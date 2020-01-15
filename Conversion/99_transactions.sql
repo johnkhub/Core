@@ -67,7 +67,10 @@ BEGIN
 	DECLARE @amount decimal(19,6)
 	DECLARE @reason varchar
 
-	PRINT 'INSERT INTO transaction_batch (batch_id) VALUES ('''+CONVERT(varchar(40),@batch_id)+''');'
+	IF @flags & 1 = 0
+	BEGIN
+		PRINT 'INSERT INTO transaction_batch (batch_id) VALUES ('''+CONVERT(varchar(40),@batch_id)+''');'
+	END
 	
 	-- The tables providing the current state of the register
 	PRINT 'INSERT INTO lifecycle (asset_id) VALUES (''' + CONVERT(varchar(40),@asset_id) +''');' 
