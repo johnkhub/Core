@@ -1,0 +1,1 @@
+insert into external_id_type (type_id, name, description) values ('c6a74a62-54f5-4f93-adf3-abebab3d3467', 'V6', 'Version 6 component identifier')

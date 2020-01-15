@@ -1,0 +1,10 @@
+INSERT INTO transaction_type (code, name, description) VALUES ('DATALOAD', 'Initial data load', 'Initial load when we take on the register');
+INSERT INTO transaction_type (code, name) VALUES ('ADDITION', 'Addition');
+INSERT INTO transaction_type (code, name, description) VALUES ('WIP_XFER', 'WIP Transfer', 'Transfer from Work In Progress');
+INSERT INTO transaction_type (code, name) VALUES ('DEPRECIATE', 'Depreciate');
+INSERT INTO transaction_type (code, name) VALUES ('UPGRADE', 'Upgrade');
+INSERT INTO transaction_type (code, name) VALUES ('IMPAIR', 'Impair');
+INSERT INTO transaction_type (code, name) VALUES ('REVALUE', 'Revalue');
+INSERT INTO transaction_type (code, name) VALUES ('MAINT', 'Maintenance');
+INSERT INTO transaction_type (code, name) VALUES ('RECLASSIF', 'Reclassify');
+INSERT INTO transaction_type (code, name) VALUES ('DERECOG', 'Derecognise');
