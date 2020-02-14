@@ -10,6 +10,12 @@ We primarily target Postgres so it makes sense to adopt its conventions.
 * SQL keywords `UPPERCASE`
 * identifier names `lower_case_with_underscores`
 
+
+Lookup tables
+-----------------------
+* Are named `ref_xxxx`
+* Inherit from `kv_base`
+
 Naming conventions
 ------------------
 * Primary Keys TBD

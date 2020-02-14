@@ -24,9 +24,14 @@ SELECT
     "Latitude", "Longitude", √
     "TreasuryCode", "CostCentreCode", "GeneralLedgerCode", "WIP_Project_ID", 
     "MeasurementModel", "RespDepartmentID", "AssetCustodianID", "CustodianshipDate", "ImpairmentDate", "ImpairmentReason", "RevImpairmentDate", "RevImpairmentReason", "DisposalMethodID", 
-    "TransferDate", "TransferredFrom", "TransferredTo", "DerecognitionDate", "Asset_Barcode_Nr", "Room_Barcode_Nr", "Serial_Number", "Fleet_Number", "AdditionsFinYTD", "ValueChangeFinYTD", 
-    "ProvisionOpening", "ProvisionAdjust", "ProvisionClosing", "DisposalProceedCost", "DerecognitionCost", "DerecognitionDepr", "TransferCost", "TransferDepr", "ImpairmentTransfer", "Room_Name", 
-    "Building_Name", "Fleet_Reg_Year", "Floor", "AdditionsNature", "CaseNumber", "CashGenerating", "DateCreated", "DateLastFinMonth", "DateLastRenewed", "DepreciationBudgetNr_Credit", 
+    "TransferDate", "TransferredFrom", "TransferredTo", "DerecognitionDate", "Asset_Barcode_Nr", 
+	"Room_Barcode_Nr", √
+	"Serial_Number", "Fleet_Number", "AdditionsFinYTD", "ValueChangeFinYTD", 
+    "ProvisionOpening", "ProvisionAdjust", "ProvisionClosing", "DisposalProceedCost", "DerecognitionCost", "DerecognitionDepr", "TransferCost", "TransferDepr", "ImpairmentTransfer", 
+	"Room_Name", √
+    "Building_Name", "Fleet_Reg_Year", 
+	"Floor", √
+	"AdditionsNature", "CaseNumber", "CashGenerating", "DateCreated", "DateLastFinMonth", "DateLastRenewed", "DepreciationBudgetNr_Credit", 
     "DepreciationBudgetNr_Debit", "FuncLocPath", "Impairment_Review_Date", "InsuranceClaimed", "InsurancePolicyNr", "LastMaintenanceDate", "ReplacedComponents", "RevaluationAccuracy", 
     "RevaluationLastDate", "RevaluationMethod", "RevaluationNextDate", "RevaluedBy", "SoldTo", "UpgradeDate", "VerificationLastDate", "VerificationNextDate", "YearConstruct_CG", "YearRenewed_CG", 
     "AdditionsClosing", "AdditionsOpening", "DisposalProfitLoss", "DRC", "EUL_Adjusted", "FairValueLessCostSell", "InsuranceAmount", "InsuranceCover", "RevaluationReserveClosing", 
@@ -35,8 +40,10 @@ SELECT
 FROM public."AssetComponent"; 
 */
 
-CREATE VIEW ar_lite_view AS
+CREATE OR REPLACE VIEW ar_lite_view AS
 SELECT
+	asset.asset_id,
+/*	
     asset_link.external_id AS "ComponentID" ,
  
     -- split financial path here
@@ -46,20 +53,21 @@ SELECT
 	split_part(asset.grap_path, '-', 4) AS "AssetGroupTypeID",
 	split_part(asset.grap_path, '-', 5) AS "AssetTypeID",
 	split_part(asset.grap_path, '-', 6) AS "ComponentTypeID",
-	
-	
-	-- split adm path here
+*/	
+
+/*	
+	-- split adm path here THIS IS WRONG WE WOULD NEED TO DO A LOOKUP FROM THE CLASSIFICATION DATABASE
 	split_part(asset.adm_path, '-', 3) AS "DescriptorType",
 	split_part(asset.adm_path, '-', 4) AS "DescriptorClass",
 	split_part(asset.adm_path, '-', 5) AS "DescriptorSize",
-	
+*/
 	location.latitude AS "Latitude",
     location.longitude AS "Longitude",
-    location.address AS "LocationAddress",
+    --location.address AS "LocationAddress",
 
     -- facility
-	facility.name AS "AssetFacilityName",
-	
+	"facility".name AS "AssetFacilityName", 
+/*	
 	-- lifecycle
     lifecycle.criticality_grade AS "CriticalityGrade", 
     lifecycle.condition_grade AS "ConditionGrade", 
@@ -71,16 +79,51 @@ SELECT
     lifecycle.condition_grade_cg AS "ConditionGrade_CG", 
     lifecycle.performance_grade_cg AS "PerformanceGrade_CG", 
     lifecycle.utilisation_grade_cg AS "UtilisationGrade_CG", 
-    lifecycle.ops_cost_grade_cg AS "OpsCostGrade_CG"   
+    lifecycle.ops_cost_grade_cg AS "OpsCostGrade_CG",
+*/
+	-- floor
+	"floor".name AS "floor",
+	
+	-- room
+	room.name AS "Room_Name"
+	--room.barcode AS "Room_Barcode_Nr"
 
     -- financials
 	
 FROM
-    asset inner join asset_link on asset.asset_id = asset_link.asset_id and asset_link.external_id_type = 'c6a74a62-54f5-4f93-adf3-abebab3d3467'
+    asset LEFT JOIN asset_link on asset.asset_id = asset_link.asset_id and asset_link.external_id_type = 'c6a74a62-54f5-4f93-adf3-abebab3d3467'
 	
-	left join financials on asset.asset_id = financials.asset_id
-    left join lifecycle on asset.asset_id = lifecycle.asset_id
-    left join location  on asset.asset_id = location.asset_id
+	LEFT JOIN far.financials ON asset.asset_id = far.financials.asset_id
+    LEFT JOIN far.lifecycle ON asset.asset_id = far.lifecycle.asset_id
+    LEFT JOIN location  ON asset.asset_id = location.asset_id
 	
-    left join 
-        asset_facility on asset.asset_id = asset_facility.asset_id inner join facility on asset_facility.facility_code = facility.code;
+	LEFT JOIN asset "facility" ON "facility".func_loc_path <@ asset.func_loc_path AND "facility".asset_type_code = 'FACILITY'
+    LEFT JOIN asset "floor" ON "floor".func_loc_path <@ asset.func_loc_path AND "floor".asset_type_code = 'FLOOR'
+    LEFT JOIN asset "room" ON "room".func_loc_path <@ asset.func_loc_path AND "room".asset_type_code = 'ROOM';
+
+/*
+CREATE EXTENSION tablefunc;
+
+select * FROM crosstab(
+	'
+	SELECT f."templateId", f."fieldName", f.default
+	FROM "TemplateType" t
+	JOIN "FieldTemplateDefinition" f ON t.id = f."templateId" AND t."isActive"
+	',
+	'
+	SELECT DISTINCT("fieldName") FROM "FieldTemplateDefinition" ORDER BY "fieldName"
+	'
+) AS T (
+	id bigint,
+	"descriptorSizeUnit" text,
+	"eul" numeric,
+	"eulUnit" text,
+	"extentConversion" numeric,
+	"extentUnit" text,
+	"refUnitRateUnit" text, 
+	"residualPct" numeric,
+	"unitRate" numeric, 
+	"unitRateCG" int 
+);
+
+*/

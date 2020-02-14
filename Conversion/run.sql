@@ -3,15 +3,16 @@ USE BCM;
 -- Iterate over all Components
 --
 SET NOCOUNT ON
+
+/*
 DELETE FROM [BCM_CORE].[Core].[public].[asset_link];
 DELETE FROM [BCM_CORE].[Core].[public].[asset];
 DELETE FROM [BCM_CORE].[Core].[public].[transaction];
 DELETE FROM [BCM_CORE].[Core].[public].[transaction_batch];
 DELETE FROM [BCM_CORE].[Core].[public].[location];
-DELETE FROM [BCM_CORE].[Core].[public].[asset_facility];
 DELETE FROM [BCM_CORE].[Core].[public].[lifecycle];
 DELETE FROM [BCM_CORE].[Core].[public].[financials];
-
+*/
 
 UPDATE AssetRegisterIconFin2019 SET DirtyFlag = 1;
 
@@ -22,7 +23,7 @@ DECLARE @idx AS bigint = 0;
 -- bit set:
 --
 -- 1 suppress transaction table insert generation (transaction, transaction_batch)
--- 2 suppress flat table inset generation  (lifecycle, financials etc)
+-- 2 suppress flat table insert generation  (lifecycle, financials etc)
 
 DECLARE @flags int = 1  
 
