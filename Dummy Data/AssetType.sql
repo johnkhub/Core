@@ -1,1 +1,0 @@
-INSERT INTO assettype (code, name, description) VALUES ('DUMMY', 'Dummy', 'Dummy')

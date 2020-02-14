@@ -1,0 +1,77 @@
+**TODO**: Change schema so we add `description` and `name` to `principal` table with `isGroup` flag (say) and do away with `principal` and `group` tables
+**TODO** *We will have to figure out how to manage the identities of the owners and how to manage this. This restriction is not enforced yet.*
+**TODO** *The front-end already supports reading from db.table.field. We should embrace this and add a schema specifier.*
+**TODO** **Initially we would need to make the field nullable** as we won't be writing the audit trail.
+
+Path from dept up to branch
+LOcation path?
+Structured address??
+Don't recreate the UUIDs .
+
+(4) Add services
+-----------------------
+Structured import process
+Structured deployment process
+Initially only writes go through services
+
+
+Documentation
+-------------
+Confluence docs:
+	Design
+	Dictionary of terms
+	
+
+
+
+Consider dynamic schema rules
+Dynamic constraints on code lenghts
+
+
+
+
+
+These must be removed
+
+UPDATE asset_import SET "Code (uk)" = REGEXP_REPLACE("Code (uk)", 'F_', '', 'g') WHERE "Level" = 'Facility'; -- remove F prefix from Facility
+UPDATE asset_import SET "Code (uk)" = "AssetID" || '-' || "Code (uk)" WHERE "Level" <> 'Asset';
+
+
+
+
+Tamper check on asset
+Reference count
+Tamper check on kv
+
+  // REMOVED TEMPORARILY audit_id uuid [NOT NULL, note: 'audit log entry']
+ 
+  // REMOVED TEMPORARILY tamper_check varchar [NOT NULL]
+  
+  // REMOVED TEMPORARILY  meta jsonb [default: `'{}'::jsonb`, note: 'arbitrary annotations']
+
+
+
+-- NOTE: ltree does not provide a means to add referential constraints so deleting a node that is tied to a path segment is failed.
+"address" text, -- This needs to be replaced with more structured data
+ /* 
+  "location_path" ltree NULL, -- 
+
+	province 
+    region
+      district
+        municipality
+          town
+            suburb
+              street           
+*/
+
+
+-- Consider making an AssetExt base table to be inherited
+CREATE TABLE "asset"."a_tp_envelope" (
+
+Transactions ... inl JSONB
+
+Acces control
+-- to keep someone from regenerating the entire audit trail from a known root we probably need a way to encrypt the first value
+inserts into audit trail
+-- MUst add a way to move users to another group so we can delete this group (when removing a group)
