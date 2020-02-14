@@ -14,7 +14,6 @@ SET "AssetId" = REGEXP_REPLACE("AssetId", '\s', '', 'g'), "MapFeatureID UPDATED 
 
 DELETE FROM  land_parcel_import WHERE "MapFeatureID UPDATED BY IMQS" NOT LIKE 'C%';
 
-
 INSERT INTO asset (asset_id, code, name, func_loc_path, asset_type_code)
 SELECT DISTINCT ON ("MapFeatureID UPDATED BY IMQS")
 	uuid_generate_v4(), 
@@ -24,8 +23,6 @@ SELECT DISTINCT ON ("MapFeatureID UPDATED BY IMQS")
 	'LANDPARCEL'
 FROM land_parcel_import WHERE NOT EXISTS(SELECT asset_id FROM asset WHERE name = 'Parcel ' || "MapFeatureID UPDATED BY IMQS" AND asset_type_code = 'LANDPARCEL');
 
-
-DELETE FROM asset.a_tp_landparcel;
 INSERT INTO asset.a_tp_landparcel (asset_id,lpi)
 SELECT 
 	DISTINCT ON ("AssetId", "MapFeatureID UPDATED BY IMQS")
@@ -34,7 +31,6 @@ FROM land_parcel_import
 WHERE (SELECT asset_id FROM asset WHERE func_loc_path = text2ltree("AssetId"||'.'||"MapFeatureID UPDATED BY IMQS")) IS NOT NULL
 ORDER BY "AssetId", "MapFeatureID UPDATED BY IMQS";
 
-DELETE FROM "asset"."asset_landparcel";
 INSERT INTO "asset"."asset_landparcel"
 SELECT 
 	DISTINCT ON (	(SELECT asset_id FROM asset WHERE code = "AssetId"),

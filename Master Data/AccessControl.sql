@@ -1,5 +1,13 @@
 SELECT '========================== 14_SetAccess.sql ===========================';
 
+DELETE FROM access_control.entity_access;
+SELECT(access_control.sp_remove_group('Readers'));
+SELECT(access_control.sp_remove_group('Creators'));
+SELECT(access_control.sp_remove_group('Writers'));
+SELECT(access_control.sp_remove_group('Super'));
+SELECT(access_control.sp_remove_group('Deletors'));
+
+
 SELECT (access_control.sp_add_group('Readers'));
 SELECT (access_control.sp_add_group('Creators'));
 SELECT (access_control.sp_add_group('Writers'));
@@ -18,6 +26,7 @@ BEGIN
 		FETCH cur_group INTO g;
 		EXIT WHEN NOT FOUND;
 		
+		PERFORM (access_control.sp_remove_group(g.k));
 		PERFORM (access_control.sp_add_group(g.k, g.v));
 	END LOOP;
 
@@ -35,6 +44,7 @@ BEGIN
 		FETCH cur_group INTO g;
 		EXIT WHEN NOT FOUND;
 		
+		PERFORM (access_control.sp_remove_group(g.k));
 		PERFORM (access_control.sp_add_group(g.k, g.v));
 	END LOOP;
 
@@ -52,6 +62,7 @@ BEGIN
 		FETCH cur_group INTO g;
 		EXIT WHEN NOT FOUND;
 		
+		PERFORM (access_control.sp_remove_group(g.k));
 		PERFORM (access_control.sp_add_group(g.k, g.v));
 	END LOOP;
 

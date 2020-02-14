@@ -7,6 +7,7 @@ UPDATE asset_import SET "Code (uk)" = REGEXP_REPLACE("Code (uk)", 'F_', '', 'g')
 UPDATE asset_import SET "Code (uk)" = "AssetID" || '-' || "Code (uk)" WHERE "Level" <> 'Asset';
 
 -- This is a temporary constraint for importing DTPW - in general we are not guaranteed that we will have all levels of the tree
+ALTER TABLE asset DROP CONSTRAINT IF EXISTS check_paths;
 ALTER TABLE asset ADD CONSTRAINT check_paths CHECK (
 	(asset_type_code = 'ENVELOPE' AND nlevel(func_loc_path) = 1) OR 
 	(asset_type_code = 'FACILITY' AND nlevel(func_loc_path) = 2) OR

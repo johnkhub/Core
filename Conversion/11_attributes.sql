@@ -1,18 +1,5 @@
 SELECT '========================== 11_attributes.sql ===========================';
 
-DELETE FROM asset.a_tp_envelope;
-DELETE FROM asset.a_tp_building;
-DELETE FROM asset.a_tp_component;
-DELETE FROM asset.a_tp_facility;
-DELETE FROM asset.a_tp_floor;
-DELETE FROM asset.a_tp_room;
-DELETE FROM asset.a_tp_landparcel;
-DELETE FROM asset.a_tp_site;
-DELETE FROM asset.ref_suburb;
-DELETE FROM asset.ref_district;
-DELETE FROM asset.ref_town;
-DELETE FROM asset.ref_municipality;
-
 UPDATE asset_import  SET "SUBURB" = "SUBURB" || '_' || "Suburb_Id" WHERE "SUBURB" = 'BERGSIG';
 
 INSERT INTO asset.ref_suburb (v,k)

@@ -201,9 +201,9 @@ DECLARE
     g_id uuid;
     user_count int;
 BEGIN
-  -- MUst add a way to move users to another group so we can delete this group
+  -- Must add a way to move users to another group so we can delete this group
   g_id := (SELECT group_id FROM access_control.group WHERE name = code);
-  user_count := (SELECT count(*) FROM access_control.principal WHERE group_id = (SELECT group_id FROM principal WHERE principal_id = g_id));
+  user_count := (SELECT count(*) FROM access_control.principal WHERE group_id = (SELECT group_id FROM access_control.principal WHERE principal_id = g_id));
   IF EXISTS(SELECT reserved FROM access_control.group WHERE group_id = group_id AND reserved = true) THEN
     RAISE EXCEPTION 'Cannot delete reserved group %. ', code;
   END IF;
@@ -216,7 +216,7 @@ BEGIN
   DELETE FROM access_control.principal WHERE principal_id = g_id;
   DELETE FROM access_control.group WHERE group_id = g_id;
 	  
-  RETURN user_id;
+  RETURN g_id;
 END; $$ 
 LANGUAGE PLPGSQL
 SECURITY DEFINER

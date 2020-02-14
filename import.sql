@@ -8,6 +8,24 @@
 \i 'Master Data/FieldNamesMerged.sql'
 
 
+DELETE FROM asset_classification;
+
+DELETE FROM asset.a_tp_envelope;
+DELETE FROM asset.a_tp_building;
+DELETE FROM asset.a_tp_component;
+DELETE FROM asset.a_tp_facility;
+DELETE FROM asset.a_tp_floor;
+DELETE FROM asset.a_tp_room;
+DELETE FROM asset.a_tp_site;
+DELETE FROM asset.ref_suburb;
+DELETE FROM asset.ref_district;
+DELETE FROM asset.ref_town;
+DELETE FROM asset.ref_municipality;
+
+
+DELETE FROM "asset"."asset_landparcel";
+DELETE FROM asset.a_tp_landparcel;
+
 --
 -- Client dependant Master Data (using its OWN SCHEMA)
 --
@@ -41,6 +59,9 @@ SET responsible_dept_classif =
 \i 'Master Data/AccessControl.sql'
 
 
+
+DROP VIEW IF EXISTS import_report_view;
+DROP VIEW IF EXISTS  source_report_view;
 
 --
 -- Import the asset data
