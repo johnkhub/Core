@@ -1,0 +1,66 @@
+For a given Asset the Financial Values will be
+
+$FIN_YEAR_START$	
+$FIN_YEAR_END$
+$NOW$
+
+THERE IS OF COURSE A WHERE AssetId = xxxx REQUIRED, I have omitted it to keep things concise.
+
+Calculated from Transactions
+----------------------------
+
+Account				, Derived value					  , As
+
+Depreciation		, DepreciationLastDate			  , select MAX("EffectiveDate") as "DepreciationLastDate" from Transaction where "TransactionType" = 'DEPRECIATION' and "EffectiveDate" < $FIN_YEAR_END$
+					, DepreciationOpening			  , select SUM("Amount") as "DepreciationClosing" from Transaction where TransactionType = 'DEPRECIATION' and Field = 'Depreciation' and "EffectiveDate" <= $FIN_YEAR_START$	  
+					, DeprecitiationClosing		 	  , select SUM("Amount") as "DepreciationClosing" from Transaction where TransactionType = 'DEPRECIATION' and Field = 'Depreciation' and "EffectiveDate" < $FIN_YEAR_END$
+					, DepreciationFinYtd			  , select SUM("Amount") as "DepreciationFinYtd"  from Transaction where TransactionType = 'DEPRECIATION' and Field = 'Depreciation' and "EffectiveDate" < $NOW$
+
+Impairment			, 								  ,
+
+Cost				, CostOpening				  	  , select SUM("Amount") as "CostOpening" from Transaction where Field = 'Cost' and "EffectiveDate" <= $FIN_YEAR_START$	  
+					, CostClosing				      , select SUM("Amount") as "CostClosing" from Transaction where Field = 'Cost' and "EffectiveDate" < $FIN_YEAR_END$
+					, TransferCost					  , select SUM("Amount") as "TransferCost"  from Transaction where Field = 'Cost' and "EffectiveDate" < $NOW$
+
+Reclassification, ReclassificationLastDate			  , select MAX("EffectiveDate") as "ReclassificationLastDate" from Transaction where "TransactionType" = 'RECLASSIFICATION' and "EffectiveDate" < $FIN_YEAR_END$
+				, ReclassificationCost				  , select SUM("Amount") as "ReclassificationCost"  from Transaction where TransactionType = 'RECLASSIFICATION' and Field = 'Cost' and "EffectiveDate" < $NOW$
+				, ReclassificationDepreciation		  , select SUM("Amount") as "ReclassificationDepreciation"  from Transaction where TransactionType = 'RECLASSIFICATION' and Field = 'Depreciation' and "EffectiveDate" < $NOW$
+				, ReclassificationImpairment		  , select SUM("Amount") as "ReclassificationImpairment"  from Transaction where TransactionType = 'RECLASSIFICATION' and Field = 'Impairment' and "EffectiveDate" < $NOW$
+
+Revaluation		, RevaluationLastDate				  , select MAX("EffectiveDate") as "RevaluationLastDate" from Transaction where "TransactionType" = 'REVALUATION' and "EffectiveDate" < $FIN_YEAR_END$
+				, RevaluationReserveOpening			  , 
+				' RevaluationReserveClosing			  ,
+				, RevaluationReserveFinYTD			  ,
+				, RevaluationReserveFinYTDDepreciation,
+				, RevaluationReserveFinYTDImpairment  ,
+				, RevaluationAmount					  , select SUM("Amount") as "ReclassificationImpairment"  from Transaction where TransactionType = 'REVALUATION' and Field = 'Cost' and "EffectiveDate" < $NOW$
+
+Derecognition	, DerecognitionDate					  , select MAX("EffectiveDate") as "DerecognitionDate" from Transaction where "TransactionType" = 'DERECOGNITION' and "EffectiveDate" < $FIN_YEAR_END$
+				, DerecognitionCost					  , 
+				, DerecognitionDepreciation			  ,
+				, DerecognitionImpairment			  ,
+				, RevaluationReserveFinYTDImpairment  ,
+				, RevaluationReserveOpening			  ,
+				, RevaluationAmount					  ,
+
+Addition		, AdditionLastDate					  , select MAX("EffectiveDate") as "AdditionLastDate" from Transaction where "TransactionType" = 'ADDITION' and Field = 'Cost' and "EffectiveDate" < $FIN_YEAR_END$
+				, AdditionOpening					  , select SUM("Amount") as "AdditionOpening" from Transaction where TransactionType = 'ADDITION' and Field = 'Cost' and "EffectiveDate" <= $FIN_YEAR_START$	  
+				, AdditionClosing					  , select SUM("Amount") as "AdditionClosing" from Transaction where TransactionType = 'ADDITION' and Field = 'Cost' and "EffectiveDate" < $FIN_YEAR_END$
+				, AdditionFinYTD					  , select SUM("Amount") as "AdditionFinYtd"  from Transaction where TransactionType = 'ADDITION' and Field = 'Cost' and "EffectiveDate" < $NOW$
+					
+					
+					
+
+Calculated from Calculations					
+----------------------------
+CarryingValue		
+CarryingValueOpening							
+CarryingValueClosing
+
+
+
+					
+					
+
+
+
