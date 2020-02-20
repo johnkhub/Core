@@ -1,3 +1,9 @@
+Use of data types
+=================
+
+* Code fields and Keys ('k') in Lookup Tables are VARCHAR(10)
+* Money is DECIMAL(19,4)
+
 Naming rules
 ============
 Take not of the identifier length limit of *63* imposed by Postgres. Try and keep table and field names short in case they need to be 
