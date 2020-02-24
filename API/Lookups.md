@@ -1,14 +1,23 @@
-Operations
+API
 ==========
 
-* Add Lookup Type ()
+Status codes
+-------------
 
-```
-GET /lookups
-```
+|Code|Meaning|Explanation|
+|----|-------|-----------|
+|200|OK||
+|201|Created||
+|||
 
+
+### `GET /lookups`
+Accepts: *Nothing*
+Returns: *Nothing*
+
+`PUT lookups/code`
+Accepts: 
 ```
-PUT lookups/code
 {
   "name",
   "description",
@@ -16,20 +25,25 @@ PUT lookups/code
   "table"
 }
 ```
+Returns: *Nothing* and status []
 
+
+### `POST /lookups/code/{code}`
+Accepts: 
 ```
-POST /lookups/code/{code} 
 {
   "k",
   "v"
   "description"
 }
-
-DELETE /lookups/code/{code}/{k}
 ```
+Returns: *Nothing*
 
+### `DELETE /lookups/code/{code}/{k}`
+
+`POST /lookups/code/{code}?k=""&v=""&description=""`
+Accepts: 
 ```
-POST /lookups/code/{code}?k=""&v=""&description=""
 [
   {
     "k",
@@ -37,11 +51,14 @@ POST /lookups/code/{code}?k=""&v=""&description=""
     "description"
   }
 ]
+```
+Returns: *Nothing*
 
-DELETE /lookups/code/{code}/keys
+### `DELETE /lookups/code/{code}/keys`
+Accepts: 
+```
 [
   list of keys
 ]
 ```
-
-
+Returns: *Nothing*
