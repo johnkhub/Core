@@ -21,6 +21,7 @@ CREATE TABLE settings (
 \i 'Schema/06_Access Control.sql'
 \i 'Schema/07_Audit.sql'
 \i 'Schema/08_FinYear.sql'
+\i 'Schema/Reporting.sql'
 
 \i 'Views/ar_lite_view.sql'
 \i 'Views/asset_core_view.sql'
