@@ -1,14 +1,14 @@
 CREATE TABLE "asset" (
   "asset_id" uuid PRIMARY KEY,
   "asset_type_code" varchar(10) NOT NULL,
-  
+
   "code" varchar(100) UNIQUE,
   "name" varchar NOT NULL,
-  
+
   "adm_path" ltree NULL,
   "func_loc_path" ltree NOT NULL,
   "grap_path" ltree NULL ,
-  
+
   "creation_date" timestamp NOT NULL DEFAULT 'NOW()',
   "deactivated_at" timestamp,
   "reference_count" BIGINT NOT NULL DEFAULT 0
@@ -28,23 +28,23 @@ COMMENT ON COLUMN "assettype"."uid" IS 'This field is required to model the asse
 
 CREATE TABLE "geoms" (
   "asset_id" uuid PRIMARY KEY,
-  "geom" geometry NOT NULL
+  "geom" geometry(Geometry, 4326) NOT NULL
 );
 
 
 CREATE TABLE "location" (
   "asset_id" uuid UNIQUE PRIMARY KEY,
   "address" text, -- This needs to be replaced with more structured data
- /* 
-  "location_path" ltree NULL, -- 
+ /*
+  "location_path" ltree NULL, --
 
-	province 
+	province
     region
       district
         municipality
           town
             suburb
-              street           
+              street
 */
 
 
