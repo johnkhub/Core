@@ -35,9 +35,17 @@ To use this API you must be authenticated via the Auth service and have permissi
 
 |Code|Meaning|Explanation|
 |----|-------|-----------|
-|200|OK||
-|201|Created||
-|||
+|200|OK|Operation completed successfully|
+|201|Created|Entity was created successfully|
+|400|Bad request|The Operation requested is improperly formatted - typically a validation failure.
+|403|Forbidden|User does not have permission to perform the action|
+|404|Not found|Entity not found|
+|408|Request timeout|The client should resubmit the request|
+|409|Conflict|The entity that you tried to add already exists|
+|412|Precondition failed|Indicates that the requested Operation would violate a business rule|
+
+
+### Objects
 
 
 
@@ -57,6 +65,7 @@ Returns:
     }
 ]
 ```
+Status codes: 200, 400, 403, 408
 
 
 ### `POST assets/authorisation/users`
@@ -69,11 +78,14 @@ Accepts:
 ```
 Returns: *Nothing*
 
+Status codes: 201, 400, 403, 408, 409, 412
+
 ### `DELETE assets/authorisation/users/{user_uuid}`
 Accepts: *Nothing* 
 Returns: *Nothing*
+Status codes: 200, 400, 403, 408, 412
 
-### `GET assets/authorisation/users`
+### `GET assets/authorisation/groups`
 Accepts: *Nothing*
 Returns:
 ```
@@ -83,6 +95,7 @@ Returns:
     }
 ]
 ```
+Status codes: 200, 400, 403, 408
 
 ### `POST assets/authorisation/groups`
 Accepts: 
@@ -94,8 +107,14 @@ Accepts:
 ```
 Returns: *Nothing*
 
+Status codes: 201, 400, 403, 408, 409, 412
+
 ### `DELETE assets/authorisation/groups/{group_uuid}`
-Accepts: 
+Accepts: *Nothing*
+
+Returns: *Nothing*
+
+Status codes: 200, 400, 403, 404, 408, 412
 
 ###  `POST assets/authorisation/groups/{group_uuid}`
 Accepts: 
@@ -106,9 +125,14 @@ Accepts:
 ```
 Returns: *Nothing*
 
+Status codes: 201, 400, 403, 408, 409, 412
+
 ### `DELETE assets/authorisation/groups/{group_uuid}/{user_uuid}`
 Accepts: *Nothing*
+
 Returns: *Nothing*
+
+Status codes: 200, 400, 403, 404, 408, 412
 
 ### `POST assets/authorisation/entity/{entity_uuid}`
 Accepts: 
@@ -121,10 +145,18 @@ Accepts:
 ```
 Returns: *Nothing*
 
+Status codes: 201, 400, 403, 408, 409, 412
+
 ### `POST assets/authorisation/entity/{entity_uuid}/{principal_uuid}`
 Accepts: *Nothing*
+
 Returns: *Nothing*
+
+Status codes: 201, 400, 403, 408, 409, 412
 
 ### `DELETE assets/authorisation/entity/{entity_uuid}/{principal_uuid}`
 Accepts: *Nothing*
+
 Returns: *Nothing*
+
+Status codes: 200, 400, 403, 404, 408, 412
