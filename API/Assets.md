@@ -143,7 +143,7 @@ Returns: *Nothing*
 Status codes: 200, 400, 403, 408, 409, 412
 
 ### `DELETE asset/link/{uuid}/to/{external_id_type}/{external_id}`
-Removes the specified external identifier of teh specified type linked to the specified Asset.
+Removes the specified external identifier of the specified type linked to the specified Asset. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
 Accepts: *Nothing*
 
@@ -151,3 +151,14 @@ Returns: *Nothing*
 
 Status codes: 200, 400, 403, 408, 412
 
+### `asset/link/{uuid}/to/{external_id_type}` ###
+Returns the link to the specified asset of the given external type. Use `GET asset/link/types` to list the external identifier types that exist on your system.
+
+Accepts: *Nothing*
+
+Returns: 
+```
+   <external_id>
+```
+
+Status codes: 200, 400, 403

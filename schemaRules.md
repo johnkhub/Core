@@ -9,6 +9,10 @@ Naming rules
 Take not of the identifier length limit of *63* imposed by Postgres. Try and keep table and field names short in case they need to be 
 combined to form names in keys and indexes.
 
+Comments
+--------
+* Many if not most entities in the various schemas have comments i.e. `COMMENT ON XXX IS...` Please add comments as you go along.
+
 Basic
 ----
 We primarily target Postgres so it makes sense to adopt its conventions.

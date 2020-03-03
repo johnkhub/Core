@@ -1,0 +1,1 @@
+C:\Workspaces\Tools\liquibase\liquibase-3.8.7\liquibase --outputFile=diffs.txt --classpath=postgresql-42.2.5.jar --url=jdbc:postgresql://localhost:5432/test_core?currentSchema=public --username=imqs --password=1mq5p@55w0rd diff --referenceUrl=jdbc:postgresql://localhost:5432/core12feb_2?currentSchema=public --referenceUsername=postgres --referencePassword=1mq5p@55w0rd

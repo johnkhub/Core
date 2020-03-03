@@ -3,6 +3,7 @@ package za.co.imqs.coreservice.audit;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * (c) 2020 IMQS Software
@@ -30,14 +31,12 @@ public class AuditLoggerImpl implements AuditLogger {
 
     private static AuditLogWriter.AuditLogRow map(AuditLogEntry entry) {
         final AuditLogWriter.AuditLogRow r = new AuditLogWriter.AuditLogRow();
-        /*
-        r.setAction("");
-        r.setAudit_id();
-        r.setEvent_time();
-        r.setPrincipal_id();
-        r.setStatus();
+        r.setAudit_id(UUID.fromString(entry.getAffectedEntity()));
+        r.setEvent_time(entry.getAt());
+        r.setPrincipal_id(UUID.fromString(entry.getUserId()));
+        r.setAction(entry.getOperation().toString());
+        r.setStatus(entry.getResult().toString());
 
-         */
         return r;
     }
 }

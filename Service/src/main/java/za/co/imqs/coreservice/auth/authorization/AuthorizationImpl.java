@@ -16,6 +16,8 @@ import za.co.imqs.spring.service.auth.authorization.UserContext;
 @Slf4j
 public class AuthorizationImpl implements Authorization {
 
+    // Get the users's membership to the groups associated with a specific CD or Dept for first authorisation
+    // then do teh call to the database function to check other permissions
     public boolean authorize(AuthResponse authAuthResponse) {
         return true;
     }

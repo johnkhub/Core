@@ -3,40 +3,52 @@ package za.co.imqs.coreservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
-import za.co.imqs.libimqs.utils.ConfigurationUtils;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
-import za.co.imqs.services.serviceauth.dto.PermissionDTO;
-import za.co.imqs.services.serviceauth.dto.UserDTO;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
+import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.List;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
- * (c) 2015 IMQS Software
- * <p/>
- * User: AbramS
- * Date: 2016/08/31
+ * (c) 2019 IMQS Software
+ * <p>
+ * User: frankvr
+ * Date: 2019/02/15
  */
 
 @Configuration
-@Profile({PROFILE_PRODUCTION})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Slf4j
 public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Autowired
     private ObjectMapper mapper;
+
+    private final DataSource ds;
+
+    @Autowired
+    public AuthConfiguration(@Qualifier("default_ds") DataSource ds) {
+        this.ds = ds;
+    }
+
+    @Bean
+    @Qualifier("auth_ds")
+    public DataSource getAuthDataSource() {
+        return ds;
+    }
 
     @Bean
     public AuthInterceptor handleAuthInterceptor(){
@@ -49,6 +61,14 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     @Bean
     public Authorization authorization() {
         return new AuthorizationImpl();
+    }
+
+
+
+    @Bean
+    @Override
+    public int getRouterPort() {
+        return 8001;
     }
 
     @Bean

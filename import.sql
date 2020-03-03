@@ -3,9 +3,9 @@
 -- 
 \i 'Master Data/AssetType.sql'
 \i 'Master Data/ExternalIdType.sql'
-\i 'Master Data/TransactionTypes.sql'
+--\i 'Master Data/TransactionTypes.sql'
 \i 'Master Data/Units.sql'
-\i 'Master Data/FieldNamesMerged.sql'
+--\i 'Master Data/FieldNamesMerged.sql'
 
 
 DELETE FROM asset_classification;
@@ -135,8 +135,8 @@ FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/DTPW_Location Breakdown_V13B_202
 
 \i 'DTPW Data/emis.sql'
 
---DELETE FROM postal_code;
---COPY  postal_code (suburb, box_code, street_code, area)
---FROM 'C:/Users/frankvr/Documents/Core/Master Data/postalcodes.csv' DELIMITER ';' CSV HEADER;
+DELETE FROM postal_code;
+COPY  postal_code (suburb, box_code, street_code, area)
+FROM 'C:/Users/frankvr/Documents/Core/Master Data/postalcodes.csv' DELIMITER ';' CSV HEADER;
 
 \i 'import_report.sql'

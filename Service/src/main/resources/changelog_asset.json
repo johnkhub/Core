@@ -1,0 +1,1483 @@
+{ "databaseChangeLog": [
+  {
+    "changeSet": {
+      "id": "1583403835611-1",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_envelope_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "name": "municipality_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "town_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "suburb_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "district_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "region_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "ward_code",
+                  "type": "VARCHAR(10)"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type ENVELOPE",
+            "schemaName": "asset",
+            "tableName": "a_tp_envelope"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-2",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "asset_landparcel_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "asset_landparcel_pkey"
+                  },
+                  "name": "landparcel_asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Linking table between asset and landparcel",
+            "schemaName": "asset",
+            "tableName": "asset_landparcel"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-9",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_room_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type ROOM",
+            "schemaName": "asset",
+            "tableName": "a_tp_room"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-10",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_building_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type BUILDING",
+            "schemaName": "asset",
+            "tableName": "a_tp_building"
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-12",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_component_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type COMPONENT",
+            "schemaName": "asset",
+            "tableName": "a_tp_component"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-13",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_site_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type SITE",
+            "schemaName": "asset",
+            "tableName": "a_tp_site"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-14",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_landparcel_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "lpi",
+                  "remarks": "Land Parcel Identifier",
+                  "type": "VARCHAR(21)"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type LANDPARCEL",
+            "schemaName": "asset",
+            "tableName": "a_tp_landparcel"
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-15",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_facility_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "facility_type_code",
+                  "type": "VARCHAR(10)"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type FACILITY",
+            "schemaName": "asset",
+            "tableName": "a_tp_facility"
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-16",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_floor_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "VARCHAR"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type FLOOR",
+            "schemaName": "asset",
+            "tableName": "a_tp_floor"
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-26",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_room",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_room_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-5",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_district"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-8",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_facility_type"
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-11",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_municipality"
+          }
+        }]
+      
+    }
+  },
+    
+    
+  {
+    "changeSet": {
+      "id": "1583403835611-6",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_region"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-7",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_suburb"
+          }
+        }]
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-3",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_town"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-4",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "asset",
+            "tableName": "ref_ward"
+          }
+        }]
+      
+    }
+  },
+ 
+  {
+    "changeSet": {
+      "id": "1583403835611-27",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_building",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_building_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-29",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_component",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_component_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-30",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_site",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_site_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-31",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_landparcel",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-32",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addUniqueConstraint": {
+            "columnNames": "lpi",
+            "constraintName": "a_tp_landparcel_lpi_key",
+            "schemaName": "asset",
+            "tableName": "a_tp_landparcel"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-33",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "landparcel_asset_id",
+            "baseTableName": "asset_landparcel",
+            "baseTableSchemaName": "asset",
+            "constraintName": "asset_landparcel_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "a_tp_landparcel",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-34",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_facility",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_facility_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-36",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_floor",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_floor_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-37",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-44",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "asset_landparcel",
+            "baseTableSchemaName": "asset",
+            "constraintName": "asset_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-19",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_district_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_district",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-20",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_district_v_idx",
+            "schemaName": "asset",
+            "tableName": "ref_district",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+   {
+    "changeSet": {
+      "id": "1583403835611-24",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_facility_type_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_facility_type",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-25",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_facility_type_v_idx",
+            "schemaName": "asset",
+            "tableName": "ref_facility_type",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-28",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_municipality_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_municipality",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-21",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_region_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_region",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-22",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_region_v_idx",
+            "schemaName": "asset",
+            "tableName": "ref_region",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-23",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_suburb_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_suburb",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-17",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_town_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_town",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-18",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_ward_k_idx",
+            "schemaName": "asset",
+            "tableName": "ref_ward",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-35",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "facility_type_code",
+            "baseTableName": "a_tp_facility",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_facility_facility_type_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_facility_type",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-38",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "district_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_district_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_district",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-39",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "municipality_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_municipality_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_municipality",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-40",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "region_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_region_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_region",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-41",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "suburb_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_suburb_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_suburb",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-42",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "town_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_town_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_town",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403835611-43",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "ward_code",
+            "baseTableName": "a_tp_envelope",
+            "baseTableSchemaName": "asset",
+            "constraintName": "a_tp_envelope_ward_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_ward",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        }]
+      
+    }
+  }
+]}

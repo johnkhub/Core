@@ -1,4 +1,0 @@
-call java -jar C:\Workspaces\Tools\liquibase\liquibase-3.5.1-bin\liquibase.jar --changeLogFile=changelog_public.json generateChangeLog --url=jdbc:postgresql://localhost:5432/CoreFrank?currentSchema=public
-call java -jar C:\Workspaces\Tools\liquibase\liquibase-3.5.1-bin\liquibase.jar --changeLogFile=changelog_dtpw.json generateChangeLog --url=jdbc:postgresql://localhost:5432/CoreFrank?currentSchema=dtpw
-call java -jar C:\Workspaces\Tools\liquibase\liquibase-3.5.1-bin\liquibase.jar --changeLogFile=changelog_asset.json generateChangeLog --url=jdbc:postgresql://localhost:5432/CoreFrank?currentSchema=asset
-call java -jar C:\Workspaces\Tools\liquibase\liquibase-3.5.1-bin\liquibase.jar --changeLogFile=changelog_access_control.json generateChangeLog --url=jdbc:postgresql://localhost:5432/CoreFrank?currentSchema=access_control

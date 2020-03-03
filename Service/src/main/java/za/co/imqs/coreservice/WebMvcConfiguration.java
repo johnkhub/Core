@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import za.co.imqs.formservicebase.interceptors.ServiceFailureInterceptor;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
  * This is boiler plate stuff. Add entries to the ComponentScan annotation as needed.
@@ -17,11 +19,14 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_P
 
 @Slf4j
 @Configuration
-@Profile(PROFILE_PRODUCTION)
-public class WebMvcConfiguration extends WebMvcConfigurationSupport {
-    public static final String ROOT_PATH = "/asset";
+@EnableWebMvc // THIS IS IMPORTANT without it the interceptor filtering does not work
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+public class WebMvcConfiguration implements WebMvcConfigurer {
+    public static final String ROOT_PATH = "/assets";
     public static final String PING_PATH = ROOT_PATH+"/ping";
     public static final String DIE_PATH = ROOT_PATH+"/die";
+
+    public static final String TESTING_PATH = ROOT_PATH+"/testing";
 
 
     @Autowired
@@ -33,7 +38,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(healthInterceptor);
-        registry.addInterceptor(handleAuthInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(handleAuthInterceptor).addPathPatterns("/**").excludePathPatterns(PING_PATH);
     }
 }
 

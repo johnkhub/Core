@@ -3,6 +3,7 @@ package za.co.imqs.coreservice.dataaccess;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -28,8 +29,13 @@ public interface AuditLogWriter {
 
         private String action;
         private String status;
+        private UUID correlation;
     }
 
     public void write(Collection<AuditLogRow> rows);
-    public void write(AuditLogRow ...rows);
+
+    default void write(AuditLogRow ...rows) {
+        write(Arrays.asList(rows));
+    }
+
 }

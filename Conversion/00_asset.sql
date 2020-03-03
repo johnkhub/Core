@@ -100,7 +100,7 @@ ON CONFLICT (asset_id) DO UPDATE SET address = EXCLUDED.address;
 INSERT INTO geoms (asset_id, geom)
 SELECT 
 	(SELECT asset_id FROM asset WHERE code = "AssetID") as asset_id,
-	ST_GeomFromText("Geometry") as geom
+	ST_Force3D(ST_GeomFromText("Geometry", 4326)) as geom
 FROM 
 	asset_import 
 WHERE ("Geometry" IS NOT NULL) AND ("Geometry" != '#N/A')

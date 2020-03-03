@@ -1,18 +1,27 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
+import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.CoreAsset;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 
 /**
  * (c) 2020 IMQS Software
@@ -25,9 +34,15 @@ import java.util.UUID;
 public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final Environment env;
 
-    public CoreAssetWriterImpl(DataSource ds) {
+    @Autowired
+    public CoreAssetWriterImpl(
+            @Qualifier("default_ds") DataSource ds,
+            Environment env
+    ) {
         this.jdbc = new NamedParameterJdbcTemplate(ds);
+        this.env = env;
     }
 
     // TODO: Retry
@@ -58,15 +73,16 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 }
                 if (tGeoms.getValues().size() > 0) {
                     tGeoms.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    jdbc.update(generateInsert("geoms", tGeoms).toString(), tGeoms);
+                    jdbc.update("INSERT INTO geoms (asset_id, geom) VALUES (:asset_id, ST_GeomFromText(:geom, 4326))", tGeoms);
                 }
             } catch(Exception e) {
-                throw exceptionMapper(e, a);
+                throw exceptionMapperAsset(e, a);
             }
         }
     }
 
     @Override
+    @Transactional
     public void updateAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {
@@ -92,29 +108,59 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 }
                 if (tGeoms.getValues().size() > 0) {
                     tGeoms.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    count += jdbc.update(generateUpdate("geoms", tGeoms).toString(), tGeoms);
+                    //count += jdbc.update(generateUpdate("geoms", tGeoms).toString(), tGeoms);
+                    count += jdbc.update("UPDATE geoms SET geom = ST_GeomFromText(:geom, 4326) WHERE asset_id = :asset_id", tGeoms);
                 }
                 if (count == 0)
                     throw new NotFoundException("Asset " + a.getAsset_id() + " does not exist");
             } catch (Exception e) {
-                throw exceptionMapper(e, a);
+                throw exceptionMapperAsset(e, a);
             }
         }
     }
 
     @Override
+    @Transactional
     public void deleteAssets(List<UUID> uuid) {
         throw new UnsupportedOperationException("Deletion of asset not implemented");
     }
 
+
     @Override
-    public void addExternalLink(UUID uuid, String externalIdType, String externalId) {
-        jdbc.getJdbcTemplate().update("INSERT INTO asset_link (uuid,externalIdType,externalId) VALUES (?,?,?)", uuid.toString(), externalIdType, externalId);
+    @Transactional
+    public void obliterateAssets(List<UUID> uuids) {
+        final List<String> profiles = Arrays.asList(env.getActiveProfiles());
+        if (profiles.contains(PROFILE_PRODUCTION)) {
+            throw new RuntimeException("No way!");
+        }
+
+        for (UUID uuid : uuids) {
+            jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id=?", uuid);
+            jdbc.getJdbcTemplate().update("DELETE FROM location WHERE asset_id=?", uuid);
+            jdbc.getJdbcTemplate().update("DELETE FROM geoms WHERE asset_id=?", uuid);
+            jdbc.getJdbcTemplate().update("DELETE FROM asset_identification WHERE asset_id=?", uuid);
+            jdbc.getJdbcTemplate().update("DELETE FROM asset WHERE asset_id=?", uuid);
+        }
     }
 
     @Override
-    public void deleteExternalLink(UUID uuid, String externalIdType, String externalId) {
-        jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE uuid = ? externalIdType = ? AND externalId = ?", uuid.toString(), externalIdType, externalId);
+    @Transactional
+    public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
+        try {
+            jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?)", uuid, externalIdType, externalId);
+        } catch (Exception e) {
+            throw exceptionMapperExternalLink(e, uuid, externalId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
+        try {
+            jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
+        } catch (Exception e) {
+            throw exceptionMapperExternalLink(e, uuid, externalId);
+        }
     }
 
     private void process(
@@ -146,7 +192,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             tAssetIdentification.addValue("barcode", asset.getBarcode(), Types.VARCHAR);
         }
         if (asset.getGeometry() != null) {
-            tGeoms.addValue("geom", asset.getGeometry(), Types.OTHER);
+            tGeoms.addValue("geom", asset.getGeometry(), Types.VARCHAR);
         }
         if (asset.getLatitude() != null) {
             tLocation.addValue("latitude", asset.getLatitude(), Types.DECIMAL);
@@ -178,7 +224,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     private StringBuffer generateInsert(String target, MapSqlParameterSource map) {
-        final StringBuffer insert = new StringBuffer("INSERT INTO ").append(target).append("(");
+        final StringBuffer insert = new StringBuffer("INSERT INTO ").append(target).append(" (");
         for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
             insert.append(e.getKey()).append(",");
         }
@@ -191,9 +237,23 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         return insert;
     }
 
-    private RuntimeException exceptionMapper(Exception e, CoreAsset asset) {
+    private RuntimeException exceptionMapperAsset(Exception e, CoreAsset asset) {
         if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Asset " +  asset.getAsset_id() + " already exists! ("+e.getMessage()+")");
+            return new AlreadyExistsException("Asset " + asset.getAsset_id() + " already exists! (" + e.getMessage() + ")");
+        } else if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
+    private RuntimeException exceptionMapperExternalLink(Exception e, UUID asset, String link) {
+        if (e instanceof org.springframework.dao.DuplicateKeyException) {
+            return new AlreadyExistsException("Asset Link " + asset + ":" + link + " already exists! (" + e.getMessage() + ")");
+        } else if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
         } else if (e instanceof RuntimeException) {
             return (RuntimeException)e;
         } else {

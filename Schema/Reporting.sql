@@ -37,4 +37,4 @@ ORDER BY
     indexname;
 
 COMMENT ON VIEW public.index_definition_by_view_view 
-AS 'Gets the definitions of all of the indexes on all of the tables on all of the views. This can serve as a source of information when deciding on what indexes to create on materialized views.'
+IS 'Gets the definitions of all of the indexes on all of the tables on all of the views. This can serve as a source of information when deciding on what indexes to create on materialized views.';

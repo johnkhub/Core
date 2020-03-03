@@ -1,0 +1,431 @@
+{ "databaseChangeLog": [
+  {
+    "changeSet": {
+      "id": "1583403225361-1",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "dtpw",
+            "tableName": "ref_branch"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-2",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "name": "branch_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "dtpw",
+            "tableName": "ref_chief_directorate"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-3",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_branch_k_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_branch",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-4",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_branch_v_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_branch",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-5",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "name": "chief_directorate_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "responsible_dept_classif",
+                  "remarks": "<branch>.<chief directorate>.<reponsible department>",
+                  "type": "PUBLIC.LTREE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-6",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_chief_directorate_k_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_chief_directorate",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-7",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_chief_directorate_v_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_chief_directorate",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-8",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "responsible_dept_classif"
+                }
+              }]
+            ,
+            "indexName": "responsible_dept_classif",
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-9",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_client_department_k_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583403225361-10",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_client_department_v_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  {
+    "changeSet": {
+      "id": "1583403225361-11",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "responsible_dept_code",
+            "baseTableName": "asset_classification",
+            "constraintName": "asset_classification_responsible_dept_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_client_department",
+            "referencedTableSchemaName": "dtpw",
+            "validate": true
+          }
+        }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "0000000000-1",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "dtpw/external_id_types.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter": ";"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "0000000000-2",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "dtpw/kv_types.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter": ";"
+          }
+        }
+      ]
+    }
+  }
+]}

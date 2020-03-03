@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,9 +14,13 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.CoreAssetFactory;
+import za.co.imqs.spring.service.auth.ThreadLocalUser;
+import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 import java.util.Collections;
-import java.util.UUID;
+
+import static za.co.imqs.coreservice.Validation.asUUID;
+import static za.co.imqs.coreservice.WebMvcConfiguration.ROOT_PATH;
 
 /**
  * (c) 2020 IMQS Software
@@ -25,10 +30,11 @@ import java.util.UUID;
  */
 @RestController
 @Slf4j
-@RequestMapping("/assets")
+@RequestMapping(ROOT_PATH)
 public class AssetController {
 
     private final CoreAssetWriter assetWriter;
+
     private final CoreAssetFactory aFact = new CoreAssetFactory();
     private final AuditLoggingProxy audit;
 
@@ -42,20 +48,22 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method= RequestMethod.PUT, value= "/",
+            method = RequestMethod.PUT, value = "/{uuid}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity addAsset(@RequestBody CoreAssetDto asset) {
+    public ResponseEntity addAsset(@PathVariable String uuid, @RequestBody CoreAssetDto asset) {
+        final UserContext user = ThreadLocalUser.get();
         // Authentication
         // Authorisation
         // Audit logging
         try {
             audit.tryIt(
-                        new AuditLogEntry("", "", "", AuditLogger.Operation.ADD, ""),
-                        () -> {
-                            assetWriter.createAssets(Collections.singletonList(aFact.from(asset))); return null;
-                        }
-                    );
+                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    () -> {
+                        assetWriter.createAssets(Collections.singletonList(aFact.create(asUUID(uuid), asset)));
+                        return null;
+                    }
+            );
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e) {
             return mapException(e);
@@ -63,17 +71,19 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method= RequestMethod.DELETE, value= "/{uuid}"
+            method = RequestMethod.DELETE, value = "/{uuid}"
     )
     public ResponseEntity deleteAsset(@PathVariable String uuid) {
+        final UserContext user = ThreadLocalUser.get();
         // Authentication
         // Authorisation
         // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry("", "", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
                     () -> {
-                        assetWriter.deleteAssets(Collections.singletonList(asUUID(uuid))); return null;
+                        assetWriter.deleteAssets(Collections.singletonList(asUUID(uuid)));
+                        return null;
                     }
             );
             return new ResponseEntity(HttpStatus.OK);
@@ -83,17 +93,19 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method= RequestMethod.PATCH, value= "/"
+            method = RequestMethod.PATCH, value = "/{uuid}"
     )
-    public ResponseEntity updateAsset(@RequestBody CoreAssetDto asset) {
+    public ResponseEntity updateAsset(@PathVariable String uuid, @RequestBody CoreAssetDto asset) {
+        final UserContext user = ThreadLocalUser.get();
         // Authentication
         // Authorisation
         // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry("", "", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
                     () -> {
-                        assetWriter.updateAssets(Collections.singletonList(aFact.from(asset))); return null;
+                        assetWriter.updateAssets(Collections.singletonList(aFact.update(asUUID(uuid), asset)));
+                        return null;
                     }
             );
             return new ResponseEntity(HttpStatus.OK);
@@ -102,39 +114,43 @@ public class AssetController {
         }
     }
 
+
     @RequestMapping(
-            method= RequestMethod.PUT, value= "asset/link/{uuid}/to/{external_id_type}/{external_id}"
+            method = RequestMethod.PUT, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
-    public ResponseEntity addExternalLink(@RequestParam String uuid, @RequestParam String external_id_type, @RequestParam String external_id) {
+    public ResponseEntity addExternalLink(@PathVariable String uuid, @PathVariable String external_id_type, @PathVariable String external_id) {
+        final UserContext user = ThreadLocalUser.get();
         // Authentication
         // Authorisation
         // Audit logging
         try {
-            assetWriter.addExternalLink(asUUID(uuid), external_id_type, external_id);
             audit.tryIt(
-                    new AuditLogEntry("", "", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
                     () -> {
-                        assetWriter.addExternalLink(asUUID(uuid), external_id_type, external_id); return null;
+                        assetWriter.addExternalLink(asUUID(uuid), asUUID(external_id_type), external_id);
+                        return null;
                     }
             );
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
     @RequestMapping(
-            method= RequestMethod.DELETE, value= "asset/link/{uuid}/to/{external_id_type}/{external_id}"
+            method = RequestMethod.DELETE, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
-    public ResponseEntity deleteExternalLink(@RequestParam String uuid, @RequestParam String external_id_type, @RequestParam String external_id) {
+    public ResponseEntity deleteExternalLink(@PathVariable String uuid, @PathVariable String external_id_type, @PathVariable String external_id) {
+        final UserContext user = ThreadLocalUser.get();
         // Authentication
         // Authorisation
         // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry("", "", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
                     () -> {
-                        assetWriter.deleteExternalLink(asUUID(uuid), external_id_type, external_id); return null;
+                        assetWriter.deleteExternalLink(asUUID(uuid), asUUID(external_id_type), external_id);
+                        return null;
                     }
             );
             return new ResponseEntity(HttpStatus.OK);
@@ -144,6 +160,7 @@ public class AssetController {
     }
 
     private ResponseEntity mapException(Exception exception) {
+        log.error("--> "+exception);
         if (exception instanceof AlreadyExistsException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
         } else if (exception instanceof NotFoundException) {
@@ -152,64 +169,13 @@ public class AssetController {
             return new ResponseEntity(exception.getMessage(), HttpStatus.FORBIDDEN);
         } else if (exception instanceof ValidationFailureException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        } else if (exception instanceof BusinessRuleViolationException) {
+            return new ResponseEntity(exception.getMessage(), HttpStatus.PRECONDITION_FAILED);
         } else if (exception instanceof ResubmitException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.REQUEST_TIMEOUT); // So the client can resubmit
         } else {
-            return new ResponseEntity(exception.getMessage()+"\n"+exception.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
+            final String stacktrace = ExceptionUtils.getStackTrace(exception);
+            return new ResponseEntity(exception.getMessage() + "\n" + stacktrace, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private UUID asUUID(String uuid) {
-        try {
-            return UUID.fromString(uuid);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationFailureException(uuid + " is not a valid UUID");
-        }
-    }
-    /*
-
-```
--- explicit endpoint for each type so we then need to only add endpoints instead of changing -- -- existing code when new types are introduced
-
-```
-PUT assets/{uuid}/envelope
-{
-}
-```
-
-```
-PUT assets/{uuid}/facility
-{
-}
-```
-
-
-```
-PUT assets/{uuid}/building
-{
-}
-```
-
-
-```
-PUT assets/{uuid}/floor
-{
-}
-```
-
-
-```
-PUT assets/{uuid}/room
-{
-}
-```
-
-```
-PUT assets/{uuid}/component
-{
-    "component_type"
-}
-```
-
-     */
 }

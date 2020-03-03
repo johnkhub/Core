@@ -1,46 +1,5 @@
-CREATE SCHEMA "access_control";
-
-CREATE TABLE "access_control"."access_type" (
-  "name" varchar(10) PRIMARY KEY,
-  "mask" integer NOT NULL
-);
-
-CREATE TABLE "access_control"."entity_access" (
-  "entity_id" uuid,
-  "principal_id" uuid,
-  "access_types" integer NOT NULL DEFAULT 0,
-  "grant_types" integer NOT NULL DEFAULT 0,
-  PRIMARY KEY ("entity_id", "principal_id")
-);
-
-CREATE TABLE "access_control"."principal" (
-  "id" serial  PRIMARY KEY,
-  "principal_id" uuid UNIQUE,
   "group_id" int
-);
-
-CREATE TABLE "access_control"."user" (
-  "user_id" uuid PRIMARY KEY,
-  "name"  text
-);
-
-CREATE TABLE "access_control"."group" (
-  "group_id" uuid PRIMARY KEY,
-  "name"  text,
-  "description" text,
-  "reserved" boolean  NOT NULL  DEFAULT false
-);
-
-ALTER TABLE "access_control"."entity_access" ADD FOREIGN KEY ("principal_id") REFERENCES "access_control"."principal" ("principal_id");
-ALTER TABLE "access_control"."principal" ADD FOREIGN KEY ("group_id")  REFERENCES "access_control"."principal" ("id");
-
-
-CREATE INDEX ON "access_control"."access_type" ("name");
-CREATE INDEX ON "access_control"."entity_access" ("entity_id", "principal_id");
-CREATE INDEX ON "access_control"."principal" ("principal_id");
-CREATE INDEX ON "access_control"."principal" ("group_id");
-CREATE INDEX ON "access_control"."user" ("user_id");
-CREATE INDEX ON "access_control"."group" ("group_id");
+  "is_group" boolean,
 
 COMMENT ON TABLE "access_control"."entity_access" IS 'Defines what access specific principals have to specific entities';
 COMMENT ON TABLE "access_control"."access_type" IS 'Master data list of access types';
@@ -318,8 +277,7 @@ INSERT INTO access_control.access_type (mask, name) VALUES (4, 'UPDATE');
 INSERT INTO access_control.access_type (mask, name) VALUES (8, 'DELETE');
 
 -- Add a system user
-INSERT INTO access_control.user (user_id,name) VALUES (uuid_generate_v4(), 'System');
-INSERT INTO access_control.principal (principal_id) VALUES ((SELECT user_id FROM access_control.user WHERE name = 'System'));
+INSERT INTO access_control.principal (principal_id, group_id, name, description, is_group, reserved) VALUES (uuid_generate_v4(), null, 'System', 'System user is the root grantor of permissions.', false, true);
 
 --select * from information_schema.table_privileges where grantee = 'normal_reader'
 --select * from information_schema.routine_privileges where grantee = 'normal_reader'
@@ -353,8 +311,6 @@ GRANT SELECT ON TABLE dtpw.ref_client_department TO normal_reader;
 GRANT SELECT ON TABLE dtpw.ref_chief_directorate TO normal_reader;
 
 GRANT USAGE ON SCHEMA access_control TO normal_reader;
-GRANT SELECT ON TABLE access_control.user TO normal_reader;
-GRANT SELECT ON TABLE access_control.group TO normal_reader;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_access TO normal_reader;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO normal_reader;
 
@@ -406,8 +362,6 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE dtpw.ref_chief_directorate TO importe
 GRANT USAGE ON SCHEMA access_control TO importer;
 GRANT SELECT ON TABLE access_control.entity_access TO importer;
 GRANT SELECT ON TABLE access_control.principal TO importer;
-GRANT SELECT ON TABLE access_control.user TO importer;
-GRANT SELECT ON TABLE access_control.group TO importer;
 GRANT SELECT ON access_control.access_type TO importer;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_access TO importer;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO importer;

@@ -2,6 +2,7 @@ package za.co.imqs.coreservice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -30,14 +31,26 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @EnableTransactionManagement
 public class PersistenceConfiguration {
+    private static final String[] SCHEMAS = {
+            "changelog_public.json",
+            "changelog_audit.json",
+            "changelog_asset.json",
+            "changelog_access_control.json",
+            "changelog_dtpw.json"
+    };
 
     @Autowired
     private ConfigClient configClient;
 
     @Bean
+    @Qualifier("default_ds")
     public DataSource getDataSource() {
         final DataSource dataSource = HikariCPClientConfigDatasourceHelper.getDataSource(configClient, "jdbc");
-        DatabaseUtil.updateDb(dataSource, DatabaseUtil.DEFAULT_CHANGELOG, true);
+
+        for (String schema : SCHEMAS) {
+            DatabaseUtil.updateDb(dataSource, schema, true);
+        }
+
         return dataSource;
     }
 

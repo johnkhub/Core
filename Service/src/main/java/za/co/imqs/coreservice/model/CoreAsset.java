@@ -25,6 +25,7 @@ public class CoreAsset {
     private Timestamp deactivated_at;
     private Integer reference_count;
 
+    private String address;
     private BigDecimal latitude;
     private BigDecimal longitude;
 

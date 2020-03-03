@@ -1,0 +1,341 @@
+{ "databaseChangeLog": [
+  {
+    "changeSet": {
+      "id": "1583395109147-1",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "entity_access_pkey"
+                  },
+                  "name": "entity_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "entity_access_pkey"
+                  },
+                  "name": "principal_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueNumeric": 0,
+                  "name": "access_types",
+                  "remarks": "Principal has these",
+                  "type": "INTEGER"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueNumeric": 0,
+                  "name": "grant_types",
+                  "remarks": "Principal may grant these to others",
+                  "type": "INTEGER"
+                }
+              }]
+            ,
+            "remarks": "Defines what access specific principals have to specific entities",
+            "schemaName": "access_control",
+            "tableName": "entity_access"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-2",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "access_type_pkey"
+                  },
+                  "name": "name",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "mask",
+                  "remarks": "NONE=0  CREATE=1 READ=2,  UPDATE=4,  DELETE=8, ...",
+                  "type": "INTEGER"
+                }
+              }]
+            ,
+            "remarks": "Master data list of access types",
+            "schemaName": "access_control",
+            "tableName": "access_type"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-3",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "autoIncrement": true,
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "principal_pkey"
+                  },
+                  "name": "id",
+                  "type": "INTEGER"
+                }
+              },
+              {
+                "column": {
+                  "name": "principal_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "group_id",
+                  "type": "INTEGER"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "name",
+                  "type": "TEXT"
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "TEXT"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "is_group",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueBoolean": false,
+                  "name": "reserved",
+                  "type": "BOOLEAN"
+                }
+              }]
+            ,
+            "remarks": "Self referential table of principals. Groups are also principals. The table links users to groups via this self-reference",
+            "schemaName": "access_control",
+            "tableName": "principal"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-4",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "group_id"
+                }
+              }]
+            ,
+            "indexName": "principal_group_id_idx",
+            "schemaName": "access_control",
+            "tableName": "principal"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-5",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addUniqueConstraint": {
+            "columnNames": "name",
+            "constraintName": "principal_name_key",
+            "schemaName": "access_control",
+            "tableName": "principal"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-6",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "principal_id"
+                }
+              }]
+            ,
+            "indexName": "principal_principal_id_idx",
+            "schemaName": "access_control",
+            "tableName": "principal"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-7",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addUniqueConstraint": {
+            "columnNames": "principal_id",
+            "constraintName": "principal_principal_id_key",
+            "schemaName": "access_control",
+            "tableName": "principal"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-8",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "principal_id",
+            "baseTableName": "entity_access",
+            "baseTableSchemaName": "access_control",
+            "constraintName": "entity_access_principal_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "principal_id",
+            "referencedTableName": "principal",
+            "referencedTableSchemaName": "access_control",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395109147-9",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "group_id",
+            "baseTableName": "principal",
+            "baseTableSchemaName": "access_control",
+            "constraintName": "principal_group_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "id",
+            "referencedTableName": "principal",
+            "referencedTableSchemaName": "access_control",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  {
+    "changeSet": {
+      "id": "a1725304-b4a6-4bbe-8e55-05b74086471a",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/access_control_stored_procs.sql",
+            "endDelimiter" : "//",
+            "relativeToChangelogFile": false
+          }
+        }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "a1725304-b4a6-4bbe-8e55-05b74086471a-1",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/access_control_data.sql",
+            "relativeToChangelogFile": false
+          }
+        }]
+    }
+  }
+]}

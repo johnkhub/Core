@@ -1,10 +1,18 @@
 package za.co.imqs.coreservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggerImpl;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
+
+import javax.sql.DataSource;
+
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
  * (c) 2019 IMQS Software
@@ -13,8 +21,22 @@ import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
  * Date: 2019/02/15
  */
 @Configuration
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 public class AuditConfiguration {
 
+    private final DataSource ds;
+
+    @Autowired
+    public AuditConfiguration(@Qualifier("default_ds") DataSource ds) {
+        this.ds = ds;
+    }
+
+    @Bean
+    @Qualifier("audit_ds")
+    public DataSource getAuditDataSource() {
+        return ds;
+    }
+    
     @Bean
     public AuditLogger getAuditLogger() {
         return new AuditLoggerImpl(AuditLogWriter.NULL_AUDIT_WRITER);

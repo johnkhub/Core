@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.DIE_PATH;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 
 /**
@@ -20,6 +22,7 @@ import static za.co.imqs.coreservice.WebMvcConfiguration.DIE_PATH;
 @Slf4j
 @RestController
 @RequestMapping(DIE_PATH)
+@Profile(PROFILE_TEST)
 public class MortalCoilController {
 
 

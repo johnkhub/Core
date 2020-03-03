@@ -1,0 +1,306 @@
+{ "databaseChangeLog": [
+  {
+    "changeSet": {
+      "id": "1583395114168-1",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "auditlink_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "auditlink_pkey"
+                  },
+                  "name": "audit_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "schemaName": "audit",
+            "tableName": "auditlink"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-2",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "audit_pkey"
+                  },
+                  "name": "audit_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "principal_id",
+                  "remarks": "Principal that posted Transaction",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "insert_time",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "event_time",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "action",
+                  "remarks": "Action like create, delete, login etc.",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "status",
+                  "remarks": "Succeeded, failed etc.",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "tamper_check",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "'{}'::JSONB",
+                  "name": "parameters",
+                  "type": "JSONB"
+                }
+              }]
+            ,
+            "schemaName": "audit",
+            "tableName": "audit"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-3",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "auditlink",
+            "baseTableSchemaName": "audit",
+            "constraintName": "auditlink_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-4",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addUniqueConstraint": {
+            "columnNames": "audit_id",
+            "constraintName": "auditlink_audit_id_key",
+            "schemaName": "audit",
+            "tableName": "auditlink"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-5",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "event_time"
+                }
+              },
+              {
+                "column": {
+                  "name": "action"
+                }
+              },
+              {
+                "column": {
+                  "name": "status"
+                }
+              }]
+            ,
+            "indexName": "audit_event_time_action_status_idx",
+            "schemaName": "audit",
+            "tableName": "audit"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-6",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "event_time"
+                }
+              },
+              {
+                "column": {
+                  "name": "principal_id"
+                }
+              }]
+            ,
+            "indexName": "audit_event_time_principal_id_idx",
+            "schemaName": "audit",
+            "tableName": "audit"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-7",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "defaultValueComputed": "now()",
+                  "name": "insert_time"
+                }
+              }]
+            ,
+            "indexName": "audit_insert_time_idx",
+            "schemaName": "audit",
+            "tableName": "audit"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1583395114168-8",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "audit_id",
+            "baseTableName": "auditlink",
+            "baseTableSchemaName": "audit",
+            "constraintName": "auditlink_audit_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "audit_id",
+            "referencedTableName": "audit",
+            "referencedTableSchemaName": "audit",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  {
+    "changeSet": {
+      "id": "f42927a2-b883-4702-b781-1032fff075a4",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/audit_stored_procs.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
+  }
+]}

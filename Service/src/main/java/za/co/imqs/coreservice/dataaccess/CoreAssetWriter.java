@@ -1,9 +1,8 @@
 package za.co.imqs.coreservice.dataaccess;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import za.co.imqs.coreservice.model.CoreAsset;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +17,15 @@ public interface CoreAssetWriter {
     public void updateAssets(List<CoreAsset> assets);
     public void deleteAssets(List<UUID> uuids);
 
-    public void addExternalLink(UUID uuid, String externalIdType, String externalId);
-    public void deleteExternalLink(UUID uuid, String externalIdType, String externalId);
+    public void addExternalLink(UUID uuid, UUID externalIdType, String externalId);
+    public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId);
+
+    //
+    // Extra methods for *Testing*
+    // These will refuse to execute in production
+    //
+    public void obliterateAssets(List<UUID> uuids);
+    default void obliterateAssets(UUID ...uuids) {
+        obliterateAssets(Arrays.asList(uuids));
+    }
 }
