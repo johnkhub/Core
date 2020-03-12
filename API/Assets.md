@@ -161,4 +161,4 @@ Returns:
    <external_id>
 ```
 
-Status codes: 200, 400, 403
+Status codes: 200, 400, 403, 404,  408
