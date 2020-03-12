@@ -30,6 +30,8 @@ public interface AuditLogWriter {
         private String action;
         private String status;
         private UUID correlation;
+
+        private String parameters;
     }
 
     public void write(Collection<AuditLogRow> rows);

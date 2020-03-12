@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggerImpl;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
+import za.co.imqs.coreservice.dataaccess.AuditLogWriterImpl;
 
 import javax.sql.DataSource;
 
@@ -25,6 +27,9 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Configuration
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 public class AuditConfiguration {
+
+    @Autowired
+    private ObjectMapper mapper;
 
     private final DataSource ds;
 
@@ -48,7 +53,7 @@ public class AuditConfiguration {
 
     @Bean
     public AuditLogger getAuditLogger() {
-        return new AuditLoggerImpl(AuditLogWriter.NULL_AUDIT_WRITER);
+        return new AuditLoggerImpl(new AuditLogWriterImpl(ds), mapper);
     }
 
 }

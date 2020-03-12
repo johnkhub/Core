@@ -18,6 +18,7 @@ import za.co.imqs.spring.service.auth.authorization.UserContext;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ACCESS_ROOT_PATH;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
@@ -52,8 +53,8 @@ public class PermissionController {
         try {
             return new ResponseEntity(
                     audit.tryIt(
-                        new AuditLogEntry(invokingUser.getUserId(), "", "", AuditLogger.Operation.ADD, ""),
-                        () -> permissions.getUsers()
+                            new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.QUERY_USERS, null),
+                            () -> permissions.getUsers()
                     ),
                     HttpStatus.OK
             );
@@ -71,7 +72,7 @@ public class PermissionController {
         try {
             return new ResponseEntity(
                     audit.tryIt(
-                        new AuditLogEntry(invokingUser.getUserId(), "", "", AuditLogger.Operation.ADD, ""),
+                            new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.QUERY_GROUPS, null),
                         () ->  permissions.getGroups()
                     ),
                     HttpStatus.OK
@@ -89,11 +90,11 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
                 audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "user", "", AuditLogger.Operation.DELETE, ""),
-                    () -> {
-                        permissions.deleteUser(uuid);
-                        return null;
-                    }
+                        new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.DELETE_USER, of("user", uuid)),
+                        () -> {
+                            permissions.deleteUser(uuid);
+                            return null;
+                         }
             );
             return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e) {
@@ -108,7 +109,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "group", "", AuditLogger.Operation.DELETE, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.DELETE_GROUP, of("group", name)),
                     () -> {
                         permissions.deleteGroup(name);
                         return null;
@@ -128,7 +129,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "group", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.ADD_GROUP, of("group", group.getGroup_id())),
                     () -> {
                         permissions.addGroup(group);
                         return null;
@@ -148,7 +149,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "user", "", AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.ADD_GROUP, of("group", user.getPrincipal_id())),
                     () -> {
                         permissions.addUser(user);
                         return null;
@@ -168,7 +169,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "group", user_id.toString(), AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.JOIN_GROUP, of("group", groupname, "user", user_id)),
                     () -> {
                         permissions.addUserToGroup(user_id, groupname);
                         return null;
@@ -188,7 +189,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "group", user_id.toString(), AuditLogger.Operation.DELETE, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.LEAVE_GROUP, of("group", groupname, "user", user_id)),
                     () -> {
                         permissions.removeUserFromGroup(user_id, groupname);
                         return null;
@@ -212,7 +213,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "", entity_id.toString(), AuditLogger.Operation.GRANT, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.GRANT_ACL, of("entity", entity_id, "permissions", perms, "grantee", grantee)),
                     () -> {
                         permissions.grantPermissions(UUID.fromString(invokingUser.getUserId()), grantee, perms, entity_id);
                         return null;
@@ -235,7 +236,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(invokingUser.getUserId(), "", entity_id.toString(), AuditLogger.Operation.REVOKE, ""),
+                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.REVOKE_ACL, of("entity", entity_id, "revokee", revokee)),
                     () -> {
                         permissions.revokePermissions(UUID.fromString(invokingUser.getUserId()), revokee, entity_id);
                         return null;

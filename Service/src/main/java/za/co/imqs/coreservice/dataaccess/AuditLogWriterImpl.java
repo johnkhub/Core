@@ -35,13 +35,13 @@ public class AuditLogWriterImpl implements AuditLogWriter {
         for (AuditLogRow r : rows) {
             if (r.getInsert_time() != null) {
                 jdbc.update(
-                        "INSERT INTO audit.audit (audit_id, principal_id, event_time, insert_time, action, status) VALUES (?,?,?,?,?,?)",
-                        r.getAudit_id(), r.getPrincipal_id(), r.getEvent_time(), r.getInsert_time(), r.getAction(), r.getStatus()
+                        "INSERT INTO audit.audit (audit_id, principal_id, event_time, insert_time, action, status, parameters) VALUES (?,?,?,?,?,?,to_jsonb(?))",
+                        r.getAudit_id(), r.getPrincipal_id(), r.getEvent_time(), r.getInsert_time(), r.getAction(), r.getStatus(), r.getParameters()
                 );
             } else {
                 jdbc.update(
-                        "INSERT INTO audit.audit (audit_id, principal_id, event_time,  action, status) VALUES (?,?,?,?,?)",
-                        r.getAudit_id(), r.getPrincipal_id(), r.getEvent_time(), r.getAction(), r.getStatus()
+                        "INSERT INTO audit.audit (audit_id, principal_id, event_time,  action, status, parameters) VALUES (?,?,?,?,?,to_jsonb(?))",
+                        r.getAudit_id(), r.getPrincipal_id(), r.getEvent_time(), r.getAction(), r.getStatus(), r.getParameters()
                 );
             }
             if (r.getCorrelation() != null) {

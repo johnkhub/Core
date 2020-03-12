@@ -3,6 +3,9 @@ package za.co.imqs.coreservice.audit;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * (c) 2016 IMQS Software
@@ -13,44 +16,36 @@ import java.sql.Timestamp;
 @Getter
 public class AuditLogEntry {
     private final Timestamp at;
-    private final String userId;
-
-    private final String affectedEntity;
+    private final UUID userId;
     private final AuditLogger.Operation operation;
-    private final String parameters;
-    private final String entityDescription;
+    private final Object parameters;
 
     private AuditLogger.Result result;
+    private UUID correlationId;
 
     public AuditLogEntry(
-            String userId,
-            String entityDescription,
-            String affectedEntity,
-            AuditLogger.Operation operation, String parameters,
+            UUID userId,
+            AuditLogger.Operation operation, Object parameters,
             AuditLogger.Result result) {
-       this(new Timestamp(System.currentTimeMillis()), userId, entityDescription, affectedEntity, operation, parameters, result);
+       this(new Timestamp(System.currentTimeMillis()), userId, operation, parameters, result);
     }
 
     public AuditLogEntry(
-            String userId,
-            String entityDescription,
-            String affectedEntity,
-            AuditLogger.Operation operation, String parameters
+            UUID userId,
+            AuditLogger.Operation operation,
+            Object parameters
     ){
-        this(new Timestamp(System.currentTimeMillis()), userId, entityDescription, affectedEntity, operation, parameters, null);
+        this(new Timestamp(System.currentTimeMillis()), userId, operation, parameters, null);
     }
 
     public AuditLogEntry(
             Timestamp at,
-            String user,
-            String entityDescription,
-            String affectedEntity,
-            AuditLogger.Operation operation, String parameters,
+            UUID user,
+            AuditLogger.Operation operation,
+            Object parameters,
             AuditLogger.Result result
     ) {
         this.userId = user;
-        this.affectedEntity = affectedEntity;
-        this.entityDescription = entityDescription;
         this.operation = operation;
         this.parameters = parameters;
         this.result = result;
@@ -61,10 +56,15 @@ public class AuditLogEntry {
         this.result = result;
     }
 
+    public AuditLogEntry setCorrelationId(UUID id) {
+        this.correlationId = id;
+        return this;
+    }
+
     public String toString() {
         return String.format(
                 "%s : %s attempt to %s %s %s with %s. %s",
-                at.toString(), userId, operation, entityDescription, affectedEntity, parameters, result
+                at.toString(), userId, operation, parameters.toString(), result
         );
     }
 
@@ -72,8 +72,6 @@ public class AuditLogEntry {
         if (o instanceof AuditLogEntry) {
             final AuditLogEntry other = (AuditLogEntry)o;
             return
-                    this.getAffectedEntity().equals(other.getAffectedEntity()) &&
-                    this.getEntityDescription().equals(other.getEntityDescription()) &&
                     this.getResult() == other.getResult() &&
                     this.getOperation() == other.getOperation() &&
                     this.getAt().equals(other.getAt()) &&
@@ -84,6 +82,99 @@ public class AuditLogEntry {
     }
 
     public int hashCode() {
-        return (at + affectedEntity).hashCode();
+        return at.hashCode() << 16 & userId.hashCode();
+    }
+
+
+
+    // Not terribly pretty - this functionality also exists as of Java 9.
+    public static <T>  Map<String,T> of (
+            String k1, T v1
+    ) {
+        return of(
+                k1,v1,
+                null, null
+        );
+    }
+
+    public static <T>  Map<String,T> of (
+            String k1, T v1,
+            String k2, T v2
+    ) {
+        return of(
+                k1,v1,
+                k2, v2,
+                null, null
+        );
+    }
+
+    public static <T>  Map<String,T> of (
+            String k1, T v1,
+            String k2, T v2,
+            String k3, T v3
+
+    ) {
+        return of(
+                k1,v1,
+                k2, v2,
+                k3, v3,
+                null, null
+        );
+    }
+
+    public static <T>  Map<String,T> of (
+            String k1, T v1,
+            String k2, T v2,
+            String k3, T v3,
+            String k4, T v4
+    ) {
+        return of(
+                k1,v1,
+                k2, v2,
+                k3, v3,
+                k4, v4,
+                null, null
+        );
+    }
+
+    public static <T>  Map<String,T> of (
+            String k1, T v1,
+            String k2, T v2,
+            String k3, T v3,
+            String k4, T v4 ,
+            String k5, T v5
+    ) {
+        final Map<String,T> map = new HashMap<>();
+        if (k1 != null) {
+            map.put(k1,v1);
+        } else {
+            return map;
+        }
+
+        if (k2 != null) {
+            map.put(k2,v2);
+        } else {
+            return map;
+        }
+
+        if (k3 != null) {
+            map.put(k3,v3);
+        } else {
+            return map;
+        }
+
+        if (k4 != null) {
+            map.put(k4,v4);
+        } else {
+            return map;
+        }
+
+        if (k5 != null) {
+            map.put(k5,v5);
+        } else {
+            return map;
+        }
+
+        return map;
     }
 }

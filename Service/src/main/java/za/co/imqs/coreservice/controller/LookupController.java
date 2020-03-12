@@ -6,13 +6,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import za.co.imqs.coreservice.audit.AuditLogEntry;
+import za.co.imqs.coreservice.audit.AuditLogger;
+import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dataaccess.exception.*;
+import za.co.imqs.spring.service.auth.ThreadLocalUser;
+import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
-import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
 /**
  * (c) 2020 IMQS Software
@@ -25,10 +34,15 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 @RequestMapping(LOOKUP_ROOT_PATH)
 public class LookupController {
     private final LookupProvider lookups;
+    private final AuditLoggingProxy audit;
 
     @Autowired
-    public LookupController(LookupProvider lookups) {
+    public LookupController(
+            LookupProvider lookups,
+            AuditLogger audit
+    ) {
         this.lookups = lookups;
+        this.audit = new AuditLoggingProxy(audit);
     }
 
     @RequestMapping(
@@ -36,6 +50,7 @@ public class LookupController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity get(@PathVariable String view, @RequestParam Map<String, String> paramMap) {
+        final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity(lookups.get(view.replace("+","."), paramMap), HttpStatus.OK);
         } catch (Exception e) {
@@ -49,6 +64,7 @@ public class LookupController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity getWithOperators(@PathVariable String view, @RequestBody Map<String, LookupProvider.Field> paramMap) {
+        final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity(lookups.getWithOperators(view.replace("%2E","."), paramMap), HttpStatus.OK);
         } catch (Exception e) {
@@ -78,7 +94,8 @@ public class LookupController {
             method = RequestMethod.GET, value = "/kv",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity getKVTypes() {
+    public ResponseEntity<List<LookupProvider.KvDef>> getKVTypes() {
+        final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity(lookups.getKvTypes(), HttpStatus.OK);
         } catch (Exception e) {
@@ -91,8 +108,16 @@ public class LookupController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity acceptKv(@PathVariable String target,  @RequestBody List<LookupProvider.Kv> kvs) {
+        final UserContext user = ThreadLocalUser.get();
         try {
-            lookups.acceptKv(target, kvs);
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_KV_VALUE, of("kv_type", target, "kv", kvs)),
+                    () -> {
+                        lookups.acceptKv(target, kvs);
+                        return null;
+                    }
+            );
+
             return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);

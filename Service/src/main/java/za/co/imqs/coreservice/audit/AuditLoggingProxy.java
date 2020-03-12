@@ -35,7 +35,7 @@ public class AuditLoggingProxy {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            audit.log(entry);
+            audit.log(entry); // WE PROBABLY NEED A FALLBACK HERE THAT WILL WRITE TO LOCAL FILESYSTEM?
         }
     }
 }

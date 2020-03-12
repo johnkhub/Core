@@ -40,6 +40,7 @@ import static za.co.imqs.libimqs.utils.KitchenSink.isWindows;
  */
 @Slf4j
 public class TestUtils {
+	public static final String USERNAME = "6be25306-f785-4264-8cb0-13db9ba5141f";
     public static final boolean IS_IN_CONTAINER = false; // test itself is inside a container
     public static final boolean IS_CONNECT_TO_CONTAINER = true; // test is connecting to a service inside a container
 

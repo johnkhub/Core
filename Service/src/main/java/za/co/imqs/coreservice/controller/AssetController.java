@@ -16,9 +16,12 @@ import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
+import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
 /**
@@ -50,16 +53,15 @@ public class AssetController {
             method = RequestMethod.PUT, value = "/{uuid}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity addAsset(@PathVariable String uuid, @RequestBody CoreAssetDto asset) {
+    public ResponseEntity addAsset(@PathVariable UUID uuid, @RequestBody CoreAssetDto asset) {
         final UserContext user = ThreadLocalUser.get();
-        // Authentication
         // Authorisation
         // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.createAssets(Collections.singletonList(aFact.create(asUUID(uuid), asset)));
+                        assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
                         return null;
                     }
             );
@@ -72,16 +74,17 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/{uuid}"
     )
-    public ResponseEntity deleteAsset(@PathVariable String uuid) {
+    public ResponseEntity deleteAsset(@PathVariable UUID uuid) {
         final UserContext user = ThreadLocalUser.get();
-        // Authentication
         // Authorisation
-        // Audit logging
         try {
+            final Map<String,UUID> p = new HashMap<>();
+
+
             audit.tryIt(
-                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.deleteAssets(Collections.singletonList(asUUID(uuid)));
+                        assetWriter.deleteAssets(Collections.singletonList(uuid));
                         return null;
                     }
             );
@@ -94,16 +97,14 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.PATCH, value = "/{uuid}"
     )
-    public ResponseEntity updateAsset(@PathVariable String uuid, @RequestBody CoreAssetDto asset) {
+    public ResponseEntity updateAsset(@PathVariable UUID uuid, @RequestBody CoreAssetDto asset) {
         final UserContext user = ThreadLocalUser.get();
-        // Authentication
         // Authorisation
-        // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.updateAssets(Collections.singletonList(aFact.update(asUUID(uuid), asset)));
+                        assetWriter.updateAssets(Collections.singletonList(aFact.update(uuid, asset)));
                         return null;
                     }
             );
@@ -117,16 +118,14 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.PUT, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
-    public ResponseEntity addExternalLink(@PathVariable String uuid, @PathVariable String external_id_type, @PathVariable String external_id) {
+    public ResponseEntity addExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
-        // Authentication
         // Authorisation
-        // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.addExternalLink(asUUID(uuid), asUUID(external_id_type), external_id);
+                        assetWriter.addExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
             );
@@ -139,16 +138,14 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
-    public ResponseEntity deleteExternalLink(@PathVariable String uuid, @PathVariable String external_id_type, @PathVariable String external_id) {
+    public ResponseEntity deleteExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
-        // Authentication
         // Authorisation
-        // Audit logging
         try {
             audit.tryIt(
-                    new AuditLogEntry(user.getUserId(), "", uuid, AuditLogger.Operation.ADD, ""),
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.deleteExternalLink(asUUID(uuid), asUUID(external_id_type), external_id);
+                        assetWriter.deleteExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
             );
