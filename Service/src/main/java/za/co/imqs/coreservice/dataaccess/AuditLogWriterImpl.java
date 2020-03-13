@@ -30,7 +30,7 @@ public class AuditLogWriterImpl implements AuditLogWriter {
     }
 
     @Override
-    @Transactional
+    @Transactional("audit_tx_mgr")
     public void write(Collection<AuditLogRow> rows) {
         for (AuditLogRow r : rows) {
             if (r.getInsert_time() != null) {

@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.UUID;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static za.co.imqs.TestUtils.BOING;
@@ -92,7 +93,8 @@ public class CoreAssetWriterImplTest {
 
     @Test
     public void addNewNoPermission() {
-        expect.expect(NotPermittedException.class);
+        fail("Not implemented");
+        //expect.expect(NotPermittedException.class);
     }
 
     @Test
@@ -180,16 +182,6 @@ public class CoreAssetWriterImplTest {
     }
 
     @Test
-    public void deleteNonExistingExternalLink() {
-        expect.expect(NotFoundException.class);
-
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
-        final CoreAsset asset = getObject();
-        writer.createAssets(Collections.singletonList(asset));
-        writer.deleteExternalLink(asset.getAsset_id(), V6_EXT_ID, UUID.randomUUID().toString());
-    }
-
-    @Test
     public void addExternalLinkToUnknownType() {
         expect.expect(ValidationFailureException.class);
 
@@ -197,16 +189,6 @@ public class CoreAssetWriterImplTest {
         final CoreAsset asset = getObject();
         writer.createAssets(Collections.singletonList(asset));
         writer.addExternalLink(asset.getAsset_id(),  UUID.randomUUID(), UUID.randomUUID().toString());
-    }
-
-    @Test
-    public void deleteExternalLinkFromUnknownType() {
-        expect.expect(ValidationFailureException.class);
-
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
-        final CoreAsset asset = getObject();
-        writer.createAssets(Collections.singletonList(asset));
-        writer.deleteExternalLink(asset.getAsset_id(),  UUID.randomUUID(), UUID.randomUUID().toString());
     }
 
     @Test

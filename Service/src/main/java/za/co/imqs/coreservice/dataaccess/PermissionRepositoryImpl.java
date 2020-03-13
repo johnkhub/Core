@@ -41,19 +41,19 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public List<UserDto> getUsers() {
         return null;
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public List<GroupDto> getGroups() {
         return null;
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void deleteUser(UUID name) {
         jdbc.execute("{call access_control.sp_remove_user()}", (CallableStatement stmt) -> {
             stmt.setObject(1, name);
@@ -63,7 +63,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void deleteGroup(String name) {
         jdbc.execute("{call access_control.sp_remove_group()}", (CallableStatement stmt) -> {
             stmt.setString(1, name);
@@ -73,7 +73,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public UUID addGroup(GroupDto group) {
         return jdbc.execute("{? = call access_control.sp_add_group(?)}", (CallableStatement stmt) -> {
             stmt.setString(2, group.getName());
@@ -84,7 +84,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void addUser(UserDto user) {
         jdbc.execute("{call access_control.sp_add_user(?,?)}", (CallableStatement stmt) -> {
             stmt.setObject(1, user.getPrincipal_id());
@@ -95,7 +95,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void addUserToGroup(UUID userId, String groupName) {
         jdbc.execute("{call access_control.sp_add_user_to_group(?,?)}", (CallableStatement stmt) -> {
             stmt.setObject(1, userId);
@@ -106,7 +106,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void removeUserFromGroup(UUID userId, String groupName) {
         jdbc.execute("{call access_control.sp_remove_user_group(?,?)}", (CallableStatement stmt) -> {
             stmt.setObject(1, userId);
@@ -118,7 +118,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void grantPermissions(UUID grantor, UUID grantee, int permissions, UUID entity) {
         jdbc.execute("{call access_control.sp_grant_access(?::uuid,?,?::uuid[],?::uuid)}", (CallableStatement stmt) -> {
             stmt.setObject(1, grantor);
@@ -131,7 +131,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public void revokePermissions(UUID revoker, UUID revokee, UUID entity) {
         jdbc.execute("{call access_control.sp_revoke_access(?,?,?,?)}", (CallableStatement stmt) -> {
             stmt.setObject(1, revoker);
@@ -143,13 +143,13 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public int getPermission(UUID principal, UUID entity) {
         return jdbc.queryForObject("SELECT access_control.fn_get_effective_access(?,?)", Integer.class, principal, entity);
     }
 
     @Override
-    @Transactional
+    @Transactional("auth_tx_mgr")
     public int getGrant(UUID principal, UUID entity) {
         return jdbc.queryForObject("SELECT access_control.fn_get_effective_grant(?,?)", Integer.class, principal, entity);
     }

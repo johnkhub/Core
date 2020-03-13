@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggerImpl;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
@@ -27,7 +29,7 @@ public class AuditConfiguration {
     private final DataSource ds;
 
     @Autowired
-    public AuditConfiguration(@Qualifier("default_ds") DataSource ds) {
+    public AuditConfiguration(@Qualifier("core_ds") DataSource ds) {
         this.ds = ds;
     }
 
@@ -36,9 +38,17 @@ public class AuditConfiguration {
     public DataSource getAuditDataSource() {
         return ds;
     }
-    
+
+
+    @Bean
+    @Qualifier("audit_tx_mgr")
+    public PlatformTransactionManager getAuditTransactionManager() {
+        return new DataSourceTransactionManager(getAuditDataSource());
+    }
+
     @Bean
     public AuditLogger getAuditLogger() {
         return new AuditLoggerImpl(AuditLogWriter.NULL_AUDIT_WRITER);
     }
+
 }

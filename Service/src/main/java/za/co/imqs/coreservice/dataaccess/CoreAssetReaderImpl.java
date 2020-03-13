@@ -33,7 +33,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
 
     @Autowired
     public CoreAssetReaderImpl(
-            @Qualifier("default_ds") DataSource ds
+            @Qualifier("core_ds") DataSource ds
     ) {
         this.jdbc = new JdbcTemplate(ds);
     }

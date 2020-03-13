@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
 import za.co.imqs.services.serviceauth.ServiceAuth;
@@ -40,7 +42,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     private final DataSource ds;
 
     @Autowired
-    public AuthConfiguration(@Qualifier("default_ds") DataSource ds) {
+    public AuthConfiguration(@Qualifier("core_ds") DataSource ds) {
         this.ds = ds;
     }
 
@@ -63,7 +65,11 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         return new AuthorizationImpl();
     }
 
-
+    @Bean
+    @Qualifier("auth_tx_mgr")
+    public PlatformTransactionManager getAuthTransactionManager() {
+        return new DataSourceTransactionManager(getAuthDataSource());
+    }
 
     @Bean
     @Override

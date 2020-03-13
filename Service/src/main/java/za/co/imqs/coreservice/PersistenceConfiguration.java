@@ -43,7 +43,7 @@ public class PersistenceConfiguration {
     private ConfigClient configClient;
 
     @Bean
-    @Qualifier("default_ds")
+    @Qualifier("core_ds")
     public DataSource getDataSource() {
         final DataSource dataSource = HikariCPClientConfigDatasourceHelper.getDataSource(configClient, "jdbc");
 
@@ -55,7 +55,8 @@ public class PersistenceConfiguration {
     }
 
     @Bean
-    public PlatformTransactionManager getTransactionManager() {
+    @Qualifier("core_tx_mgr")
+    public PlatformTransactionManager getCoreTransactionManager() {
         return new DataSourceTransactionManager(getDataSource());
     }
 }

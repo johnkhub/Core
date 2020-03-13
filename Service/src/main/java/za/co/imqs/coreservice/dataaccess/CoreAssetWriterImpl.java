@@ -38,7 +38,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     @Autowired
     public CoreAssetWriterImpl(
-            @Qualifier("default_ds") DataSource ds,
+            @Qualifier("core_ds") DataSource ds,
             Environment env
     ) {
         this.jdbc = new NamedParameterJdbcTemplate(ds);
@@ -82,7 +82,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional
+    @Transactional("core_tx_mgr")
     public void updateAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {
@@ -120,14 +120,14 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional
+    @Transactional("core_tx_mgr")
     public void deleteAssets(List<UUID> uuid) {
         throw new UnsupportedOperationException("Deletion of asset not implemented");
     }
 
 
     @Override
-    @Transactional
+    @Transactional("core_tx_mgr")
     public void obliterateAssets(List<UUID> uuids) {
         final List<String> profiles = Arrays.asList(env.getActiveProfiles());
         if (profiles.contains(PROFILE_PRODUCTION)) {
@@ -144,7 +144,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional
+    @Transactional("core_tx_mgr")
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?)", uuid, externalIdType, externalId);
@@ -154,7 +154,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional
+    @Transactional("core_tx_mgr")
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
