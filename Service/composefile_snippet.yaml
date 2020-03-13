@@ -1,0 +1,16 @@
+# -- add to your compose file
+
+#
+# Core Asset Service
+#
+asset-core-service:
+  image: imqs/asset-core-service:master
+  ports:
+    - "127.0.0.1:8669:80"
+  volumes:
+    - ./logs:/var/log/imqs
+  depends_on:
+    - config
+    - db
+    - router
+    - auth
