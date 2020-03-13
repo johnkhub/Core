@@ -5,13 +5,13 @@
 # It is important to note that the user's .m2 folder is fed to the maven container. For this to work your settings.xml file must not move the repository folder 
 # from the user's $HOME/.m2 folder
 #
-# If you don't specify a tag for teh built services the current branch will be used. Note that this will not work on a Jenkins slave as it checks out a specific 
+# If you don't specify a tag for the built services the current branch will be used. Note that this will not work on a Jenkins slave as it checks out a specific 
 # revision and not a branch. When using this on a Jenkins slave you *must* provide the branch yourself
 #
 
 
 # IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT!IMPORTANT!
-# The Jenkins slaves execute the script as the 'jenkins' user - this is a non login user by the looks of it. I did not bother to figure out why but the Jenkisn.m2 folder end up in
+# The Jenkins slaves execute the script as the 'jenkins' user - this is a non login user by the looks of it. I did not bother to figure out why but the Jenkisn.m2 folder ends up in
 # /var/lib/jenkins/.m2
 
 m2="/$HOME/.m2"
@@ -31,22 +31,9 @@ function dockerise() {
 
 set -e
 
-# pushd "common/libimqs"
-# docker run --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v "$m2":/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests  clean install
-# popd
-
-# pushd "common/coreframework"
-# docker run --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v "$m2":/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests  clean install
-# popd
-
-# pushd "common/form-service-base"
-# docker run --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v "$m2":/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests  clean install
-# popd
-
 
 # Assign current branch as tag (removing whitespace)
 tag=${1:- $(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
-pushd "asset-core-service"
 dockerise "asset-core-service" "$tag"
 popd
