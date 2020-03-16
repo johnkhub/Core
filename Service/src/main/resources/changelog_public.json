@@ -1816,5 +1816,164 @@
         }]
 
     }
+  },
+
+
+  {
+    "changeSet": {
+      "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-1",
+      "author": "frankvr",
+      "comment" : "Add support for tags",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "primaryKey" : true
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable" : false
+                  },
+                  "name": "tags",
+                  "type": "text[]"
+                }
+              }
+              ]
+            ,
+            "tableName": "asset_tags"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-2",
+      "author": "frankvr",
+      "comment" : "Add support for tags",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "asset",
+            "constraintName": "asset_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-3",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "CHARACTER VARYING"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueDate": "CURRENT_TIMESTAMP",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "activated_at",
+                  "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOL"
+                }
+              }]
+          ,
+            "tableName": "tags"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-4",
+      "author": "frankvr",
+      "comment" : "Add support for tags",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/asset_tags_stored_procs.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "c127a622-b465-4ec4-93d8-a34ead141099",
+      "author": "frankvr",
+      "comment" : "Add standard views",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/asset_core_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
   }
 ]}

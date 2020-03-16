@@ -1479,5 +1479,24 @@
         }]
       
     }
+  },
+  {
+    "changeSet": {
+      "id": "510fc302-4d6e-404d-8cd5-a3b9911da02a",
+      "author": "frankvr",
+      "comment" : "Add standard views",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "asset/asset_extension_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
   }
 ]}
