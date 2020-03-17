@@ -203,3 +203,14 @@ FROM
 	asset AS a LEFT JOIN asset.a_tp_facility f  ON a.asset_id = f.asset_id
 WHERE a.asset_type_code = 'FACILITY' AND (f.asset_id IS NULL OR f.facility_type_code IS NULL);
 
+SELECT
+	(SELECT COUNT( DISTINCT ("LocationSGcode FROM FAR")) from land_parcel_import) AS "Num distinct features",
+	(select count(*) FROM asset where asset_type_code = 'LANDPARCEL') AS "Num added parcels",
+	(select count(*) FROM asset.a_tp_landparcel) AS "Num added parcels ext",
+	(select count(*) FROM asset.landparcel_view) AS "Num correctly joined extensions",
+	(
+		SELECT count(a.asset_id) FROM asset.a_tp_landparcel a LEFT JOIN asset.asset_landparcel alp ON a.asset_id = alp.landparcel_asset_id
+		WHERE alp.landparcel_asset_id IS NULL
+	) AS "Lanparcels not linked to envelope";
+
+
