@@ -1865,8 +1865,8 @@
         {
           "addForeignKeyConstraint": {
             "baseColumnNames": "asset_id",
-            "baseTableName": "asset",
-            "constraintName": "asset_asset_id_fkey",
+            "baseTableName": "asset_tags",
+            "constraintName": "asset_tags_asset_id_fkey",
             "deferrable": false,
             "initiallyDeferred": false,
             "onDelete": "NO ACTION",

@@ -32,7 +32,8 @@ FROM
 	ON names.name = codes.name;
 	
 
-DELETE FROM asset_import WHERE "TOWN" = 'VAN RHYNSDORP';
+--DELETE FROM asset_import WHERE "TOWN" = 'VAN RHYNSDORP';
+UPDATE asset_import SET "TOWN" = 'VANRHYNSDORP' WHERE "TOWN" = 'VAN RHYNSDORP';
 
 INSERT INTO asset.ref_town
 SELECT 

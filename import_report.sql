@@ -98,13 +98,15 @@ JOIN
 	WHERE i.asset_id IS NULL OR i.serial_number IS NULL
 	GROUP BY a.asset_type_code
 ) AS identification_serial_number
-ON totals."Asset Type" = identification_serial_number."Asset Type";
+ON totals."Asset Type" = identification_serial_number."Asset Type"
+ORDER BY  totals."Asset Type"; 
+
 COMMENT ON VIEW import_report_view IS 'A view that shows the number of entities of each type that was IMPORTED as well as indication of how many attribute values are missing.';
 
 CREATE OR REPLACE VIEW source_report_view AS
 SELECT 
     CASE 
-		WHEN dept."Level" = 'Asset' THEN 'ENVELOPE'
+		WHEN dept."Level" = 'Asset' THEN 'Envelope'
 		ELSE
 			dept."Level"	
 	END, 
@@ -172,7 +174,7 @@ COMMENT ON VIEW source_report_view IS 'A view that shows the number of entities 
 
 
 -- TODO: Must add Landparcels to source_report_view. Must add serial and barcode to import source data
--- TODO: Dept won't match at the moment as when we import we propagate the dept to all children while thi si not the case on the source data
+-- TODO: Dept won't match at the moment as when we import we propagate the dept to all children while this not the case on the source data
 SELECT 
 	import_report_view."Asset Type",
 	import_report_view."Num with no location (lat/long)" - source_report_view."Num with no location (lat/long)" AS "Recon: Num with no location (lat/long)",
