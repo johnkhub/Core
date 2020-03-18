@@ -19,10 +19,13 @@ import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
+import static za.co.imqs.TestUtils.ServiceRegistry.PG;
 
 /**
  * (c) 2020 IMQS Software
@@ -31,9 +34,13 @@ import static junit.framework.TestCase.fail;
  * Date: 2020/03/10
  */
 public class TestUtils {
-    public static final String USERNAME = "test";
-    public static final String PASSWORD = "test";
-    public static final int CORE_PORT = 8669;
+    public static final boolean IS_IN_CONTAINER = false; // test itself is inside a container
+    public static final boolean IS_CONNECT_TO_CONTAINER = true; // test is connecting to a service inside a container
+
+    public static final String USERNAME = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "test";
+    public static final String PASSWORD = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "test";
+    public static final int CORE_PORT = IS_IN_CONTAINER ?  80 : 8669;
+
 
     public static final Environment BOING = new Environment() {
         @Override
@@ -102,10 +109,12 @@ public class TestUtils {
         }
     };
 
+    public static final ServiceRegistry SERVICES = new ServiceRegistry();
+
     public static String getAuthSession(String username, String password)  {
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod("http://localhost:8001" + "/auth2/login");
+            PostMethod post = new PostMethod("http://"+SERVICES.get("auth") + "/auth2/login");
             post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
             client.executeMethod(post);
             if (post.getStatusCode() != 200)
@@ -129,7 +138,7 @@ public class TestUtils {
 
         public PermissionRepositoryImplTest() {
             final DataSource ds = HikariCPClientConfigDatasourceHelper.getDefaultDataSource(
-                    "jdbc:postgresql://localhost:5432/test_core","postgres","1mq5p@55w0rd"
+                    "jdbc:postgresql://"+SERVICES.get(PG)+":5432/test_core","postgres","1mq5p@55w0rd"
             );
             this.jdbc = new JdbcTemplate(ds);
 
@@ -246,5 +255,29 @@ public class TestUtils {
             fail("Not implemented");
         }
 
+    }
+
+    public static class ServiceRegistry {
+        public static final String AUTH = "auth";
+        public static final String ROUTER = "router";
+        public static final String CONFIG = "config";
+        public static final String CORE = "asset-core-service";
+        public static final String PG = "db";
+        public static final String MS = "mssql";
+
+        private final Map<String,String> m = new HashMap<>();
+
+        public ServiceRegistry() {
+            m.put(AUTH, AUTH);
+            m.put(ROUTER, ROUTER);
+            m.put(PG,PG);
+            m.put(CONFIG, CONFIG);
+            m.put(CORE, CORE);
+            m.put(MS, MS);
+        }
+
+        public String get(String name) {
+            return IS_IN_CONTAINER ? m.get(name)  : "localhost";
+        }
     }
 }

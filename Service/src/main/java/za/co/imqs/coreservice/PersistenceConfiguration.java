@@ -39,8 +39,12 @@ public class PersistenceConfiguration {
             "changelog_dtpw.json"
     };
 
+    private final ConfigClient configClient;
+
     @Autowired
-    private ConfigClient configClient;
+    public PersistenceConfiguration(ConfigClient configClient) {
+        this.configClient = configClient;
+    }
 
     @Bean
     @Qualifier("core_ds")

@@ -29,11 +29,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public static final String TESTING_PATH = ROOT_PATH+"/testing";
 
 
-    @Autowired
-    public AuthInterceptor handleAuthInterceptor;
+    private final AuthInterceptor handleAuthInterceptor;
+    private final ServiceFailureInterceptor healthInterceptor;
 
     @Autowired
-    public ServiceFailureInterceptor healthInterceptor;
+    public WebMvcConfiguration(
+            AuthInterceptor handleAuthInterceptor,
+            ServiceFailureInterceptor healthInterceptor
+    ) {
+        this.handleAuthInterceptor = handleAuthInterceptor;
+        this.healthInterceptor = healthInterceptor;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

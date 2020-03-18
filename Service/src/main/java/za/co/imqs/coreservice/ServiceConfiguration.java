@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -19,13 +20,10 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2015/11/20
  */
 @Configuration
-@Profile({PROFILE_PRODUCTION,PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION,PROFILE_TEST, "default"})
 @EnableScheduling
 public class ServiceConfiguration {
 
-    @Autowired
-    protected ConfigClient configClient;
-    
     @Bean
     public TaskScheduler taskScheduler() {
         final ThreadPoolTaskScheduler sched =  new ThreadPoolTaskScheduler();

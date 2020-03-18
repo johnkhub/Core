@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+
 /**
  * (c) 2019 IMQS Software
  * <p>
@@ -29,6 +31,11 @@ public class Boot {
 
     public static void main(String[] args) {
         java.util.Locale.setDefault(java.util.Locale.US);
+
+        if (!System.getenv().containsKey("spring_profiles_active")) {
+            System.getProperties().putIfAbsent("spring.profiles.active", PROFILE_PRODUCTION);
+        }
+
         new Boot().start(args);
     }
 
