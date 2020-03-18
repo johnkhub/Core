@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 
 /**
  * (c) 2020 IMQS Software
@@ -26,7 +27,7 @@ public class AbstractAssetControllerAPITest {
 
     @BeforeClass
     public static void configure() {
-        RestAssured.baseURI = "http://localhost";
+        RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
         session = getAuthSession(USERNAME, PASSWORD);
     }

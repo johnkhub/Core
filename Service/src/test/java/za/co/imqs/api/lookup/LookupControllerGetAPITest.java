@@ -17,6 +17,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 
 
 /**
@@ -31,7 +32,7 @@ public class LookupControllerGetAPITest {
 
     @BeforeClass
     public static void configure() {
-        RestAssured.baseURI = "http://localhost";
+        RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
         session = TestUtils.getAuthSession(USERNAME, PASSWORD);
     }

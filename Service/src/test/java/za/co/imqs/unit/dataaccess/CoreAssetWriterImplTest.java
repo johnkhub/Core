@@ -25,6 +25,8 @@ import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static za.co.imqs.TestUtils.BOING;
+import static za.co.imqs.TestUtils.SERVICES;
+import static za.co.imqs.TestUtils.ServiceRegistry.PG;
 
 /**
  * (c) 2020 IMQS Software
@@ -45,7 +47,7 @@ public class CoreAssetWriterImplTest {
     public CoreAssetWriterImplTest() {
         this.jdbc = new JdbcTemplate(
                 HikariCPClientConfigDatasourceHelper.getDefaultDataSource(
-                        "jdbc:postgresql://localhost:5432/test_core","postgres","1mq5p@55w0rd"
+                        "jdbc:postgresql://"+SERVICES.get(PG)+":5432/test_core","postgres","1mq5p@55w0rd"
                 )
         );
 

@@ -28,12 +28,9 @@ function dockerise() {
   docker push "imqs/$fqn"
 }
 
-
 set -e
 
-
 # Assign current branch as tag (removing whitespace)
-tag=${1:- $(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
+tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
 dockerise "asset-core-service" "$tag"
-popd

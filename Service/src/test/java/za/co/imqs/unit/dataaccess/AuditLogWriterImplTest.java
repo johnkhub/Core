@@ -16,6 +16,8 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import static junit.framework.TestCase.*;
+import static za.co.imqs.TestUtils.SERVICES;
+import static za.co.imqs.TestUtils.ServiceRegistry.PG;
 
 /**
  * (c) 2020 IMQS Software
@@ -33,7 +35,7 @@ public class AuditLogWriterImplTest {
     public AuditLogWriterImplTest() {
         this.jdbc = new JdbcTemplate(
                 HikariCPClientConfigDatasourceHelper.getDefaultDataSource(
-                        "jdbc:postgresql://localhost:5432/test_core","postgres","1mq5p@55w0rd"
+                        "jdbc:postgresql://"+SERVICES.get(PG)+":5432/test_core","postgres","1mq5p@55w0rd"
                 )
         );
         DbCreator.create(jdbc.getDataSource());

@@ -14,6 +14,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 
 
 /**
@@ -28,7 +29,7 @@ public class LookupControllerKvAPITest {
 
     @BeforeClass
     public static void configure() {
-        RestAssured.baseURI = "http://localhost";
+        RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
         session = TestUtils.getAuthSession(USERNAME, PASSWORD);
     }
