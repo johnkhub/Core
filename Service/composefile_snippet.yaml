@@ -1,16 +1,20 @@
-# -- add to your compose file
+  # -- add to your compose file
 
-#
-# Core Asset Service
-#
-asset-core-service:
-  image: imqs/asset-core-service:master
-  ports:
-    - "127.0.0.1:8669:80"
-  volumes:
-    - ./logs:/var/log/imqs
-  depends_on:
-    - config
-    - db
-    - router
-    - auth
+  #
+  # Core Asset Service
+  #
+  asset-core-service:
+    image: imqs/asset-core-service:master
+    ports:
+      - "127.0.0.1:8669:80"
+    volumes:
+      - ./logs:/var/log/imqs
+    depends_on:
+      - config
+      - db
+      - router
+      - auth
+    #environment:
+      # valid values are "test" and "production"
+      # "test" exposes additional endpoints to aid integration testing
+      #- spring_profiles_active=test
