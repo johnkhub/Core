@@ -9,11 +9,6 @@
 # revision and not a branch. When using this on a Jenkins slave you *must* provide the branch yourself
 #
 
-
-# IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT!IMPORTANT!
-# The Jenkins slaves execute the script as the 'jenkins' user - this is a non login user by the looks of it. I did not bother to figure out why but the Jenkisn.m2 folder ends up in
-# /var/lib/jenkins/.m2
-
 m2="/$HOME/.m2"
 
 function dockerise() {
@@ -23,7 +18,7 @@ function dockerise() {
   # Use bash builtin printf and print to variable
   printf -v fqn "%s:%s" "$docker_name" "$tag"
     
-  docker run -t -e "MAVEN_OPTS=-Xmx1024m" --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v "$m2":/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests -Pcontainerize clean install
+  docker run -t -e "MAVEN_OPTS=-Xmx1024m" --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v ~/.m2:/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests -Pcontainerize clean install -U
   docker build -t "imqs/$fqn" .
   docker push "imqs/$fqn"
 }
@@ -34,3 +29,4 @@ set -e
 tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
 dockerise "asset-core-service" "$tag"
+chown -R `whoami` .
