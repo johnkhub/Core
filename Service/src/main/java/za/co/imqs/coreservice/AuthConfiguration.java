@@ -36,14 +36,16 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 public class AuthConfiguration extends BaseAuthConfiguration {
 
-    @Autowired
-    private ObjectMapper mapper;
-
+    private final ObjectMapper mapper;
     private final DataSource ds;
 
     @Autowired
-    public AuthConfiguration(@Qualifier("core_ds") DataSource ds) {
+    public AuthConfiguration(
+            @Qualifier("core_ds") DataSource ds,
+            ObjectMapper mapper
+    ) {
         this.ds = ds;
+        this.mapper = mapper;
     }
 
     @Bean
@@ -72,12 +74,6 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     }
 
     @Bean
-    @Override
-    public int getRouterPort() {
-        return 8001;
-    }
-
-    @Bean
     public ServiceAuth getServiceAuth(){
         /*
         final List<PermissionDTO> configAuthGroups =
@@ -91,6 +87,20 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
          */
         return new ServiceAuthImpl(getHostAndPort(), mapper, Collections.emptyList(), Collections.emptyList());
+    }
+
+    @Bean
+    @Qualifier("routerPort")
+    @Override
+    public int getRouterPort() {
+        return super.getRouterPort();
+    }
+
+    @Bean
+    @Qualifier("routerHost")
+    @Override
+    public String getRouterHost() {
+        return Boolean.valueOf(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost();
     }
 
     private String getHostAndPort() {
