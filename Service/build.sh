@@ -18,7 +18,7 @@ function dockerise() {
   # Use bash builtin printf and print to variable
   printf -v fqn "%s:%s" "$docker_name" "$tag"
     
-  docker run -t -e "MAVEN_OPTS=-Xmx1024m" --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v ~/.m2:/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests -Pcontainerize clean install -U
+  docker run -t -e "MAVEN_OPTS=-Xmx1024m" --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -v ~/.m2:/root/.m2 -w /usr/src/mymaven maven:3.5.0-jdk-8 mvn -DskipTests -Pcontainerize clean install
   docker build -t "imqs/$fqn" .
   docker push "imqs/$fqn"
 }
@@ -29,4 +29,4 @@ set -e
 tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
 dockerise "asset-core-service" "$tag"
-chown -R `whoami` .
+#chown -R `whoami` .
