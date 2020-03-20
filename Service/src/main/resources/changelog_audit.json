@@ -302,5 +302,95 @@
         }]
 
     }
+  },
+  {
+    "changeSet": {
+      "id": "ae2cd1ab-78b8-4fda-8577-58cf76ce705d",
+      "comment" : "Rename asset to entity and change management of audit types",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+       {
+          "dropForeignKeyConstraint": {
+              "baseColumnNames": "asset_id",
+              "baseTableName": "auditlink",
+              "baseTableSchemaName": "audit",
+              "constraintName": "auditlink_asset_id_fkey"
+            }
+        },
+        {
+          "renameColumn": {
+            "columnDataType": "uuid",
+            "newColumnName": "entity_id",
+            "oldColumnName": "asset_id",
+            "schemaName": "audit",
+            "tableName": "auditlink"
+          }
+        },
+        {
+          "createTable" : {
+            "columns": [
+              {
+                "column": {
+                  "name": "mnemonic",
+                  "type": "varchar(20)",
+                  "constraints": {
+                    "primaryKey" : true
+                  }
+                }
+              },
+              {
+                "column": {
+                  "name": "description",
+                  "type": "text"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueComputed": "'{}'::JSONB",
+                  "name": "meta",
+                  "type": "JSONB",
+                  "constraints": {
+                    "nullable" : false
+                  }
+                }
+              }
+            ],
+          "schemaName": "audit",
+          "tableName": "audit_type"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "action"
+                }
+              }]
+          ,
+            "indexName": "idx_action",
+            "schemaName": "audit",
+            "tableName": "audit"
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "action",
+            "baseTableName": "audit",
+            "baseTableSchemaName": "audit",
+            "constraintName": "audit_audit_type_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "mnemonic",
+            "referencedTableName": "audit_type",
+            "referencedTableSchemaName": "audit",
+            "validate": true
+          }
+        }
+      ]
+    }
   }
 ]}

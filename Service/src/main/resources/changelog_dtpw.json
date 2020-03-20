@@ -465,5 +465,45 @@
         }]
 
     }
+  },
+  {
+    "changeSet": {
+      "id": "efefd1e6-3a5b-4f01-be56-1146a1c46556",
+      "author": "frankvr",
+      "comment" : "Add missing FKs",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "branch_code",
+            "baseTableName": "ref_chief_directorate",
+            "baseTableSchemaName" : "dtpw",
+            "constraintName": "chiefdir_branch_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_branch",
+            "referencedTableSchemaName": "dtpw",
+            "validate": true
+          }
+        }, {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "chief_directorate_code",
+            "baseTableName": "ref_client_department",
+            "baseTableSchemaName" : "dtpw",
+            "constraintName": "clientdep_chiefdir_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_chief_directorate",
+            "referencedTableSchemaName": "dtpw",
+            "validate": true
+          }
+        }]
+    }
   }
 ]}
