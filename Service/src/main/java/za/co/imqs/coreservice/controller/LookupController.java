@@ -22,6 +22,7 @@ import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
+import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
 /**
  * (c) 2020 IMQS Software
@@ -94,7 +95,7 @@ public class LookupController {
             method = RequestMethod.GET, value = "/kv",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<List<LookupProvider.KvDef>> getKVTypes() {
+    public ResponseEntity getKVTypes() {
         final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity(lookups.getKvTypes(), HttpStatus.OK);
