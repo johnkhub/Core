@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import za.co.imqs.coreservice.audit.AuditLogEntry;
-import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.exception.*;
@@ -21,12 +19,11 @@ import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
-import static za.co.imqs.coreservice.WebMvcConfiguration.TESTING_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -38,7 +35,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile(PROFILE_TEST)
 @RestController
 @Slf4j
-@RequestMapping(TESTING_PATH)
+@RequestMapping(ASSET_TESTING_PATH)
 public class AssetTestingController {
 
     private final CoreAssetWriter assetWriter;

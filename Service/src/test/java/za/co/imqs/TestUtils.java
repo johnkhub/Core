@@ -35,10 +35,10 @@ import static za.co.imqs.TestUtils.ServiceRegistry.PG;
  */
 public class TestUtils {
     public static final boolean IS_IN_CONTAINER = false; // test itself is inside a container
-    public static final boolean IS_CONNECT_TO_CONTAINER = true; // test is connecting to a service inside a container
+    public static final boolean IS_CONNECT_TO_CONTAINER = false; // test is connecting to a service inside a container
 
-    public static final String USERNAME = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "test";
-    public static final String PASSWORD = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "test";
+    public static final String USERNAME = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "demo" : "demo";
+    public static final String PASSWORD = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "demo" : "demo";
     public static final int CORE_PORT = IS_IN_CONTAINER ?  80 : 8669;
 
 
@@ -114,7 +114,7 @@ public class TestUtils {
     public static String getAuthSession(String username, String password)  {
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod("http://"+SERVICES.get("auth") + "/auth2/login");
+            PostMethod post = new PostMethod("http://"+"legendqa" + "/auth2/login");
             post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
             client.executeMethod(post);
             if (post.getStatusCode() != 200)

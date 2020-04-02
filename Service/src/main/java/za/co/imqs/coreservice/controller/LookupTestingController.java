@@ -15,7 +15,8 @@ import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
-import static za.co.imqs.coreservice.WebMvcConfiguration.TESTING_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -27,7 +28,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile(PROFILE_TEST)
 @RestController
 @Slf4j
-@RequestMapping(TESTING_PATH+"/lookups")
+@RequestMapping(ASSET_TESTING_PATH +LOOKUP_ROOT_PATH)
 public class LookupTestingController {
 
     private final LookupProvider lookups;

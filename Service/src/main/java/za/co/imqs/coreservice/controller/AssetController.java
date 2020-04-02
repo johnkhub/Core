@@ -20,7 +20,7 @@ import za.co.imqs.spring.service.auth.authorization.UserContext;
 import java.util.Collections;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
-import static za.co.imqs.coreservice.WebMvcConfiguration.ROOT_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 
 /**
  * (c) 2020 IMQS Software
@@ -30,7 +30,7 @@ import static za.co.imqs.coreservice.WebMvcConfiguration.ROOT_PATH;
  */
 @RestController
 @Slf4j
-@RequestMapping(ROOT_PATH)
+@RequestMapping(ASSET_ROOT_PATH)
 public class AssetController {
 
     private final CoreAssetWriter assetWriter;

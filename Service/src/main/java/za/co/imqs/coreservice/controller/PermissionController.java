@@ -19,6 +19,8 @@ import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 import java.util.UUID;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.ACCESS_ROOT_PATH;
+
 /**
  * (c) 2020 IMQS Software
  * <p>
@@ -27,7 +29,7 @@ import java.util.UUID;
  */
 @RestController
 @Slf4j
-@RequestMapping("/assets/access")
+@RequestMapping(ACCESS_ROOT_PATH)
 public class PermissionController {
     private final PermissionRepository permissions;
     private final AuditLoggingProxy audit;
