@@ -17,7 +17,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2015/11/20
  */
 @Configuration
-@Profile({PROFILE_PRODUCTION,PROFILE_TEST, "default"})
+@Profile({PROFILE_PRODUCTION,PROFILE_TEST})
 @EnableScheduling
 public class ServiceConfiguration {
 
