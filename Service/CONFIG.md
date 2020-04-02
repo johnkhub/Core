@@ -11,6 +11,13 @@ The result is a single jar file.
 
 Upon startup, the service will create an empty database if one does not exist.
 
+Developer
+---------
+* Deploy has some sample configuration and launch scripts to run the service
+* Use [this](composefile_snippet.yaml) to add to your compose file
+* [This](src/test/java/za/co/imqs/api/README.md) provides some info on running tests 
+* The docker configures the service for remote debugging. All you need to do is to expose the port in your compose file.
+
 
 Deploy
 -----

@@ -5,7 +5,7 @@ These are the API level integration tests.
 
 Pre-conditions
 --------------
-1. An auth user with a name and password of `test`
+1. An auth user with a name and password of `dev`
 2. Being integration tests, they require soem of the services in the stack to be running. These would typically be started in Docker.
     * Auth
     * Router

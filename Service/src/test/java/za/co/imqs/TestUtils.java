@@ -38,6 +38,7 @@ import static za.co.imqs.libimqs.utils.KitchenSink.isWindows;
  * User: frankvr
  * Date: 2020/03/10
  */
+@Slf4j
 public class TestUtils {
     public static final boolean IS_IN_CONTAINER = false; // test itself is inside a container
     public static final boolean IS_CONNECT_TO_CONTAINER = true; // test is connecting to a service inside a container
@@ -130,13 +131,6 @@ public class TestUtils {
         }
     }
 
-    /**
-     * (c) 2020 IMQS Software
-     * <p>
-     * User: frankvr
-     * Date: 2020/02/17
-     */
-    @Slf4j
     public static class PermissionRepositoryImplTest {
         private final JdbcTemplate jdbc;
 
