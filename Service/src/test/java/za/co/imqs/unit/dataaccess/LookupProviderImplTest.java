@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static za.co.imqs.TestUtils.BOING;
+import static za.co.imqs.TestUtils.resolveWorkingFolder;
 
 /**
  * (c) 2020 IMQS Software
@@ -21,11 +22,11 @@ import static za.co.imqs.TestUtils.BOING;
 @Slf4j
 public class LookupProviderImplTest {
 
+    final String path = String.join("/", "file:", resolveWorkingFolder(), "src/test/resources/config.json");
+
     @Test
     public void test() throws Exception  {
-        final LookupProvider p = new LookupProviderImpl(
-                new ClientConfigurationFactory("file:C:/Users/frankvr/Documents/Core/Service/src/test/resources/config.json"), BOING
-        );
+        final LookupProvider p = new LookupProviderImpl(new ClientConfigurationFactory(path), BOING);
         final Map<String,String> params = new HashMap<>();
 
         params.put("asset_type_code", "ROOM");
@@ -34,9 +35,7 @@ public class LookupProviderImplTest {
 
     @Test
     public void testWithOperators() throws Exception  {
-        final LookupProvider p = new LookupProviderImpl(
-                new ClientConfigurationFactory("file:C:/Users/frankvr/Documents/Core/Service/src/test/resources/config.json"), BOING
-        );
+        final LookupProvider p = new LookupProviderImpl(new ClientConfigurationFactory(path), BOING);
         final Map<String, LookupProvider.Field> params = new HashMap<>();
 
         final LookupProvider.Field fld = new LookupProvider.Field();

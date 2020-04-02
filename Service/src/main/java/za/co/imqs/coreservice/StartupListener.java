@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import za.co.imqs.configuration.client.ConfigClient;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.spring.service.health.ServiceHealth;
 
@@ -22,19 +20,13 @@ import za.co.imqs.spring.service.health.ServiceHealth;
 public class StartupListener implements ApplicationListener<ContextRefreshedEvent> {
 
     private final ServiceHealth serviceHealth;
-    private final ConfigClient configClient;
-    private final TaskScheduler taskScheduler;
     private final ServiceAuth serviceAuth;
 
     @Autowired
     public StartupListener(
-            ConfigClient configClient,
-            TaskScheduler taskScheduler,
             ServiceHealth serviceHealth,
             ServiceAuth serviceAuth
     ) {
-        this.configClient = configClient;
-        this.taskScheduler = taskScheduler;
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
     }

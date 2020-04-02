@@ -88,7 +88,7 @@ public class CoreAssetFactory {
     private <T> T assertNotSet(T value, String name, String hint) {
         if (value != null)
             throw new BusinessRuleViolationException("Change of "+name+" not allowed." +  ((hint != null) ? hint : ""));
-        return value;
+        return null;
     }
 }
 

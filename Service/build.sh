@@ -9,8 +9,6 @@
 # revision and not a branch. When using this on a Jenkins slave you *must* provide the branch yourself
 #
 
-m2="/$HOME/.m2"
-
 function dockerise() {
   docker_name=$1
   tag=$2

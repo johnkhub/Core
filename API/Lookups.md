@@ -19,6 +19,7 @@ The current implementation of this API:
 |----|-------|-----------|
 |200|OK|Operation completed successfully|
 |201|Created|Entity was created successfully|
+|204|No Content|The service successfully processed the request, but there was no data to return. Only used in cases where an empty collection cannot be used as return value.|
 |400|Bad request|The Operation requested is improperly formatted - typically a validation failure.
 |403|Forbidden|User does not have permission to perform the action|
 |404|Not found|Entity not found|

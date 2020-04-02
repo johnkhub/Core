@@ -26,7 +26,7 @@ public class AuditLoggerImpl implements AuditLogger {
 
     @Override
     public void log(List<AuditLogEntry> entries) {
-        entries.stream().forEach((e) -> log(e));
+        entries.forEach((e) -> log(e));
     }
 
     private static AuditLogWriter.AuditLogRow map(AuditLogEntry entry) {

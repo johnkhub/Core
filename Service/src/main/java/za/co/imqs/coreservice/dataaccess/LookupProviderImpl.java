@@ -53,6 +53,7 @@ public class LookupProviderImpl implements LookupProvider {
 
     @Autowired
     public LookupProviderImpl(
+
             ConfigClient config,
             Environment env
     ){
@@ -67,7 +68,7 @@ public class LookupProviderImpl implements LookupProvider {
         try {
             viewName = fixQuoting(viewName);
 
-            final StringBuffer query = new StringBuffer("SELECT * FROM " + viewName);
+            final StringBuilder query = new StringBuilder("SELECT * FROM " + viewName);
             final List<Object> values = new ArrayList<>(parameters.size());
 
 
@@ -95,7 +96,7 @@ public class LookupProviderImpl implements LookupProvider {
         try {
             viewName = fixQuoting(viewName);
 
-            final StringBuffer query = new StringBuffer("SELECT * FROM " + viewName);
+            final StringBuilder query = new StringBuilder("SELECT * FROM " + viewName);
             final List<Object> values = new ArrayList<>(parameters.size());
 
             if (!parameters.isEmpty()) {
@@ -124,7 +125,7 @@ public class LookupProviderImpl implements LookupProvider {
         try {
             return cFact.get("kv").query("SELECT * FROM kv_type", KV_TYPE_MAPPER);
         } catch (DataIntegrityViolationException d) {
-            if (d.getMessage().contains("No results were returned by the query")) {
+            if (d.getMessage() != null && d.getMessage().contains("No results were returned by the query")) {
                 return Collections.emptyList();
             }
             throw d;
@@ -159,7 +160,7 @@ public class LookupProviderImpl implements LookupProvider {
                             ps.setTimestamp(3, ts);
                             ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at()));
                             ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at()));
-                            ps.setBoolean(6, kvs.get(i).getAllow_delete() == null ? false : true);
+                            ps.setBoolean(6, kvs.get(i).getAllow_delete() == null ? false : kvs.get(i).getAllow_delete());
                         }
 
                         @Override
@@ -209,10 +210,9 @@ public class LookupProviderImpl implements LookupProvider {
         return rv.substring(0,rv.length()-1);
     }
 
-    // In the genaral use case of this code you would be able to connect to a whole bunch of databases
+    // TODO In the genaral use case of this code you would be able to connect to a whole bunch of databases
     private class ConnectionFactory {
-        // We need to implement a bi-directional map here so we can also look up the viewName based on the ds so we
-        // don't instantiate multiple connection pools for the same db
+        // TODO We need to implement a bi-directional map here so we can also look up the viewName based on the ds so we don't instantiate multiple connection pools for the same db
         private final Map<String, JdbcTemplate> dataSources = new HashMap<>();
 
         public JdbcTemplate get(String viewName) {

@@ -1,7 +1,6 @@
 package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +10,6 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
-import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.CoreAssetFactory;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
@@ -21,6 +19,7 @@ import java.util.Collections;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
+import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
 /**
  * (c) 2020 IMQS Software
@@ -156,26 +155,6 @@ public class AssetController {
             return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
-        }
-    }
-
-    private ResponseEntity mapException(Exception exception) {
-        log.error("--> "+exception);
-        if (exception instanceof AlreadyExistsException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
-        } else if (exception instanceof NotFoundException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND);
-        } else if (exception instanceof NotPermittedException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.FORBIDDEN);
-        } else if (exception instanceof ValidationFailureException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
-        } else if (exception instanceof BusinessRuleViolationException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.PRECONDITION_FAILED);
-        } else if (exception instanceof ResubmitException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.REQUEST_TIMEOUT); // So the client can resubmit
-        } else {
-            final String stacktrace = ExceptionUtils.getStackTrace(exception);
-            return new ResponseEntity(exception.getMessage() + "\n" + stacktrace, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

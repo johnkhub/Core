@@ -1,7 +1,6 @@
 package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -13,17 +12,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
-import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
-import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
+import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -90,7 +88,7 @@ public class AssetTestingController {
             method = RequestMethod.GET, value = "/link/{uuid}/to/{external_id_type}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<List<String>> getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
+    public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
         final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity<>(assetReader.getExternalLinks(uuid,external_id_type), HttpStatus.OK);
@@ -123,25 +121,5 @@ public class AssetTestingController {
             return o.toString();
         }
         return null;
-    }
-
-    private ResponseEntity mapException(Exception exception) {
-        log.error("--> "+exception);
-        if (exception instanceof AlreadyExistsException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
-        } else if (exception instanceof NotFoundException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND);
-        } else if (exception instanceof NotPermittedException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.FORBIDDEN);
-        } else if (exception instanceof ValidationFailureException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
-        } else if (exception instanceof BusinessRuleViolationException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.PRECONDITION_FAILED);
-        } else if (exception instanceof ResubmitException) {
-            return new ResponseEntity(exception.getMessage(), HttpStatus.REQUEST_TIMEOUT); // So the client can resubmit
-        } else {
-            final String stacktrace = ExceptionUtils.getStackTrace(exception);
-            return new ResponseEntity(exception.getMessage() + "\n" + stacktrace, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 }

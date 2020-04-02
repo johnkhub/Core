@@ -27,7 +27,6 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_P
 @EnableAutoConfiguration(exclude = {LiquibaseAutoConfiguration.class})
 @org.springframework.context.annotation.Import(za.co.imqs.spring.service.factorybeandefinitions.ClientConfiguration.class)
 public class Boot {
-    private ConfigurableApplicationContext context;
 
     public static void main(String[] args) {
         java.util.Locale.setDefault(java.util.Locale.US);
@@ -43,10 +42,8 @@ public class Boot {
         String property = System.getProperty("imqs.configuration.file");
         if (property == null) {
             String strConfig = "";
-            int var5 = config.length;
 
-            for(int var6 = 0; var6 < var5; ++var6) {
-                String con = config[var6];
+            for (String con : config) {
                 if (!con.startsWith("--")) {
                     strConfig = strConfig + " " + con;
                 }
@@ -58,7 +55,7 @@ public class Boot {
 
     private Boot start(String[] args) {
         setConfigurationProperty(args);
-        context = SpringApplication.run(Boot.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(Boot.class, args);
         return this;
     }
 }

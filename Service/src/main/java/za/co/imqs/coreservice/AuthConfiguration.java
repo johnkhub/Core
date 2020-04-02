@@ -11,7 +11,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
-import za.co.imqs.libimqs.utils.ConfigurationUtils;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
@@ -91,12 +90,6 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         return new ServiceAuthImpl(getAuthURL(), mapper, Collections.emptyList(), Collections.emptyList());
     }
 
-    @Bean
-    @Qualifier("routerPort")
-    @Override
-    public int getRouterPort() {
-        return super.getRouterPort();
-    }
 
     @Bean
     @Qualifier("routerHost")
@@ -111,6 +104,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     }
 
 
+    // TODO move to general code for use wih all services
     private URL applyOverride(String serviceName, URL toOverride) {
         if (configClient.getProperty(serviceName) != null) {
             try {

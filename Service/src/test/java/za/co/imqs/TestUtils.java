@@ -18,6 +18,8 @@ import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +27,10 @@ import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
+import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.PG;
+import static za.co.imqs.libimqs.utils.KitchenSink.isUnix;
+import static za.co.imqs.libimqs.utils.KitchenSink.isWindows;
 
 /**
  * (c) 2020 IMQS Software
@@ -35,10 +40,10 @@ import static za.co.imqs.TestUtils.ServiceRegistry.PG;
  */
 public class TestUtils {
     public static final boolean IS_IN_CONTAINER = false; // test itself is inside a container
-    public static final boolean IS_CONNECT_TO_CONTAINER = false; // test is connecting to a service inside a container
+    public static final boolean IS_CONNECT_TO_CONTAINER = true; // test is connecting to a service inside a container
 
-    public static final String USERNAME = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "demo" : "demo";
-    public static final String PASSWORD = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "demo" : "demo";
+    public static final String USERNAME = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "dev";
+    public static final String PASSWORD = IS_CONNECT_TO_CONTAINER || IS_IN_CONTAINER ? "dev" : "dev";
     public static final int CORE_PORT = IS_IN_CONTAINER ?  80 : 8669;
 
 
@@ -114,7 +119,7 @@ public class TestUtils {
     public static String getAuthSession(String username, String password)  {
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod("http://"+"legendqa" + "/auth2/login");
+            PostMethod post = new PostMethod("http://"+SERVICES.get(AUTH)+ "/auth2/login");
             post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
             client.executeMethod(post);
             if (post.getStatusCode() != 200)
@@ -279,5 +284,15 @@ public class TestUtils {
         public String get(String name) {
             return IS_IN_CONTAINER ? m.get(name)  : "localhost";
         }
+    }
+
+    public static String resolveWorkingFolder() {
+        final String os = System.getProperty("os.name").toLowerCase();
+        if (isWindows(os)) {
+            return  System.getProperty("user.dir");
+        } else if (isUnix(os)) {
+            return "/home" + System.getProperty("user.dir");
+        }
+        throw new IllegalStateException("Unsupported OS " + System.getProperty("os.name"));
     }
 }

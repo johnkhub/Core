@@ -1,5 +1,13 @@
 # Core Schema
 
+
+> THIS DOCUMENT IS SEVERELY OUTDATED
+> [Confluence](https://imqssoftware.atlassian.net/wiki/x/IwAhVw) contains the most up to date documentation.
+
+
+
+
+
 Target Audience
 ---------------
 |Section|Audience|

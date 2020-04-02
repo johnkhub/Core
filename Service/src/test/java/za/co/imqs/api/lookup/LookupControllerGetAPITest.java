@@ -58,14 +58,6 @@ public class LookupControllerGetAPITest {
     }
 
     @Test
-    public void kv() {
-        List<Map<String,String>> result = new ArrayList<>(0);
-
-        result = verifyGet("dtpw%2Eref_client_department", new HashMap<>()).statusCode(200).extract().as(result.getClass());
-    }
-
-
-    @Test
     public void testGetAll() {
         List<Map<String,String>> result = new ArrayList<>(0);
         result = verifyGet("assettype", new HashMap<>()).

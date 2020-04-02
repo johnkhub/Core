@@ -11,6 +11,7 @@ import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import java.util.*;
 
 import static com.jayway.restassured.RestAssured.given;
+import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static za.co.imqs.TestUtils.*;
@@ -39,7 +40,7 @@ public class LookupControllerKvAPITest {
         final List<LookupProvider.KvDef> defs = Arrays.asList(
                given().
                     header("Cookie", session).
-                    get("/lookups/").
+                    get("/lookups/kv/").
                     then().
                        statusCode(200).
                        extract().as(LookupProvider.KvDef[].class)
@@ -77,7 +78,7 @@ public class LookupControllerKvAPITest {
         given().
                 header("Cookie", session).
                 contentType(ContentType.JSON).body(kv).
-                put("/lookups/{target}", "REGION").
+                put("/lookups/kv/{target}", "REGION").
                 then().statusCode(200);
     }
 
@@ -101,6 +102,23 @@ public class LookupControllerKvAPITest {
         fail("Not implemented");
     }
 
+    @Test
+    public void getKvSuccess() {
+       addKvSuccess();
+
+        assertEquals("B", given().
+                header("Cookie", session).
+                get("/lookups/v/{target}/{k}", "REGION", "b").
+                then().statusCode(200).extract().asString());
+    }
+
+    @Test
+    public void getKvMissing() {
+        given().
+                header("Cookie", session).
+                get("/lookups/v/{target}/{k}", "REGION", "bbb").
+                then().statusCode(204);
+    }
 
     private static LookupProvider.Kv pair(String key, String value) {
         final LookupProvider.Kv kv = new LookupProvider.Kv();

@@ -14,7 +14,7 @@ import static za.co.imqs.coreservice.audit.AuditLogger.Result.SUCCESS;
 @Slf4j
 public class AuditLoggingProxy {
     public interface TryWithAudit {
-        public Object tryIt() throws Exception;
+        public Object tryIt();
     }
 
     private final AuditLogger audit;

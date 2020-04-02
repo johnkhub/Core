@@ -22,7 +22,7 @@ public class ServiceHealthConfiguration {
     public ServiceHealth getHealth() {
         final ServiceHealth health = new ServiceHealthImpl();
         Thread.setDefaultUncaughtExceptionHandler(
-                (Thread t, Throwable e) ->  {health.fail(e);}
+                (Thread t, Throwable e) ->  health.fail(e)
         );
         return health;
     }
