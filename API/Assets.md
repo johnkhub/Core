@@ -14,6 +14,13 @@ Rules
 API
 ---
 
+### Security
+
+See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+The current implementation of this API: 
+* *Currently* only supports token based authentication, **not** inter-service authentication
+* *Currently* only enforces authentication and **not** authorisation
+
 ### Status codes
 
 |Code|Meaning|Explanation|
@@ -30,7 +37,8 @@ API
 
 ### Objects
 
-#### Asset 
+#### Core Asset Dto
+
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
 |`asset_type_code`|`string`|m|One of 'ENVELOPE', 'FACILITY', 'BUILDING', 'SITE','FLOOR', 'ROOM', COMPONENT, LANDPARCEL. Mandatory on create. May **not** be specified during update |
@@ -107,7 +115,7 @@ Returns: *Nothing*
 Status codes: 201, 400, 403, 408, 412
 
 ### `DELETE assets/{uuid}`
-Deletes an Asset.  The Asset is not deleted but is marked as inactive.
+Deletes an Asset.  The Asset is *not deleted*, but is marked as inactive.
 
 Accepts: *Nothing*
 
@@ -119,9 +127,11 @@ Status codes: 200, 400, 403, 408, 409, 412
 
 ### `GET asset/link/types`
 Returns a list of defined external identifier types
+
 Accepts: *Nothing*
 
 Returns:
+
 ```
 [
   {
@@ -134,6 +144,7 @@ Returns:
 Status codes: 200
 
 ### `PUT  asset/link/{uuid}/to/{external_id_type}/{external_id}`
+
 Links an external identifier of the specified type to the specified Asset. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
 Accepts: *Nothing*
@@ -143,6 +154,7 @@ Returns: *Nothing*
 Status codes: 200, 400, 403, 408, 409, 412
 
 ### `DELETE asset/link/{uuid}/to/{external_id_type}/{external_id}`
+
 Removes the specified external identifier of the specified type linked to the specified Asset. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
 Accepts: *Nothing*
@@ -151,7 +163,8 @@ Returns: *Nothing*
 
 Status codes: 200, 400, 403, 408, 412
 
-### `asset/link/{uuid}/to/{external_id_type}` ###
+### GET `asset/link/{uuid}/to/{external_id_type}` (NOT IMPLEMENTED)
+
 Returns the link to the specified asset of the given external type. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
 Accepts: *Nothing*

@@ -46,6 +46,9 @@ public interface LookupProvider {
     // Get lookups based on map of field['<','>','=','!=']value  (AND)
     public List<Map<String,Object>> getWithOperators(String viewName, Map<String,Field> parameters);
 
+
+    public String getKv(String target, String key);
+
     public void acceptKv(String target, List<Kv> kv);
 
     default void acceptKv(String target, Kv ...kv) {

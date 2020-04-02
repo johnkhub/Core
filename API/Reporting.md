@@ -1,7 +1,9 @@
 Querying and  Reporting API
 ============================
 
-Reporting is done via materialized views. Typically these are based on other views.
+**This is incomplete**
+
+Reporting is performaed via materialized views. Typically these are based on other views.
 
 |Schema|Materialised|View name                       |Description|
 -------|------------|--------------------------------|------------

@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +14,9 @@ import za.co.imqs.coreservice.dataaccess.exception.*;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
+
 /**
  * (c) 2020 IMQS Software
  * <p>
@@ -21,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("lookups")
+@RequestMapping(LOOKUP_ROOT_PATH)
 public class LookupController {
     private final LookupProvider lookups;
 
@@ -36,27 +40,45 @@ public class LookupController {
     )
     public ResponseEntity<List<Map<String,Object>>> get(@PathVariable String view, @RequestParam Map<String, String> paramMap) {
         try {
-            return new ResponseEntity(lookups.get(view, paramMap), HttpStatus.OK);
+            return new ResponseEntity(lookups.get(view.replace("%2E","."), paramMap), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
     @RequestMapping(
-            method = RequestMethod.GET, value = "/{view}",
+            method = RequestMethod.GET, value = "/{view}/using_operators",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<Map<String,Object>>> getWithOperators(@PathVariable String view, @RequestBody Map<String, LookupProvider.Field> paramMap) {
         try {
-            return new ResponseEntity(lookups.getWithOperators(view, paramMap), HttpStatus.OK);
+            return new ResponseEntity(lookups.getWithOperators(view.replace("%2E","."), paramMap), HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/v/{view}/{k}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<Map<String,Object>>> getKv(@PathVariable String view, @PathVariable String k) {
+        try {
+            final String result = lookups.getKv(view.replace("%2E","."), k);
+            if (result != null) {
+                return new ResponseEntity(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
     @RequestMapping(
-            method = RequestMethod.GET, value = "/",
+            method = RequestMethod.GET, value = "/kv",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<LookupProvider.KvDef>> getKVTypes() {
@@ -67,9 +89,8 @@ public class LookupController {
         }
     }
 
-
     @RequestMapping(
-            method = RequestMethod.PUT, value = "/{target}",
+            method = RequestMethod.PUT, value = "/kv/{target}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity acceptKv(@PathVariable String target,  @RequestBody List<LookupProvider.Kv> kvs) {
@@ -80,8 +101,6 @@ public class LookupController {
             return mapException(e);
         }
     }
-
-
 
     private ResponseEntity mapException(Exception exception) {
         log.error(exception.getMessage());

@@ -6,6 +6,13 @@ The Lookups API, provides a simple mechanism to query data.  It only supports ve
 1. Retrieving rows from a view or table based on basic set of query parameters. *All columns are returned.*
 2. Store and Retrieve to/from KV tables via the **code** assigned to that kookup table
 
+## Security
+
+See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+The current implementation of this API: 
+* *Currently* only supports token based authentication, **not** inter-service authentication
+* *Currently* only enforces authentication and **not** authorisation
+
 ## Status codes
 
 |Code|Meaning|Explanation|
@@ -130,10 +137,9 @@ Status codes: 200, 400, 403, 408, 412
 
 ## Generic table/view lookup interface
 
-|NOTE|
-|-|
-|**This interface operates on the raw database names and as such the scehma name must be included in the name of the source being read from. The period in the name should be replaces with `%2E`.**|
-||
+
+>**This interface operates on the raw database names and as such the scehma name must be included in the name of the source being read from. The period in the name should be replaces with `%2E`.**
+
 
 ### `GET /lookups/{source}` 
 Returns all columns from the table/view (`source`)

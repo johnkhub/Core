@@ -2,17 +2,17 @@
 Tagging
 ==============
 
-There are two levels of security the first is that which is enforced by the database via functions.  In and of itself it is not completely secure. The functions must be correctly invoked by teh service layer 
-APIs to secure the system.
-
+Tagging is available at a database level and a REST API level interface.
 
 Database level
 ---------------
 
 |Function                                                    |Description       |
 |------------------------------------------------------------|------------------|
-|`public.fn_add_tags(asset uuid, tags text[]) RETURNS void;` | Tags the specified asset witch each of the specified tags.  The tags must exist in `public.asset_tags`.|
+|`public.fn_add_tags(asset uuid, tags text[]) RETURNS void;` | Tags the specified asset with each of the specified tags.|
 |`public.fn_has_tag(asset uuid, tag text) RETURNS boolean`   | Returns true iff the specified asset is tagged with the specified tag. |
+
+These functions will ensure that only tags that exist in `public.asset_tags` can be used.
 
 Examples
 --------
@@ -36,12 +36,18 @@ SELECT (SELECT tags FROM asset_tags WHERE asset_id = '64fe52b9-4cdc-4cf9-aaca-b5
 ```
 SELECT public.fn_has_tag( '64fe52b9-4cdc-4cf9-aaca-b57a158b5693'', 'AT_RISK')
 ```
+**TODO: Add an example of searching for an asset that has a specific tag.**
 
 
 API level
 ----------
 
-To use this API you must be authenticated via the Auth service and have permissions to manage security on the Asset system. Both token-based or interservice authentication needs to be supported on all endpoints.
+### Security
+
+See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+The current implementation of this API: 
+* *Currently* only supports token based authentication, **not** inter-service authentication
+* *Currently* only enforces authentication and **not** authorisation
 
 
 ### Status codes
@@ -58,16 +64,13 @@ To use this API you must be authenticated via the Auth service and have permissi
 |412|Precondition failed|Indicates that the requested Operation would violate a business rule|
 
 
-### Objects
+### `GET assets/{uuid}/tag` (NOT IMPLEMENTED) 
+Returns all of the tags linked to the specified asset.
 
+Accepts: *Nothing*
 
-### `GET assets/{uuid}/tag`   
-Returns all of the tags linked to teh specified asset.
-
-Accepts: 
-*Nothing**
-```
 Returns:
+
 ```
 [
     'tag1'
@@ -78,23 +81,29 @@ Returns:
 ```
 Status codes: 200, 400, 403, 408
 
-### `GET assets/{uuid}/tag/{tag}`   
-Accepts: 
-*Nothing**
-```
-Returns:
-```
+### `GET assets/{uuid}/tag/{tag}` (NOT IMPLEMENTED)  
+Returns true if the specified asset is tagged with the specified tag.
 
+Accepts: *Nothing*
+
+Returns:
+
+```
 [
     true or false
 ]
-
 ```
 Status codes: 200, 400, 403, 408
 
 
-### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4`
-Note the use of keys without parameters for the trailing tags.
+### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4` (NOT IMPLEMENTED)  
+
+Tags the specified asset with a list of tags.
+
+| |
+|-|
+|**Note the use of keys without parameters for the trailing tags.**|
+||
 
 Accepts: *Nothing*
 
@@ -102,8 +111,13 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/{uuid}/tag/{tag}`
+### `DELETE assets/{uuid}/tag/{tag}` (NOT IMPLEMENTED)  
+
+Removes the specified tag from the specified asset.
+
 Accepts: *Nothing* 
+
 Returns: *Nothing*
+
 Status codes: 200, 400, 403, 408, 412
 

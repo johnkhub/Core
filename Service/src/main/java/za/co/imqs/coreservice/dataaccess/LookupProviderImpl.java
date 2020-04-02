@@ -132,6 +132,16 @@ public class LookupProviderImpl implements LookupProvider {
     }
 
     @Override
+    public String getKv(String target, String key) {
+        final String fqn = resolveTarget(target);
+        try {
+            return cFact.get("kv").queryForObject("SELECT v FROM " + fqn +" WHERE k = ?", String.class,  key);
+        }  catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public void acceptKv(String target, List<Kv> kvs) {
         final String fqn = resolveTarget(target);
 

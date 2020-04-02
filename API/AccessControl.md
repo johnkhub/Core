@@ -2,8 +2,7 @@
 Access Control
 ==============
 
-There are two levels of security the first is that which is enforced by the database via functions.  In and of itself it is not completely secure. The functions must be correctly invoked by teh service layer 
-APIs to secure the system.
+There are two levels of security the first is that which is enforced by the database via functions.  In and of itself it is not completely secure.  The functions must be correctly invoked by the service layer APIs to secure the system.
 
 
 Database level
@@ -21,14 +20,19 @@ Database level
 |`access_control.sp_add_user(user_id uuid, code varchar(10), description text DEFAULT NULL)  RETURNS void`|Adds a new User. We must specify the uuid instead of the code as we need to use the identity from Auth.|
 |`access_control.sp_remove_user(code varchar(10))  RETURNS void`|Removes the User with **name** `code`|
 |`access_control.sp_add_user_to_group(user_id uuid, group_name varchar(10))  RETURNS void`||
-|`access_control.sp_add_remove_user_from_group(user_id uuid, group_name varchar(10))  RETURNS void`||;
+|`access_control.sp_remove_user_from_group(user_id uuid, group_name varchar(10))  RETURNS void`||;
 
 
 
 API level
 ----------
 
-To use this API you must be authenticated via the Auth service and have permissions to manage security on the Asset system. Both token-based or interservice authentication needs to be supported on all endpoints.
+## Security
+
+See [APISecurity](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+The current implementation of this API: 
+* *Currently* only supports token based authentication, **not** inter-service authentication
+* *Currently* only enforces authentication and **not** authorisation
 
 
 ### Status codes
