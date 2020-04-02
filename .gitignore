@@ -8,3 +8,5 @@ Service/liquibase-extract/changelog_audit.json
 Service/liquibase-extract/changelog_asset_pcs.json
 Service/liquibase-extract/changelog_asset.json
 Service/liquibase-extract/changelog_dtpw.json
+Service/target/
+Service/.idea/
