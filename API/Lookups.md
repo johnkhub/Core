@@ -1,8 +1,12 @@
 API
 ====
 
+The Lookups API, provides a simple mechanism to query data.  It only supports very basic functionality:
 
-### Status codes
+1. Retrieving rows from a view or table based on basic set of query parameters. *All columns are returned.*
+2. Store and Retrieve to/from KV tables via the **code** assigned to that kookup table
+
+## Status codes
 
 |Code|Meaning|Explanation|
 |----|-------|-----------|
@@ -16,30 +20,49 @@ API
 |412|Precondition failed|Indicates that the requested Operation would violate a business rule|
 
 
-### Objects
+## KV Interface ##
 
 #### Lookup type
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
-|``|``|||
-|``|``|o||
-|``|``|o||
+|`code`|`string`|m||
+|`name`|`string`|m||
+|`description`|`string`|o||
+|`owner`|`string`|o||
+|`table`|`string`|o|Fully qualified table name `<schema>.<tablename/viewname>`|
 
 #### Lookup value
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
-|``|``|||
-|``|``|o||
-|``|``|o||
+|`k`|``|m||
+|`v`|``|m||
+|`creation_date`|``|o||
+|`activated_at`|``|o||
+|`deactivated_at`|``|o||
+|`allow_delete`|``|o||
 
 
-### `GET /lookups`
+### `GET /lookups/kv`
+Returns the list of defined kv tables.
+
 Accepts: *Nothing*
 
-Returns: [Lookup value]
+Returns: `[Lookup type]`
 Status codes: 200, 400, 403, 408
 
-### `PUT lookups/code`
+### `GET /lookups/v/{code}/{k}`
+Returns the lookup value from the kv table with the specified code, using the specified key (`k`).
+
+Accepts: *Nothing*
+
+Returns: `String`
+
+Status codes: 200, 400, 403, 408
+
+
+### `PUT lookups/kv` (NOT IMPLEMENTED)
+Adds a new kv lookup table.
+
 Accepts: 
 ```
 {
@@ -54,50 +77,133 @@ Returns: *Nothing*
 Status codes: 201, 400, 403, 408, 409, 412
 
 
-### `POST /lookups/code/{code}`
-Accepts: 
-```
-{
-  "k" : "",
-  "v" : "",
-  "description" : ""
-}
-```
-Returns: *Nothing*
-
-Status codes: 201, 400, 403, 408, 409, 412
-
-### `DELETE /lookups/code/{code}/{k}`
-Delete the lookup value with the key (`k`) from the type with teh specified code.
-
-
-Accepts: *Nothing*
-
-Returns: *Nothing*
-
-Status codes: 201, 400, 403, 408, 409, 412
-
-
-### `POST /lookups/code/{code}?k=""&v=""&description=""`
-Adds a lookup value to the type of the specified code.
-
-Accepts: *Nothing*
-
-Returns: *Nothing*
-
-Status codes: 201, 400, 403, 408, 409, 412
-
-
-### `DELETE /lookups/code/{code}/keys`
-Deletes the lookup values of the specified code with the supplied key (`k`) values..
+### `POST /lookups/kv/{code}`
+Adds new rows to the kv tables with the specified code.
 
 Accepts: 
 ```
 [
-  list of keys
+  {
+    "k" : "...",
+    "v" : "...",
+    "description" : "..."
+  }
 ]
 ```
 Returns: *Nothing*
 
-Status codes: 201, 400, 403, 408, 412
+Status codes: 201, 400, 403, 408, 409, 412
 
+### `DELETE /lookups/kv/{code}/{k}` (NOT IMPLEMENTED)
+Delete the lookup value with the key (`k`) from the kv table with the specified code.
+
+
+Accepts: *Nothing*
+
+Returns: *Nothing*
+
+Status codes: 201, 400, 403, 408, 409, 412
+
+
+### `POST /lookups/kv/{code}?k="..."&v="..."&description="..."` (NOT IMPLEMENTED)
+Adds a lookup value to the kb table with the specified code.
+
+Accepts: *Nothing*
+
+Returns: *Nothing*
+
+Status codes: 201, 400, 403, 408, 409, 412
+
+
+### `DELETE /lookups/kv/{code}/keys` (NOT IMPLEMENTED)
+Deletes the lookup values that have the specified key from the kv table with the specified code.
+
+Accepts: 
+```
+[
+  String
+]
+```
+Returns: *Nothing*
+
+Status codes: 200, 400, 403, 408, 412
+
+## Generic table/view lookup interface
+
+|NOTE|
+|-|
+|**This interface operates on the raw database names and as such the scehma name must be included in the name of the source being read from. The period in the name should be replaces with `%2E`.**|
+||
+
+### `GET /lookups/{source}` 
+Returns all columns from the table/view (`source`)
+
+Accepts: 
+
+A map of `field:value`. Each such pair forms a filter criterion. The criteria are implicitly **AND**-ed.
+
+```
+{
+  column name 1 : "..."
+  column name 2 : "..."
+  ...
+  column name n : "..."
+}
+```
+
+Returns: 
+
+A list of objects, with each object containing a field and value for each column in the underlying row.
+
+```
+[
+  {
+    ...
+  }
+]
+```
+
+Status codes: 200, 400, 403, 408
+
+### `GET /lookups/{source}/using_operators` (EXPERIMENTAL)
+Returns all columns from the table/view (`source`)
+
+Accepts: 
+
+A map of `field:{operator,value}`. Each such entity forms a filter criterion. The criteria are implicitly **AND**-ed.
+
+The operator may be one of `<`,`>`,`=`,`!=`.
+
+```
+{
+  column name 1 : {
+                    operator : "..."
+                    value : "..."
+                  },
+
+  column name 2 : { 
+                    operator : "..."
+                    value : "..."
+                  },
+  ...
+
+  column name n : { 
+                    operator : "..."
+                    value : "..."
+                  },
+}
+```
+
+Returns: 
+
+A list of objects, with each object containing a field and value for each column in the underlying row.
+
+```
+[
+  {
+    ...
+  }
+]
+```
+
+Status codes: 200, 400, 403, 408
