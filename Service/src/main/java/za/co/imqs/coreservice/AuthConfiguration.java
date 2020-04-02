@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
+import za.co.imqs.libimqs.utils.ConfigurationUtils;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
@@ -19,6 +20,7 @@ import za.co.imqs.spring.service.auth.authorization.Authorization;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
 import javax.sql.DataSource;
+import java.net.URL;
 import java.util.Collections;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -86,7 +88,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
                 );
 
          */
-        return new ServiceAuthImpl(getHostAndPort(), mapper, Collections.emptyList(), Collections.emptyList());
+        return new ServiceAuthImpl(getAuthURL(), mapper, Collections.emptyList(), Collections.emptyList());
     }
 
     @Bean
@@ -103,7 +105,21 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         return Boolean.valueOf(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost();
     }
 
-    private String getHostAndPort() {
-        return getRouterPort() == 80 ? getRouterHost() : (getRouterHost()+":"+getRouterPort());
+    @Override
+    protected URL getAuthURL() {
+        return applyOverride("authService", super.getAuthURL());
+    }
+
+
+    private URL applyOverride(String serviceName, URL toOverride) {
+        if (configClient.getProperty(serviceName) != null) {
+            try {
+                return new URL( "http://"+ (String) configClient.getProperty(serviceName)+"/auth2");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return toOverride;
     }
 }
