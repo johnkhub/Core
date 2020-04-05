@@ -81,3 +81,8 @@ Example
     "authService" : "legendqa:8001"
   }
 ```
+
+Schema management
+-------------------
+ TODO!
+This is expose via CLI 

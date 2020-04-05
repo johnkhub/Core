@@ -1,2 +1,0 @@
-INSERT INTO external_id_type (type_id, name, description) VALUES ('c6a74a62-54f5-4f93-adf3-abebab3d3467', 'V6', 'Version 6 component identifier') ON CONFLICT (type_id) DO NOTHING;
-INSERT INTO external_id_type (type_id, name, description) VALUES ('4a6a4f78-2dc4-4b29-aa9e-5033b834a564', 'EMIS', 'DTPW EMIS') ON CONFLICT (type_id) DO NOTHING;

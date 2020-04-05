@@ -7,6 +7,7 @@ public interface AuditLogger {
         QUERY_USERS,
         QUERY_GROUPS,
         QUERY_ACL,
+        QUERY_TAGS,
 
         ADD_ASSET,
         DELETE_ASSET,
@@ -33,7 +34,10 @@ public interface AuditLogger {
         LEAVE_GROUP,
 
         GRANT_ACL,
-        REVOKE_ACL
+        REVOKE_ACL,
+
+        ADD_TAGS,
+        DELETE_TAGS
     }
     public enum Result {
         SUCCESS,FAILURE

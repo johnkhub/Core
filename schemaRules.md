@@ -6,8 +6,7 @@ Use of data types
 
 Naming rules
 ============
-Take not of the identifier length limit of *63* imposed by Postgres. Try and keep table and field names short in case they need to be 
-combined to form names in keys and indexes.
+Take note of the identifier length limit of *63* imposed by Postgres. Try and keep table and field names short in case they need to be combined to form names in keys and indexes.
 
 Comments
 --------
@@ -50,6 +49,6 @@ where the suffix is one of the following:
 *check* for a Check constraint
 *seq* for all sequences
 
-**Note**: `CREATE TABLE / UNIQUE` will create implicit index `example_a_b_key` for table `example`
+**Note**: `CREATE TABLE / UNIQUE` will create an implicit index `example_a_b_key` for table `example`
 
 (See [Stackoverflow](https://stackoverflow.com/questions/4107915/postgresql-default-constraint-names/4108266#4108266))

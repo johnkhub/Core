@@ -16,17 +16,18 @@ Pre-conditions
 
 Rules
 -----
-1. Try not to load data in ways other than through the REST endpoints you need in any case
-With containerisation loading files are tricky and you need the REST endpoints anyway so you might as well use them for testing as well.
+1. Load data either programmatically or through the REST endpoints. You need these endpoints in any case within a containerised environment as accessing 
+the filesystem is tricky. loading files are tricky 
 
-2. Note the use of special controller and repository calls that are **guarded by the Spring profile type**. These are typically to delete 
-data and therefor additional safeguards are required. 
+2. Note the use of special controllers and repository calls that are **guarded by the Spring profile type**. These are typically to **delete** 
+data and therefore additional safeguards are required. 
 
+3. Use programmatic config instead of a bunch of files as much as possible. It makes test more readable as the config is close to the tests.
 
 Conventions
 ------------
 
-* We have a class per API method.
+* We have a class per API method - this keeps the classes small, the tests easy to read and makes it easier to spot **missing** tests.
 * We have a method for every possible return code.
 * Consider a test case for each field as well to test validation.
 

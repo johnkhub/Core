@@ -10,7 +10,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import za.co.imqs.configuration.client.ConfigClient;
-import za.co.imqs.libimqs.dbutils.DatabaseUtil;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
@@ -49,18 +48,18 @@ public class PersistenceConfiguration {
     @Bean
     @Qualifier("core_ds")
     public DataSource getDataSource() {
-        final DataSource dataSource = HikariCPClientConfigDatasourceHelper.getDataSource(configClient, "jdbc");
-
-        for (String schema : SCHEMAS) {
-            DatabaseUtil.updateDb(dataSource, schema, true);
-        }
-
-        return dataSource;
+        return HikariCPClientConfigDatasourceHelper.getDataSource(configClient, "jdbc");
     }
 
     @Bean
     @Qualifier("core_tx_mgr")
     public PlatformTransactionManager getCoreTransactionManager() {
         return new DataSourceTransactionManager(getDataSource());
+    }
+
+    @Bean
+    @Qualifier("schemas")
+    public String[] getSchemas() {
+        return SCHEMAS;
     }
 }

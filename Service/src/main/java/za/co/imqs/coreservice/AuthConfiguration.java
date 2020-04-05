@@ -9,18 +9,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
+import za.co.imqs.libimqs.auth.AuthResponse;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
+import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
+import za.co.imqs.spring.service.auth.authorization.UserContext;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Collections;
+import java.util.UUID;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
@@ -56,11 +63,17 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     }
 
     @Bean
-    public AuthInterceptor handleAuthInterceptor(){
-        return new DefaultHandleAuthInterceptor(
-                authentication(),
-                authorization(),
-                (sessionCookie, userId, tenantId, roles) -> new UserContextImpl(sessionCookie, tenantId, userId, roles)){};
+    public AuthInterceptor handleAuthInterceptor() {
+        if (ServiceConfiguration.Features.AUTHORISATION_GLOBAL.isActive()) {
+            return new DefaultHandleAuthInterceptor(
+                    authentication(),
+                    authorization(),
+                    (sessionCookie, userId, tenantId, roles) -> new UserContextImpl(sessionCookie, tenantId, userId, roles)) {
+            };
+
+        } else {
+            return new MockAuthInterceptor(); // TODO instead just use the code we have to create users and create aUUID user
+        }
     }
 
     @Bean
@@ -115,5 +128,14 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         }
 
         return toOverride;
+    }
+
+    private class MockAuthInterceptor extends HandlerInterceptorAdapter implements AuthInterceptor {
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+            final UserContext uCtx = new UserContextImpl("cookie", "tenant", UUID.randomUUID().toString(), Collections.emptyList());
+            ThreadLocalUser.set(uCtx);
+            return true;
+        }
     }
 }

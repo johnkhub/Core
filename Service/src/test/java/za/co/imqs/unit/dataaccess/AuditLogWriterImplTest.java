@@ -45,7 +45,8 @@ public class AuditLogWriterImplTest {
     public void before() {
         jdbc.update("DELETE FROM audit.auditlink");
         jdbc.update("DELETE FROM audit.audit");
-
+        jdbc.update("DELETE FROM audit.audit_type");
+        jdbc.update("INSERT INTO audit.audit_type(mnemonic) VALUES ('A1')");
     }
 
 
@@ -68,6 +69,7 @@ public class AuditLogWriterImplTest {
 
     @Test
     public void testWriteExcludeOptional() {
+
         final AuditLogWriter audit = new AuditLogWriterImpl(jdbc.getDataSource());
         final AuditLogWriter.AuditLogRow row = new AuditLogWriter.AuditLogRow();
 
@@ -127,7 +129,7 @@ public class AuditLogWriterImplTest {
 
     private AuditLogWriter.AuditLogRow getRow(UUID uuid) {
         return jdbc.queryForObject(
-                "SELECT audit.*, asset_id FROM audit.audit LEFT JOIN audit.auditlink ON audit.audit_id = auditlink.audit_id WHERE audit.audit_id = ?",
+                "SELECT audit.*, entity_id FROM audit.audit LEFT JOIN audit.auditlink ON audit.audit_id = auditlink.audit_id WHERE audit.audit_id = ?",
                 new EntryMapper(), uuid
         );
     }
@@ -139,7 +141,7 @@ public class AuditLogWriterImplTest {
             final AuditLogWriter.AuditLogRow a = new AuditLogWriter.AuditLogRow();
             a.setInsert_time(rs.getTimestamp("insert_time"));
             a.setEvent_time(rs.getTimestamp("event_time"));
-            a.setCorrelation(rs.getObject("asset_id", UUID.class));
+            a.setCorrelation(rs.getObject("entity_id", UUID.class));
             a.setAudit_id(rs.getObject("audit_id", UUID.class));
             a.setPrincipal_id(rs.getObject("principal_id", UUID.class));
             a.setAction(rs.getString("action"));

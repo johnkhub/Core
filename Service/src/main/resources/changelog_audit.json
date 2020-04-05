@@ -285,6 +285,7 @@
       
     }
   },
+
   {
     "changeSet": {
       "id": "f42927a2-b883-4702-b781-1032fff075a4",
@@ -303,6 +304,7 @@
 
     }
   },
+
   {
     "changeSet": {
       "id": "ae2cd1ab-78b8-4fda-8577-58cf76ce705d",
@@ -310,7 +312,7 @@
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
       "changes": [
-       {
+        {
           "dropForeignKeyConstraint": {
               "baseColumnNames": "asset_id",
               "baseTableName": "auditlink",
@@ -391,6 +393,24 @@
           }
         }
       ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "136e1f96-4e14-4a0e-be0f-864ed6c31f72",
+      "author": "frankvr",
+      "comment" : "Audit types",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "common/audit_master_data.sql",
+            "relativeToChangelogFile": false
+          }
+        }]
+
     }
   }
 ]}

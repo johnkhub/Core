@@ -23,11 +23,30 @@ LANGUAGE PLPGSQL
 SECURITY DEFINER
 ;
 
-COMMENT ON FUNCTION public.fn_add_tags IS 'Adds the specified tags to the aset with the specified UUID';
+COMMENT ON FUNCTION public.fn_add_tags IS 'Adds the specified tags to the asset with the specified UUID';
 
 CREATE OR REPLACE FUNCTION public.fn_has_tag(a uuid, t text) RETURNS boolean AS $$
 BEGIN
     RETURN coalesce((SELECT tags FROM asset_tags WHERE asset_id = a) @> ARRAY[t], false);
+END; $$
+LANGUAGE PLPGSQL
+SECURITY DEFINER
+;
+
+CREATE OR REPLACE FUNCTION public.fn_remove_tags(a uuid, t text[]) RETURNS void AS $$
+DECLARE
+    invalid text[];
+BEGIN
+    -- identify the values in t that are not in the table of defined tags
+    invalid := 	ARRAY(SELECT u FROM unnest(ARRAY[t]) u LEFT JOIN tags ON u = tags.k WHERE tags.k IS NULL);
+    IF (array_length(invalid,1) > 0) THEN
+       RAISE EXCEPTION 'Tag(s) % are not defined', invalid;
+    END IF;
+
+    FOR i IN 1..array_upper(t,1)
+    LOOP
+        UPDATE asset_tags SET tags = array_remove(tags, t[i]) WHERE asset_id = a;
+    END LOOP;
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER

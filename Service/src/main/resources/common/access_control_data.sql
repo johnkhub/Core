@@ -1,3 +1,4 @@
+-- Standard permission flags
 INSERT INTO access_control.access_type (mask, name) VALUES (0, 'NONE');
 INSERT INTO access_control.access_type (mask, name) VALUES (1, 'CREATE');
 INSERT INTO access_control.access_type (mask, name) VALUES (2, 'READ');

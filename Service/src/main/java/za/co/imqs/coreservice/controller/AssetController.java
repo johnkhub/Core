@@ -56,7 +56,6 @@ public class AssetController {
     public ResponseEntity addAsset(@PathVariable UUID uuid, @RequestBody CoreAssetDto asset) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
-        // Audit logging
         try {
             audit.tryIt(
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),

@@ -10,7 +10,7 @@ import za.co.imqs.coreservice.dataaccess.exception.*;
 public class ExceptionRemapper {
 
     public static ResponseEntity<String> mapException(Exception exception) {
-        log.error("--> " + exception);
+        log.error("--> ", exception);
         if (exception instanceof AlreadyExistsException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
         } else if (exception instanceof NotFoundException) {

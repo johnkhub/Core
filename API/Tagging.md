@@ -7,10 +7,11 @@ Tagging is available at a database level and a REST API level interface.
 Database level
 ---------------
 
-|Function                                                    |Description       |
-|------------------------------------------------------------|------------------|
-|`public.fn_add_tags(asset uuid, tags text[]) RETURNS void;` | Tags the specified asset with each of the specified tags.|
-|`public.fn_has_tag(asset uuid, tag text) RETURNS boolean`   | Returns true iff the specified asset is tagged with the specified tag. |
+|Function                                                          |Description                                                             |
+|------------------------------------------------------------------|------------------------------------------------------------------------|
+|`public.fn_add_tags(asset uuid, tags text[]) RETURNS void;`       | Tags the specified asset with each of the specified tags.              |
+|`public.fn_remove_tags(asset uuid, tags text[]) RETURNS boolean`  | Removes all of the specified tags from teh specified asset             |
+|`public.fn_has_tag(asset uuid, tag text) RETURNS boolean`         | Returns true iff the specified asset is tagged with the specified tag. |
 
 These functions will ensure that only tags that exist in `public.asset_tags` can be used.
 
@@ -96,7 +97,7 @@ Returns:
 Status codes: 200, 400, 403, 408
 
 
-### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4` (NOT IMPLEMENTED)  
+### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN` (NOT IMPLEMENTED)  
 
 Tags the specified asset with a list of tags.
 
@@ -111,7 +112,7 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/{uuid}/tag/{tag}` (NOT IMPLEMENTED)  
+### `DELETE assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN` (NOT IMPLEMENTED)  
 
 Removes the specified tag from the specified asset.
 

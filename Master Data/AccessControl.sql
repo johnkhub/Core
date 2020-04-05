@@ -1,18 +1,5 @@
 SELECT '========================== 14_SetAccess.sql ===========================';
 
-DELETE FROM access_control.entity_access;
-SELECT(access_control.sp_remove_group('Readers'));
-SELECT(access_control.sp_remove_group('Creators'));
-SELECT(access_control.sp_remove_group('Writers'));
-SELECT(access_control.sp_remove_group('Super'));
-SELECT(access_control.sp_remove_group('Deletors'));
-
-
-SELECT (access_control.sp_add_group('Readers'));
-SELECT (access_control.sp_add_group('Creators'));
-SELECT (access_control.sp_add_group('Writers'));
-SELECT (access_control.sp_add_group('Super'));
-SELECT (access_control.sp_add_group('Deletors'));
 
 -- Create groups for DTPW Brances, Chief Directorates and Departments
 DO $$
