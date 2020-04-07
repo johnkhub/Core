@@ -296,7 +296,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/audit_stored_procs.sql",
+            "path": "audit/audit_stored_procs.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
@@ -406,7 +406,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/audit_master_data.sql",
+            "path": "audit/audit_master_data.sql",
             "relativeToChangelogFile": false
           }
         }]

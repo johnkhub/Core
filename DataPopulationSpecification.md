@@ -10,6 +10,7 @@ Import specification
  * Are varchar(10) unless otherwise specified
  * Valid characters are 'a-zA-Z0-9_'
  * Case sensitive
+ * Our **convention** is to use ALL CAPS
 
 This means *removing whitespace* from such strings.
 

@@ -30,6 +30,7 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
  * User: frankvr
  * Date: 2020/02/05
  */
+@SuppressWarnings("rawtypes")
 @RestController
 @Slf4j
 @RequestMapping(ASSET_ROOT_PATH)

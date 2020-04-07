@@ -18,7 +18,8 @@ Rules
 -----
 1. Load data either programmatically or through the REST endpoints. You need these endpoints in any case within a containerised environment as accessing 
 the filesystem is tricky. loading files are tricky 
-
+>Using the APIs to populate data is awkward at first since you're bootstrapping the system but it does lead to better test coverage during development 
+>as you are using the infrastructure to test the infrastructure 
 2. Note the use of special controllers and repository calls that are **guarded by the Spring profile type**. These are typically to **delete** 
 data and therefore additional safeguards are required. 
 

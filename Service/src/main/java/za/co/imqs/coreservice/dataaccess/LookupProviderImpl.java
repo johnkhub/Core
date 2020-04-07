@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.configuration.client.ConfigClient;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
@@ -124,7 +125,9 @@ public class LookupProviderImpl implements LookupProvider {
     public List<KvDef> getKvTypes() {
         try {
             return cFact.get("kv").query("SELECT * FROM kv_type", KV_TYPE_MAPPER);
-        } catch (DataIntegrityViolationException d) {
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        } catch (DataIntegrityViolationException d) { // TODO Can't remember why I did this?
             if (d.getMessage() != null && d.getMessage().contains("No results were returned by the query")) {
                 return Collections.emptyList();
             }
@@ -137,18 +140,21 @@ public class LookupProviderImpl implements LookupProvider {
         final String fqn = resolveTarget(target);
         try {
             return cFact.get("kv").queryForObject("SELECT v FROM " + fqn +" WHERE k = ?", String.class,  key);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
         }  catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
     @Override
+    @Transactional("lookup_tx_mgr")
     public void acceptKv(String target, List<Kv> kvs) {
         final String fqn = resolveTarget(target);
 
         try {
             int[] updateCounts = cFact.get("kv").batchUpdate(
-                    String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?)", fqn),
+                    String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -169,10 +175,8 @@ public class LookupProviderImpl implements LookupProvider {
                         }
                     }
             );
-
-        } catch (Exception e) {
-            log.error("Oops", e);
-            throw new RuntimeException(e);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
         }
     }
 

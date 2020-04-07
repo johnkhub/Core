@@ -10,7 +10,6 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
@@ -30,6 +28,7 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
  * User: frankvr
  * Date: 2020/02/28
  */
+@SuppressWarnings("rawtypes")
 @RestController
 @Slf4j
 @RequestMapping(LOOKUP_ROOT_PATH)

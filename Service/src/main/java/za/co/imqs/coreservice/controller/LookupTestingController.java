@@ -41,6 +41,7 @@ public class LookupTestingController {
     }
 
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/{target}"
     )

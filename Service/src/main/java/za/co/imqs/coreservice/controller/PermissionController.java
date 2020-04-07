@@ -15,7 +15,6 @@ import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
-import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
@@ -44,6 +43,7 @@ public class PermissionController {
         this.permissions = permissions;
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.GET, value= "/user",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -63,6 +63,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.GET, value= "/group",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -83,6 +84,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.DELETE, value= "/user/{uuid}"
     )
@@ -102,6 +104,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.DELETE, value= "/group/name"
     )
@@ -121,6 +124,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.POST, value= "/group",
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -141,6 +145,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.POST, value= "/user",
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -161,6 +166,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.POST, value= "/group/{groupname}/{user_id}",
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -181,6 +187,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.DELETE, value= "/group/{groupname}/{user_id}",
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -201,6 +208,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.POST, value= "/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}",
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -225,6 +233,7 @@ public class PermissionController {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.DELETE, value= "/authorisation/entity/{entity_id}",
             consumes = MediaType.APPLICATION_JSON_VALUE

@@ -1,7 +1,6 @@
 package za.co.imqs.coreservice.audit;
 
 import lombok.extern.slf4j.Slf4j;
-import za.co.imqs.coreservice.ServiceConfiguration;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUDIT_GLOBAL;
 import static za.co.imqs.coreservice.audit.AuditLogger.Result.FAILURE;

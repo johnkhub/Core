@@ -29,7 +29,7 @@ API level
 
 ## Security
 
-See [APISecurity](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
 The current implementation of this API: 
 * *Currently* only supports token based authentication, **not** inter-service authentication
 * *Currently* only enforces authentication and **not** authorisation
@@ -53,7 +53,7 @@ The current implementation of this API:
 
 
 
-### `GET assets/authorisation/users`   
+### `GET assets/access/user` (EXPERIMENTAL)
 Accepts: 
 ```
     {
@@ -89,7 +89,7 @@ Accepts: *Nothing*
 Returns: *Nothing*
 Status codes: 200, 400, 403, 408, 412
 
-### `GET assets/authorisation/groups`
+### `GET assets/access/groups`
 Accepts: *Nothing*
 Returns:
 ```
@@ -101,7 +101,7 @@ Returns:
 ```
 Status codes: 200, 400, 403, 408
 
-### `POST assets/authorisation/groups`
+### `POST assets/access/groups`
 Accepts: 
 ```
     {
@@ -113,14 +113,14 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/authorisation/groups/{group_uuid}`
+### `DELETE assets/access/groups/{group_uuid}`
 Accepts: *Nothing*
 
 Returns: *Nothing*
 
 Status codes: 200, 400, 403, 404, 408, 412
 
-###  `POST assets/authorisation/groups/{group_uuid}`
+###  `POST assets/access/groups/{group_uuid}`
 Accepts: 
 ```{
     "user_uuid",
@@ -131,14 +131,14 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/authorisation/groups/{group_uuid}/{user_uuid}`
+### `DELETE assets/access/groups/{group_uuid}/{user_uuid}`
 Accepts: *Nothing*
 
 Returns: *Nothing*
 
 Status codes: 200, 400, 403, 404, 408, 412
 
-### `POST assets/authorisation/entity/{entity_uuid}`
+### `POST assets/access/entity/{entity_uuid}`
 Accepts: 
 ```
     {
@@ -151,14 +151,14 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `POST assets/authorisation/entity/{entity_uuid}/{principal_uuid}`
+### `POST assets/access/entity/{entity_uuid}/{principal_uuid}`
 Accepts: *Nothing*
 
 Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/authorisation/entity/{entity_uuid}/{principal_uuid}`
+### `DELETE assets/access/entity/{entity_uuid}/{principal_uuid}`
 Accepts: *Nothing*
 
 Returns: *Nothing*

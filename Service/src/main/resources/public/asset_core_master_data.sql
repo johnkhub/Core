@@ -8,12 +8,3 @@ INSERT INTO assettype (code, name, uid, description) VALUES ('ROOM', 'Room', 'd6
 INSERT INTO assettype (code, name, uid, description) VALUES ('COMPONENT', 'Component', '37144c0d-615f-4096-807c-d80c51c6a762', 'This is a placeholder - we will break these down further later') ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO external_id_type (type_id, name, description) VALUES ('c6a74a62-54f5-4f93-adf3-abebab3d3467', 'V6', 'Version 6 component identifier') ON CONFLICT (type_id) DO NOTHING;
-
-INSERT INTO kv_type (code,name,"table") VALUES ('WARD', 'Ward', 'asset.ref_ward');
-INSERT INTO kv_type (code,name,"table") VALUES ('REGION', 'Region', 'asset.ref_region');
-INSERT INTO kv_type (code,name,"table") VALUES ('TOWN', 'Town', 'asset.ref_town');
-INSERT INTO kv_type (code,name,"table") VALUES ('MUNIC', 'Municiplaity', 'asset.ref_municipality');
-INSERT INTO kv_type (code,name,"table") VALUES ('DISTRICT', 'District', 'asset.ref_district');
-INSERT INTO kv_type (code,name,"table") VALUES ('SUBURB', 'Suburb', 'asset.ref_suburb');
-
-INSERT INTO kv_type (code,name,"table") VALUES ('TAGS', 'List of tags', 'public.tags');

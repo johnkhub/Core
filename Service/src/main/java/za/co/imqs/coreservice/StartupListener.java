@@ -24,7 +24,7 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
     private final ServiceHealth serviceHealth;
     private final ServiceAuth serviceAuth;
     private final SchemaManagement schema;
-    private ApplicationArguments applicationArguments;
+    private final ApplicationArguments applicationArguments;
 
     @Autowired
     public StartupListener(

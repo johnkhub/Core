@@ -9,7 +9,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/00_init.sql",
+            "path": "public/00_init.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
@@ -1790,9 +1790,18 @@
           "sqlFile": {
             "dbms": "postgresql",
             "encoding": "utf8",
-            "path": "common/master_data.sql",
+            "path": "public/asset_core_master_data.sql",
             "relativeToChangelogFile": false,
-            "endDelimiter": "//"
+            "endDelimiter": ";"
+          }
+        },
+        {
+          "sqlFile": {
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "public/kv_types_master_data.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter": ";"
           }
         }
       ]
@@ -1809,7 +1818,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/checkconstraints.sql",
+            "path": "public/checkconstraints.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
@@ -1949,7 +1958,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/asset_tags_stored_procs.sql",
+            "path": "public/asset_tags_stored_procs.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
@@ -1968,7 +1977,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/asset_core_views.sql",
+            "path": "public/asset_core_views.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }

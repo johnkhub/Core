@@ -20,6 +20,15 @@ public interface LookupProvider {
         private String description;
         private String owner;
         private String table;
+
+        public static KvDef def(String code, String name, String table, String owner) {
+            final LookupProvider.KvDef d = new LookupProvider.KvDef();
+            d.setTable(table);
+            d.setOwner(owner);
+            d.setName(name);
+            d.setCode(code);
+            return d;
+        }
     }
 
     @Data
@@ -36,6 +45,14 @@ public interface LookupProvider {
         private String activated_at;
         private String deactivated_at;
         private Boolean allow_delete;
+
+        public static Kv pair(String k, String v) {
+            final Kv kv = new Kv();
+            kv.setK(k);
+            kv.setV(v);
+
+            return kv;
+        }
     }
 
     public List<KvDef> getKvTypes();
@@ -49,8 +66,10 @@ public interface LookupProvider {
 
     public String getKv(String target, String key);
 
+    // upsert
     public void acceptKv(String target, List<Kv> kv);
 
+    // upsert
     default void acceptKv(String target, Kv ...kv) {
         acceptKv(target, Arrays.asList(kv));
     }

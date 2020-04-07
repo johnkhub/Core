@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import za.co.imqs.coreservice.dataaccess.exception.*;
 
+@SuppressWarnings("rawtypes")
 @Slf4j
 public class ExceptionRemapper {
 

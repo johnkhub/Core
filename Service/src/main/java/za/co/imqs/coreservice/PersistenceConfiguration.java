@@ -47,14 +47,26 @@ public class PersistenceConfiguration {
 
     @Bean
     @Qualifier("core_ds")
-    public DataSource getDataSource() {
+    public DataSource getCoreDataSource() {
         return HikariCPClientConfigDatasourceHelper.getDataSource(configClient, "jdbc");
     }
 
     @Bean
     @Qualifier("core_tx_mgr")
     public PlatformTransactionManager getCoreTransactionManager() {
-        return new DataSourceTransactionManager(getDataSource());
+        return new DataSourceTransactionManager(getCoreDataSource());
+    }
+
+    @Bean
+    @Qualifier("lookup_ds")
+    public DataSource getLookupDataSource() {
+        return getCoreDataSource();
+    }
+
+    @Bean
+    @Qualifier("lookup_tx_mgr")
+    public PlatformTransactionManager getLookupTransactionManager() {
+        return new DataSourceTransactionManager(getLookupDataSource());
     }
 
     @Bean

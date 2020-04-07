@@ -14,7 +14,6 @@ import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +27,7 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
  * User: frankvr
  * Date: 2020/02/05
  */
+@SuppressWarnings("rawtypes")
 @RestController
 @Slf4j
 @RequestMapping(ASSET_ROOT_PATH)
@@ -66,10 +66,10 @@ public class TaggingController {
     }
 
     @RequestMapping(
-            method = RequestMethod.GET, value = "/{uuid}/tag/{tag}",
+            method = RequestMethod.GET, value = "/{uuid}/tag/{tag1}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity hasTag(@PathVariable UUID uuid, @PathVariable String tag) {
+    public ResponseEntity hasTags(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
@@ -77,7 +77,10 @@ public class TaggingController {
             result.add(
                     (Boolean)audit.tryIt(
                         new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
-                        () -> tagging.hasTag(uuid, tag)
+                        () -> {
+                            paramMap.put(tag1, null);
+                            return tagging.hasTags(uuid, paramMap.keySet().toArray(new String[0]));
+                        }
                     )
             );
             return new ResponseEntity(result, HttpStatus.OK);
@@ -87,7 +90,7 @@ public class TaggingController {
     }
 
     @RequestMapping(
-            method = RequestMethod.PUT, value = "/{uuid}/tag/{tag1}?tag2&tag3&tag4"
+            method = RequestMethod.PUT, value = "/{uuid}/tag/{tag1}"
     )
     public ResponseEntity addTag(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
@@ -105,14 +108,14 @@ public class TaggingController {
                         return null;
                     }
             );
-            return new ResponseEntity(HttpStatus.CREATED);
+            return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
     @RequestMapping(
-            method = RequestMethod.DELETE, value = "/{uuid}/tag/{tag1}?tag2&tag3&tag4"
+            method = RequestMethod.DELETE, value = "/{uuid}/tag/{tag1}"
     )
     public ResponseEntity deleteTag(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();

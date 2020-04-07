@@ -10,7 +10,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggerImpl;
-import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriterImpl;
 
 import javax.sql.DataSource;
@@ -28,14 +27,17 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 public class AuditConfiguration {
 
-    @Autowired
-    private ObjectMapper mapper;
 
+    private final ObjectMapper mapper;
     private final DataSource ds;
 
     @Autowired
-    public AuditConfiguration(@Qualifier("core_ds") DataSource ds) {
+    public AuditConfiguration(
+            @Qualifier("core_ds") DataSource ds,
+            ObjectMapper mapper
+    ) {
         this.ds = ds;
+        this.mapper = mapper;
     }
 
     @Bean

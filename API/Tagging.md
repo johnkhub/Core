@@ -18,26 +18,37 @@ These functions will ensure that only tags that exist in `public.asset_tags` can
 Examples
 --------
 
+## Add a new tag to the list of valid tags
 ```
 INSERT INTO asset_tags (k,v) VALUES ('AT_RISK', 'Land parcel is at risk');
 ```
 
+## Add a set of tags to an asset
+
+Use  the function `fn_add_tags`.  It will check that the specified tags exist in asset_tags. 
 ```
-INVOKE public.fn_add_tags('64fe52b9-4cdc-4cf9-aaca-b57a158b5693', ARRAY('AT_RISK'));
+INVOKE public.fn_add_tags('64fe52b9-4cdc-4cf9-aaca-b57a158b5693', ARRAY['AT_RISK']);
 ```
 
+## Get the tags associated with an Asset (as text[])
 ```
 SELECT tags FROM asset_tags WHERE asset_id = '64fe52b9-4cdc-4cf9-aaca-b57a158b5693');
 ```
 
+## See if a specific tag is set (returns true or false)
 ```
 SELECT (SELECT tags FROM asset_tags WHERE asset_id = '64fe52b9-4cdc-4cf9-aaca-b57a158b5693'') = ARRAY['AT_RISK']
 ```
-*OR*
+*OR* rather
+
 ```
-SELECT public.fn_has_tag( '64fe52b9-4cdc-4cf9-aaca-b57a158b5693'', 'AT_RISK')
+SELECT public.fn_has_tags( '64fe52b9-4cdc-4cf9-aaca-b57a158b5693'', ARRAY['AT_RISK'])
 ```
-**TODO: Add an example of searching for an asset that has a specific tag.**
+
+## Search for assets with specific tags set
+```
+SELECT * FROM assets WHERE public.fn_has_tags( asset_id, ARRAY['AT_RISK'])
+```
 
 
 API level
@@ -65,7 +76,7 @@ The current implementation of this API:
 |412|Precondition failed|Indicates that the requested Operation would violate a business rule|
 
 
-### `GET assets/{uuid}/tag` (NOT IMPLEMENTED) 
+### `GET assets/{uuid}/tag` 
 Returns all of the tags linked to the specified asset.
 
 Accepts: *Nothing*
@@ -82,8 +93,11 @@ Returns:
 ```
 Status codes: 200, 400, 403, 408
 
-### `GET assets/{uuid}/tag/{tag}` (NOT IMPLEMENTED)  
-Returns true if the specified asset is tagged with the specified tag.
+### `GET assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN`  
+
+Returns true if the specified asset is tagged with the specified tags.
+
+>**Note the use of keys without parameters for the trailing tags.**
 
 Accepts: *Nothing*
 
@@ -97,14 +111,12 @@ Returns:
 Status codes: 200, 400, 403, 408
 
 
-### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN` (NOT IMPLEMENTED)  
+### `PUT assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN`   
 
 Tags the specified asset with a list of tags.
 
-| |
-|-|
-|**Note the use of keys without parameters for the trailing tags.**|
-||
+>**Note the use of keys without parameters for the trailing tags.**
+
 
 Accepts: *Nothing*
 
@@ -112,9 +124,11 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN` (NOT IMPLEMENTED)  
+### `DELETE assets/{uuid}/tag/{tag1}?tag2&tag3&tag4...&tagN`   
 
 Removes the specified tag from the specified asset.
+
+>**Note the use of keys without parameters for the trailing tags.**
 
 Accepts: *Nothing* 
 

@@ -8,16 +8,19 @@ BEGIN
        RAISE EXCEPTION 'Tag(s) % are not defined', invalid;
     END IF;
 
-    UPDATE asset_tags SET tags = tags ||   -- append the values not already present
+    INSERT INTO asset_tags (asset_id,tags) VALUES (a,t)
+    ON CONFLICT (asset_id)
+    DO
+    UPDATE SET tags = EXCLUDED.tags ||   -- append the values not already present
 		ARRAY(
 			-- This expands the arrays into rows and joins them to determine which ones are new
 			SELECT to_add FROM
 				unnest(t) to_add
 			LEFT JOIN
-				unnest(tags) existing
+				unnest(asset_tags.tags) existing
 			ON existing = to_add WHERE existing IS NULL
-		)
-	WHERE asset_id = a;
+		),
+	asset_id = EXCLUDED.asset_id;
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -25,9 +28,9 @@ SECURITY DEFINER
 
 COMMENT ON FUNCTION public.fn_add_tags IS 'Adds the specified tags to the asset with the specified UUID';
 
-CREATE OR REPLACE FUNCTION public.fn_has_tag(a uuid, t text) RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION public.fn_has_tags(a uuid, t text[]) RETURNS boolean AS $$
 BEGIN
-    RETURN coalesce((SELECT tags FROM asset_tags WHERE asset_id = a) @> ARRAY[t], false);
+    RETURN coalesce((SELECT tags FROM asset_tags WHERE asset_id = a) @> t, false); --@> means contains
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -47,6 +50,10 @@ BEGIN
     LOOP
         UPDATE asset_tags SET tags = array_remove(tags, t[i]) WHERE asset_id = a;
     END LOOP;
+
+    -- there is a fk constraint between asset and asset_tag, so we need to remove the dead entry to be able
+    -- to remove the asset
+    DELETE FROM asset_tags WHERE asset_id = a AND cardinality(tags) = 0; -- "array_length(tags,1) = 0;" doe snot work!
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER

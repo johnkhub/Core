@@ -30,6 +30,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * User: frankvr
  * Date: 2020/03/06
  */
+@SuppressWarnings("rawtypes")
 @Profile(PROFILE_TEST)
 @RestController
 @Slf4j

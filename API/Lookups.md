@@ -69,7 +69,7 @@ Status codes: 200, 400, 403, 408
 
 
 ### `PUT lookups/kv` (NOT IMPLEMENTED)
-Adds a new kv lookup table.
+Registers a new kv lookup table.
 
 Accepts: 
 ```
@@ -86,7 +86,7 @@ Status codes: 201, 400, 403, 408, 409, 412
 
 
 ### `POST /lookups/kv/{code}`
-Adds new rows to the kv tables with the specified code.
+Upserts rows to the kv table with the specified code.
 
 Accepts: 
 ```
@@ -114,7 +114,7 @@ Status codes: 201, 400, 403, 408, 409, 412
 
 
 ### `POST /lookups/kv/{code}?k="..."&v="..."&description="..."` (NOT IMPLEMENTED)
-Adds a lookup value to the kb table with the specified code.
+Upserts a lookup value to the kv table with the specified code.
 
 Accepts: *Nothing*
 

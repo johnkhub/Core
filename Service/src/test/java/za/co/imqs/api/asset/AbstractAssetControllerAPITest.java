@@ -32,7 +32,7 @@ public class AbstractAssetControllerAPITest {
         session = getAuthSession(USERNAME, PASSWORD);
     }
 
-    protected CoreAssetDto getAsset(UUID uuid) {
+    protected static CoreAssetDto getAsset(UUID uuid) {
         return given().
                 header("Cookie", session).
                 get("/assets/testing/{uuid}", uuid).
@@ -41,7 +41,7 @@ public class AbstractAssetControllerAPITest {
                 extract().as(CoreAssetDto.class);
     }
 
-    protected void assertNotFound(UUID uuid) {
+    protected static void assertNotFound(UUID uuid) {
         given().
                 header("Cookie", session).
                 get("/assets/testing/{uuid}", uuid).
@@ -49,7 +49,7 @@ public class AbstractAssetControllerAPITest {
                 statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
-    protected void assertEquals(CoreAssetDto asset, AssetEnvelopeDto envelope) throws Exception  {
+    protected static void assertEquals(CoreAssetDto asset, AssetEnvelopeDto envelope) throws Exception  {
         assertThat(asset, notNullValue());
         assertThat(asset.getAdm_path(), equalTo(envelope.getAdm_path()));
         assertThat(asset.getName(), equalTo(envelope.getName()));

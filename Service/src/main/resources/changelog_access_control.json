@@ -315,7 +315,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/access_control_stored_procs.sql",
+            "path": "access_control/access_control_stored_procs.sql",
             "endDelimiter" : "//",
             "relativeToChangelogFile": false
           }
@@ -332,7 +332,7 @@
           "sqlFile": {
             "dbms" : "postgresql",
             "encoding" : "utf8",
-            "path": "common/access_control_data.sql",
+            "path": "access_control/access_control_master_data.sql",
             "relativeToChangelogFile": false
           }
         }]

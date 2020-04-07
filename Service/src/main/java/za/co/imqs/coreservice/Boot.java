@@ -44,17 +44,7 @@ public class Boot {
         String property = System.getProperty("imqs.configuration.file");
 
         if (property == null) {
-            /*
-            String strConfig = "";
-
-            for (String con : config) {
-                if (!con.startsWith("--")) {
-                    strConfig = strConfig + " " + con;
-                }
-            }
-            */
-
-            System.setProperty("imqs.configuration.file", config[config.length-1]);
+            System.setProperty("imqs.configuration.file", config[config.length-1].substring("--config=".length()));
         }
     }
 
@@ -62,6 +52,20 @@ public class Boot {
         setConfigurationProperty(args);
         ConfigurableApplicationContext context = SpringApplication.run(Boot.class, args);
         return this;
+    }
+
+    // These implement empty 'handle' methods. They are used for validating the commandline and generating the help text only.
+    public static class ConfigFileHandler implements CliHandler {
+
+        @Override
+        public Options getOptions() {
+            return new Options().addOption(Option.builder().longOpt("config").required(true).hasArg().argName("uri").build());
+        }
+
+        @Override
+        public boolean handle(CommandLine cmd, Options options) {
+            return true;
+        }
     }
 
     public static class HttpPortHandler implements CliHandler {
@@ -81,6 +85,7 @@ public class Boot {
         }
     }
 
+    /*
     public static class JavaPropsHandler implements CliHandler {
         @Override
         public Options getOptions() {
@@ -94,4 +99,6 @@ public class Boot {
             return true;
         }
     }
+
+     */
 }

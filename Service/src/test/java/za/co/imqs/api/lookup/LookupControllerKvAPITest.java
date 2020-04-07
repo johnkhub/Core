@@ -8,7 +8,9 @@ import org.junit.Test;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static junit.framework.TestCase.assertEquals;
@@ -16,6 +18,8 @@ import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.KvDef.def;
 
 
 /**
@@ -119,21 +123,5 @@ public class LookupControllerKvAPITest {
                 header("Cookie", session).
                 get("/lookups/v/{target}/{k}", "REGION", "bbb").
                 then().statusCode(204);
-    }
-
-    private static LookupProvider.Kv pair(String key, String value) {
-        final LookupProvider.Kv kv = new LookupProvider.Kv();
-        kv.setK(key);
-        kv.setV(value);
-        return kv;
-    }
-
-    private static LookupProvider.KvDef def(String code, String name, String table, String owner) {
-        final LookupProvider.KvDef d = new LookupProvider.KvDef();
-        d.setTable(table);
-        d.setOwner(owner);
-        d.setName(name);
-        d.setCode(code);
-        return d;
     }
 }
