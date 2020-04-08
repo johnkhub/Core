@@ -10,3 +10,4 @@ Service/liquibase-extract/changelog_asset.json
 Service/liquibase-extract/changelog_dtpw.json
 Service/target/
 Service/.idea/
+Service/deploy/ref_branch_202003282055.sql
