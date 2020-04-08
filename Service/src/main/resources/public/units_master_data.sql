@@ -1,5 +1,5 @@
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('time_kg', 'Kilogram', true,'kg', 'T_MASS') ON CONFLICT(code) DO NOTHING;
-INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('lenght_m', 'Meter', true,'m', 'T_LENGTH') ON CONFLICT(code) DO NOTHING;
+INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('length_m', 'Meter', true,'m', 'T_LENGTH') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('current_a', 'Ampere', true,'A', 'T_CURRENT') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('voltage_v', 'Volt', true,'V', 'T_VOLTAGE') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('power_w', 'Watt', true,'W', 'T_POWER') ON CONFLICT(code) DO NOTHING;

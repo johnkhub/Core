@@ -6,6 +6,7 @@ SELECT '========================== 00_asset.sql ===========================';
 UPDATE asset_import SET "Code (uk)" = REGEXP_REPLACE("Code (uk)", 'F_', '', 'g') WHERE "Level" = 'Facility'; -- remove F prefix from Facility
 UPDATE asset_import SET "Code (uk)" = "AssetID" || '-' || "Code (uk)" WHERE "Level" <> 'Asset';
 
+/*
 -- This is a temporary constraint for importing DTPW - in general we are not guaranteed that we will have all levels of the tree
 ALTER TABLE asset DROP CONSTRAINT IF EXISTS check_paths;
 ALTER TABLE asset ADD CONSTRAINT check_paths CHECK (
@@ -14,14 +15,15 @@ ALTER TABLE asset ADD CONSTRAINT check_paths CHECK (
 	(asset_type_code = 'LANDPARCEL' AND nlevel(func_loc_path) = 2) OR
 	(asset_type_code = 'BUILDING' AND nlevel(func_loc_path) = 3) OR
 	(asset_type_code = 'SITE' AND nlevel(func_loc_path) = 3) OR
-	/*
-	OR
-	(asset_type_code = 'FLOOR' AND nlevel(func_loc_path) = 4) OR
-	(asset_type_code = 'ROOM' AND nlevel(func_loc_path) = 5)
-	*/
+	
+	--OR
+	--(asset_type_code = 'FLOOR' AND nlevel(func_loc_path) = 4) OR
+	--(asset_type_code = 'ROOM' AND nlevel(func_loc_path) = 5)
+	
 	(asset_type_code = 'FLOOR') OR
 	(asset_type_code = 'ROOM')
 );
+*/
 
 INSERT INTO asset (asset_id, code, name, func_loc_path, asset_type_code)
 SELECT

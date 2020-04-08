@@ -505,5 +505,43 @@
           }
         }]
     }
+  },
+  {
+    "changeSet": {
+      "id": "668ca1e7-bfb5-4b7e-afad-513cd6516538",
+      "author": "frankvr",
+      "comment" : "Apply baked in db users",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "runAlways" : true,
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "baked_in_db_users/importer_access.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        },
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "baked_in_db_users/normal_reader_access.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        },
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "baked_in_db_users/normal_writer_access.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }
+      ]
+    }
   }
 ]}

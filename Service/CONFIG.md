@@ -5,7 +5,7 @@ Build
 -----
 
 The service is intended to be deployed in Docker. As such the mvn `containerize` profile should be selected.
-It will run as part of teh `package` life-cyle phase.
+It will run as part of teh `package` life-cycle phase.
 
 The result is a single jar file.
 
@@ -19,7 +19,7 @@ Developer
 * The docker configures the service for remote debugging. All you need to do is to expose the port in your compose file.
 
 
-Deploy
+Run
 -----
 
 ### Commandline parameters
@@ -29,10 +29,15 @@ Deploy
 |-------------------------|-----------------|---------|------------|
 |in.container             |O (false)        |Java     |Is the service running inside a container or not             |
 |logback.configurationFile|M                |Java     |Typically a link to a file hosted by the configuration Server|
-|spring.profiles.active   |O (`production`) |Java     |Spring profile. For integration testing, specify `test` |
-|n/a                      |M                |Argument |Configuration file - Typically a link to a file hosted by the configuration Server|
-|server.port              |M                |Java     |HTTP port. **Must** be prefixed by `--`|
+|spring.profiles.active   |O (`production`) |Java     |Spring profile. For integration testing, specify `test`      |
+|server.port              |M                |Argument |HTTP port                                                    |
+|sync-schemas             |O                |Argument |See Schema Management section                                |
+|document-schemas         |O                |Argument |See Schema Management section                                |
+|compare-schemas          |O                |Argument |See Schema Management section. Requires extra parameters for connection to the other database (see example)                                |
+|config                   |M                |Argument |Configuration URI - Typically a link to a file hosted by the configuration Server| 
 
+>The config parameter **MUST** be the final argument     
+ 
 > Note that the profile may also be set as an environment variable `spring_profiles_active`
 > The resolution or is 
 > 1. Environment variable
@@ -42,9 +47,25 @@ Deploy
 Example commandline
 ```
 java 
-    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy" 
-    -jar asset-core-service.jar "http://config/config-service/config/asset-core-service/1/asset-core-service-config.json" 
-    --server.port=80
+    -Din.container=true
+    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -spring.profiles.active=production 
+    -jar asset-core-service.jar  
+    --server.port=8669
+    --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"
+```
+
+```
+java 
+    -Din.container=true
+    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -spring.profiles.active=production 
+    -jar asset-core-service.jar  
+
+    --compare-schemas jdbc:postgresql://localhost:5432/core12feb_2 imqs 1mq5p@55w0rd
+
+    --server.port=8669
+    --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"
 ```
 
 ### Configuration file
@@ -56,7 +77,7 @@ java
 |serveruser|For use with inter-service auth|
 |authService|Optional - allow for pointing calls to auth to another host and port|
 
-Example 
+##### Example 
 ```
 "jdbc": {
       "idleConnectionTestPeriod": "60",
@@ -84,5 +105,14 @@ Example
 
 Schema management
 -------------------
- TODO!
-This is expose via CLI 
+
+Some aspects of schema management are exposed via commandline interface.
+>Note that this is mainly for development purposes.
+
+`sync-schemas` -  This is used to take on a database that did not previously have liquibase. Use compare schemas (below) to generate changelogs, then use this command to
+set the state of the database as in sync with these change logs.
+    
+`document-schemas` - Generates javadocs-like documentation for the database.
+ 
+`compare-schemas` - Compares an external database to the one managed by the service and generates a difference report.  
+ 

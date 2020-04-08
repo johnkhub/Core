@@ -5,19 +5,17 @@ These are the API level integration tests.
 
 Pre-conditions
 --------------
-1. An auth user with a name and password of `dev`
-2. Being integration tests, they require soem of the services in the stack to be running. These would typically be started in Docker.
+1. An auth user with a name and password of `dev`. You will have this out of the box with the default docker deployment
+2. Being integration tests, they require some of the services in the stack to be running. These would typically be started in Docker.
     * Auth
     * Router
     * Configuration Service
-    * The Core Service itsel
-
-
+    * The Core Service itself
 
 Rules
 -----
 1. Load data either programmatically or through the REST endpoints. You need these endpoints in any case within a containerised environment as accessing 
-the filesystem is tricky. loading files are tricky 
+the filesystem is tricky.
 >Using the APIs to populate data is awkward at first since you're bootstrapping the system but it does lead to better test coverage during development 
 >as you are using the infrastructure to test the infrastructure 
 2. Note the use of special controllers and repository calls that are **guarded by the Spring profile type**. These are typically to **delete** 
@@ -37,4 +35,5 @@ TODO
 
 * Create a compose files for the tests
 * Implement the unimplemented tests
-* More rigorous checks on the exact error output where for instance a specific validation criterium is violated.
+* More rigorous checks on the exact error output where for instance a specific validation criterion is violated.
+* Create a docker file to start up these services and a test rule to call the docker file  

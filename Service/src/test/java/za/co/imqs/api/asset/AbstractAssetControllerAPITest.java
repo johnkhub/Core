@@ -3,9 +3,12 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.RestAssured;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.testcontainers.containers.DockerComposeContainer;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 
+import java.io.File;
 import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -22,6 +25,9 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  * Date: 2020/03/10
  */
 public class AbstractAssetControllerAPITest {
+    @ClassRule
+    public static DockerComposeContainer compose = new DockerComposeContainer(new File("")).withServices("auth", "router", "db", "core");
+
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static String session;
 

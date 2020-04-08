@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS land_parcel_import (
 );
 
 DELETE FROM land_parcel_import;
-COPY land_parcel_import 
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/LPI Land Parcels linked to AssetID_V2_20200317.csv' DELIMITER '|' CSV HEADER;
+\copy land_parcel_import FROM './DTPW Data/LPI Land Parcels linked to AssetID_V2_20200317.csv' DELIMITER '|' CSV HEADER;
 
 DELETE FROM land_parcel_import WHERE "LocationSGcode FROM FAR" IS NULL;
 DELETE FROM land_parcel_import WHERE "LocationSGcode FROM FAR" NOT LIKE 'C%';
@@ -53,15 +52,3 @@ SELECT
 	(SELECT asset_id FROM asset WHERE code = "AssetId") as asset_id,
 	(SELECT asset_id FROM asset.a_tp_landparcel WHERE lpi = "LocationSGcode FROM FAR") as landparcel_asset_id
 FROM land_parcel_import;
-
-
---select sum(split.c)
---from
---				(select "AssetId",
---						count("AssetId") as c
---					from land_parcel_import
---					group by "AssetId"
---					having count("AssetId") = 1
---					order by "AssetId") split;
-
-

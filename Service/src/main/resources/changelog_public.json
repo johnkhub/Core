@@ -14,7 +14,6 @@
             "endDelimiter" : "//"
           }
         }]
-
     }
   },
 
@@ -188,273 +187,6 @@
       
     }
   },
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-6",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "createTable": {
-            "columns": [
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "name": "AssetID",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Facility/Asset Name",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "name": "Level",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Level (info)",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "name": "Code (uk)",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Code Name",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "SubCategory",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Type",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Code(uk)_V9",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Y",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "X",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Suburb_Nam",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Suburb_Id",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "PRCL_KEY",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "TAG_X",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "TAG_Y",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "TAG_VALUE",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "ID",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "PARCEL_NO",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "PORTION",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "COUNTRY",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "PROVINCE",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "DISTRICT",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "LOCAL",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "TOWN",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "MAIN_NAME",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "SUBURB",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Area",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "AssetTypeID",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "AssetTypeName",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "SubCategoryID2",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "SubCategory2",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "MapFeatureID_UPDATED_BY_IMQS",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Department",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "LocationAddress",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Geometry",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Serial_Number",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "Barcode",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "EMIS",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "dept_code",
-                  "type": "TEXT"
-                }
-              }]
-            ,
-            "tableName": "asset_import"
-          }
-        }]
-      
-    }
-  },
-  
   {
     "changeSet": {
       "id": "1581943138671-7",
@@ -825,60 +557,6 @@
       
     }
   },
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-14",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "createTable": {
-            "columns": [
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "name": "AssetId",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "ClientAssetID",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "AssetFacilityName",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "name": "LocationSGcode FROM FAR",
-                  "type": "TEXT"
-                }
-              },
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "name": "MapFeatureID UPDATED BY IMQS",
-                  "type": "TEXT"
-                }
-              }]
-            ,
-            "tableName": "land_parcel_import"
-          }
-        }]
-      
-    }
-  },
-  
   {
     "changeSet": {
       "id": "1581943138671-15",
@@ -1262,58 +940,6 @@
       
     }
   },
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-32",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "addUniqueConstraint": {
-            "columnNames": "Barcode",
-            "constraintName": "asset_import_Barcode_key",
-            "tableName": "asset_import"
-          }
-        }]
-      
-    }
-  },
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-33",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "addUniqueConstraint": {
-            "columnNames": "MapFeatureID_UPDATED_BY_IMQS",
-            "constraintName": "asset_import_MapFeatureID_UPDATED_BY_IMQS_key",
-            "tableName": "asset_import"
-          }
-        }]
-      
-    }
-  },
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-34",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "addUniqueConstraint": {
-            "columnNames": "Serial_Number",
-            "constraintName": "asset_import_Serial_Number_key",
-            "tableName": "asset_import"
-          }
-        }]
-      
-    }
-  },
-  
   {
     "changeSet": {
       "id": "1581943138671-35",
@@ -1947,6 +1573,28 @@
       ]
     }
   },
+
+
+  {
+    "changeSet": {
+      "id": "70772cde-c594-4937-97af-5caf00950a46",
+      "author": "frankvr",
+      "comment" : "Load units",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/units_master_data.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
+  },
+
   {
     "changeSet": {
       "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-4",
@@ -1982,7 +1630,6 @@
             "endDelimiter" : "//"
           }
         }]
-
     }
   }
 ]}

@@ -1,12 +1,6 @@
 --
 -- Client independant Master Data
 -- 
-\i 'Master Data/AssetType.sql'
-\i 'Master Data/ExternalIdType.sql'
---\i 'Master Data/TransactionTypes.sql'
-\i 'Master Data/Units.sql'
---\i 'Master Data/FieldNamesMerged.sql'
-
 
 DELETE FROM asset_classification;
 
@@ -29,22 +23,18 @@ DELETE FROM asset.a_tp_landparcel;
 --
 -- Client dependant Master Data (using its OWN SCHEMA)
 --
-DELETE FROM dtpw.ref_branch;
-COPY dtpw.ref_branch (k,v)
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/Branch.csv' DELIMITER ',' CSV HEADER;
-
-DELETE FROM dtpw.ref_chief_directorate;
-COPY dtpw.ref_chief_directorate (k,v,branch_code)
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/ChiefDirectorate.csv' DELIMITER ',' CSV HEADER;
-
 DELETE FROM dtpw.ref_client_department;
-COPY dtpw.ref_client_department (k,v,chief_directorate_code)
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/ClientDepartment.csv' DELIMITER ',' CSV HEADER;
+DELETE FROM dtpw.ref_chief_directorate;
+DELETE FROM dtpw.ref_branch;
+
+\copy dtpw.ref_branch (k,v) FROM './DTPW Data/Branch.csv' DELIMITER ',' CSV HEADER;
+\copy dtpw.ref_chief_directorate (k,v,branch_code) FROM './DTPW Data/ChiefDirectorate.csv' DELIMITER ',' CSV HEADER;
+\copy dtpw.ref_client_department (k,v,chief_directorate_code) FROM './DTPW Data/ClientDepartment.csv' DELIMITER ',' CSV HEADER;
+
 
 
 DELETE FROM asset.ref_facility_type;
-COPY asset.ref_facility_type (k,v)
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/FacilityType.csv' DELIMITER ',' CSV HEADER;
+\copy asset.ref_facility_type (k,v) FROM './DTPW Data/FacilityType.csv' DELIMITER ',' CSV HEADER;
 
 
 UPDATE dtpw.ref_client_department
@@ -54,14 +44,8 @@ SET responsible_dept_classif =
 		chief_directorate_code || '.' || 
 		k);
 
-
--- This must follow the imports above! 
-\i 'Master Data/AccessControl.sql'
-
-
-
 DROP VIEW IF EXISTS import_report_view;
-DROP VIEW IF EXISTS  source_report_view;
+DROP VIEW IF EXISTS source_report_view;
 
 --
 -- Import the asset data
@@ -122,8 +106,7 @@ CREATE TABLE asset_import
 );
 
 DELETE FROM asset_import;
-COPY asset_import 
-FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/DTPW_Location Breakdown_V13B_20200212.csv' DELIMITER ',' CSV HEADER;
+\copy asset_import FROM './DTPW Data/DTPW_Location Breakdown_V13B_20200212.csv' DELIMITER ',' CSV HEADER;
 
 
 
@@ -131,12 +114,9 @@ FROM 'C:/Users/frankvr/Documents/Core/DTPW Data/DTPW_Location Breakdown_V13B_202
 \i 'Conversion/11_attributes.sql'
 \i 'Conversion/12_Land Parcels.sql'
 \i 'Conversion/13_Departments.sql'
-\i 'Conversion/14_SetAccess.sql'
-
 \i 'DTPW Data/emis.sql'
 
 DELETE FROM postal_code;
-COPY  postal_code (suburb, box_code, street_code, area)
-FROM 'C:/Users/frankvr/Documents/Core/Master Data/postalcodes.csv' DELIMITER ';' CSV HEADER;
+\copy  postal_code (suburb, box_code, street_code, area) FROM './Master Data/postalcodes.csv' DELIMITER ';' CSV HEADER;
 
 \i 'import_report.sql'
