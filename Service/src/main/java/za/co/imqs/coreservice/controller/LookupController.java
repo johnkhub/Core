@@ -37,7 +37,7 @@ public class LookupController {
     )
     public ResponseEntity get(@PathVariable String view, @RequestParam Map<String, String> paramMap) {
         try {
-            return new ResponseEntity(lookups.get(view.replace("%2E","."), paramMap), HttpStatus.OK);
+            return new ResponseEntity(lookups.get(view.replace("+","."), paramMap), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
