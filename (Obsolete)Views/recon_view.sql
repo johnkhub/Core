@@ -6,6 +6,7 @@ SELECT a.asset_id,
 	WHEN 'BUILDING' THEN 'Building'
 	WHEN 'FLOOR' THEN 'Floor'
 	WHEN 'ROOM' THEN 'Room'
+	WHEN 'LANDPARCEL' THEN 'Land Parcel'
 	END AS "Level",
 	
 	CASE a.asset_type_code 
@@ -15,6 +16,7 @@ SELECT a.asset_id,
 	WHEN 'BUILDING' THEN '2'
 	WHEN 'FLOOR' THEN '3'
 	WHEN 'ROOM' THEN '4'
+	WHEN 'LANDPARCEL' THEN '-1'
 	END AS "Level (info)",
 	
 	
@@ -27,6 +29,7 @@ SELECT a.asset_id,
 	WHEN 'BUILDING' THEN replace(ltree2text(subltree(a.func_loc_path,1,nlevel(a.func_loc_path))), '.', '-')
 	WHEN 'FLOOR' THEN  replace(ltree2text(subltree(a.func_loc_path,1,nlevel(a.func_loc_path))), '.', '-')
 	WHEN 'ROOM' THEN replace(ltree2text(subltree(a.func_loc_path,1,nlevel(a.func_loc_path))), '.', '-')
+	WHEN 'LANDPARCEL' THEN replace(ltree2text(subltree(a.func_loc_path,1,nlevel(a.func_loc_path))), '.', '-')
 	END AS "Code (UK)",
     
 	location.longitude AS "Y",
@@ -57,4 +60,7 @@ SELECT a.asset_id,
 		
 		LEFT JOIN asset.a_tp_landparcel a_tp_lp ON a.asset_id = a_tp_lp.asset_id
 
-ORDER BY func_loc_path ASC;
+WHERE a.asset_type_code  <> 'LANDPARCEL'
+
+ORDER BY "Level", func_loc_path ASC;
+--ORDER BY func_loc_path ASC;
