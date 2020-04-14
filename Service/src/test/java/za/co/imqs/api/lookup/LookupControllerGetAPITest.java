@@ -40,7 +40,7 @@ public class LookupControllerGetAPITest {
     @Test
     public void testGet() {
         List<Map<String,String>> result = new ArrayList<>(0);
-        result = verifyGet("public%2Eassettype", new MapBuilder().put("code", "ENVELOPE").put("name", "Envelope").get()).
+        result = verifyGet("public+assettype", new MapBuilder().put("code", "ENVELOPE").put("name", "Envelope").get()).
                 statusCode(200).extract().as(result.getClass());
 
         org.hamcrest.MatcherAssert.assertThat(

@@ -25,9 +25,13 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  * Date: 2020/03/10
  */
 public class AbstractAssetControllerAPITest {
+    private static final String COMPOSE_FILE = "~/Development/Docker Bootstrap/docker-compose.yml";
+    /*
     @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(new File("")).withServices("auth", "router", "db", "core");
-
+    public static DockerComposeContainer compose = new DockerComposeContainer(
+            new File(COMPOSE_FILE)).withServices("auth", "router", "db", "core");
+    */
+    
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static String session;
 

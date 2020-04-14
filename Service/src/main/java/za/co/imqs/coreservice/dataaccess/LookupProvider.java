@@ -35,6 +35,13 @@ public interface LookupProvider {
     public static class Field {
         private String operator;
         private Object value;
+
+        public static Field of(String operator, String value) {
+            final Field f = new Field();
+            f.setOperator(operator);
+            f.setValue(value);
+            return f;
+        }
     }
 
     @Data

@@ -60,13 +60,13 @@ public class LookupController {
 
     @RequestMapping(
             method = RequestMethod.GET, value = "/{view}/using_operators",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
+            //consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity getWithOperators(@PathVariable String view, @RequestBody Map<String, LookupProvider.Field> paramMap) {
+    public ResponseEntity getWithOperators(@PathVariable String view, @RequestParam Map<String, LookupProvider.Field> paramMap) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(lookups.getWithOperators(view.replace("%2E","."), paramMap), HttpStatus.OK);
+            return new ResponseEntity(lookups.getWithOperators(view.replace("+","."), paramMap), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
@@ -79,7 +79,7 @@ public class LookupController {
     )
     public ResponseEntity getKv(@PathVariable String view, @PathVariable String k) {
         try {
-            final String result = lookups.getKv(view.replace("%2E","."), k);
+            final String result = lookups.getKv(view.replace("+","."), k);
             if (result != null) {
                 return new ResponseEntity(result, HttpStatus.OK);
             } else {

@@ -9,11 +9,14 @@ import org.junit.Test;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.assertj.core.api.Fail.fail;
+import static org.hamcrest.Matchers.hasItem;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 
@@ -37,7 +40,29 @@ public class LookupControllerGetWithOperatorAPITest {
 
     @Test
     public void testGetSuccess() {
-       fail("Not implemented");
+        final Map<String, LookupProvider.Field> parameters  = new HashMap<>();
+        parameters.put("code", LookupProvider.Field.of("=","ENVELOPE"));
+        parameters.put("name", LookupProvider.Field.of("=","Envelope"));
+
+
+        List<Map<String,String>> result = new ArrayList<>(0);
+        result = verifyGetWithOperators(
+                "public+assettype",
+                parameters).
+                statusCode(200).extract().as(result.getClass());
+
+        org.hamcrest.MatcherAssert.assertThat(
+                result,
+                hasItem(
+                        new MapBuilder().
+                                put("code", "ENVELOPE").
+                                put("name","Envelope").
+                                put("description",null).
+                                put("uid", "20430440-b8d4-45db-bedb-dbbfbe6699c6")
+                                .get()
+                )
+        );
+
     }
 
     @Test
@@ -67,8 +92,9 @@ public class LookupControllerGetWithOperatorAPITest {
     private ValidatableResponse verifyGetWithOperators(String name, final Map<String, LookupProvider.Field> ops) {
          return given().
                 header("Cookie", session).
-                contentType(ContentType.JSON).body(ops).
-                get("/lookups/", name).
+                //contentType(ContentType.JSON).body(ops).
+                        params(ops).
+                get("/lookups/{view}/using_operators", name).
                 then();
 
     }
