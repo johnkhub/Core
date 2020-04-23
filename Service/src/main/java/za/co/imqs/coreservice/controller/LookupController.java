@@ -1,25 +1,27 @@
 package za.co.imqs.coreservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import za.co.imqs.common.errors.exception.BadRequestException;
 import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.spring.service.auth.ThreadLocalUser;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
-
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
+import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 
 /**
@@ -35,14 +37,17 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 public class LookupController {
     private final LookupProvider lookups;
     private final AuditLoggingProxy audit;
+    private final ObjectMapper mapper;
 
     @Autowired
     public LookupController(
             LookupProvider lookups,
-            AuditLogger audit
+            AuditLogger audit,
+            ObjectMapper mapper
     ) {
         this.lookups = lookups;
         this.audit = new AuditLoggingProxy(audit);
+        this.mapper = mapper;
     }
 
     @RequestMapping(
@@ -60,13 +65,26 @@ public class LookupController {
 
     @RequestMapping(
             method = RequestMethod.GET, value = "/{view}/using_operators",
-            //consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity getWithOperators(@PathVariable String view, @RequestParam Map<String, LookupProvider.Field> paramMap) {
+    public ResponseEntity getWithOperators(
+            @PathVariable String view,
+            @RequestParam Map<String, String> paramMap
+
+    ) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(lookups.getWithOperators(view.replace("+","."), paramMap), HttpStatus.OK);
+            final Map<String, LookupProvider.Field> fieldsMap = new HashMap<>();
+            paramMap.forEach(
+                    (k,v) -> {
+                        try {
+                            fieldsMap.put(k, mapper.readerFor(LookupProvider.Field.class).readValue(v));
+                        } catch (Exception e) {
+                            throw new BadRequestException(v + " is nor parseable as a field");
+                        }
+                    });
+
+            return new ResponseEntity(lookups.getWithOperators(view.replace("+","."), fieldsMap), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }

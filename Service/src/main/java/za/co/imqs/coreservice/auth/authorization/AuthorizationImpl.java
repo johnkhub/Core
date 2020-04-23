@@ -3,8 +3,8 @@ package za.co.imqs.coreservice.auth.authorization;
 import lombok.extern.slf4j.Slf4j;
 import za.co.imqs.common.security.Permissions;
 import za.co.imqs.libimqs.auth.AuthResponse;
+import za.co.imqs.services.UserContext;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
 
 /**
  * (c) 2016 IMQS Software

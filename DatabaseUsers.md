@@ -7,7 +7,7 @@ We apply strict access control to objects at database level.  As part of the cre
 
 In cases where write access is required a new login role will need to be created that has access to the (*only*) the required tables.
 
-`importer` has the same read access as `normal_reader` but in addition has write access to the tables in `public`, `asset` and `dtpw`.    
+`importer` has the same read access as `normal_writer` but in addition has write access to the tables in `public`, `asset` and `dtpw`.    
 
 Restricted schemas
 ------------------

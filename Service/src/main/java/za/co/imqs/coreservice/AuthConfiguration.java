@@ -12,13 +12,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
-import za.co.imqs.spring.service.auth.ThreadLocalUser;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
 import javax.servlet.http.HttpServletRequest;

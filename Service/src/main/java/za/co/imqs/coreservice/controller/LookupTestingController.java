@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.spring.service.auth.ThreadLocalUser;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;

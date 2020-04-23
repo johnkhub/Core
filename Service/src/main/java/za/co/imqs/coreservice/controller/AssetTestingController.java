@@ -14,8 +14,8 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.CoreAsset;
-import za.co.imqs.spring.service.auth.ThreadLocalUser;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 
 import java.util.UUID;
 

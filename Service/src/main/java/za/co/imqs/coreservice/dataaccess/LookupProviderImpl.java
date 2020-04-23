@@ -102,7 +102,6 @@ public class LookupProviderImpl implements LookupProvider {
 
             if (!parameters.isEmpty()) {
                 query.append(" WHERE ");
-
                 int i = 1;
                 for (Map.Entry<String, Field> p : parameters.entrySet()) {
                     final String operator = p.getValue().getOperator();

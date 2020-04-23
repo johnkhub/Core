@@ -10,8 +10,8 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.TagRepository;
-import za.co.imqs.spring.service.auth.ThreadLocalUser;
-import za.co.imqs.spring.service.auth.authorization.UserContext;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 
 import java.util.ArrayList;
 import java.util.Map;

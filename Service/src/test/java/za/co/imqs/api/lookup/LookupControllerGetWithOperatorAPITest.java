@@ -92,8 +92,7 @@ public class LookupControllerGetWithOperatorAPITest {
     private ValidatableResponse verifyGetWithOperators(String name, final Map<String, LookupProvider.Field> ops) {
          return given().
                 header("Cookie", session).
-                //contentType(ContentType.JSON).body(ops).
-                        params(ops).
+                params(ops).
                 get("/lookups/{view}/using_operators", name).
                 then();
 
