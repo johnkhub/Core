@@ -25,7 +25,8 @@ import lombok.Data;
         @JsonSubTypes.Type(value = AssetSiteDto.class, name = "SITE"),
         @JsonSubTypes.Type(value = AssetFloorDto.class, name = "FLOOR"),
         @JsonSubTypes.Type(value = AssetRoomDto.class, name = "ROOM"),
-        @JsonSubTypes.Type(value = AssetComponentDto.class, name = "COMPONENT")
+        @JsonSubTypes.Type(value = AssetComponentDto.class, name = "COMPONENT"),
+        @JsonSubTypes.Type(value = AssetLandParcelDto.class, name = "LANDPARCEL")
 })
 
 
@@ -37,7 +38,7 @@ public class CoreAssetDto {
     String adm_path;
     String func_loc_path;
     String creation_date;
-    String  deactivated_at;
+    String deactivated_at;
 
     String address;
     String geom;
@@ -46,3 +47,7 @@ public class CoreAssetDto {
     String barcode;
     String serial_number;
 }
+
+//
+//  Useful info for sub-classes: https://stackoverflow.com/questions/38572566/warning-equals-hashcode-on-data-annotation-lombok-with-inheritance
+//

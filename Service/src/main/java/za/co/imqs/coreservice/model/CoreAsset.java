@@ -39,3 +39,5 @@ public class CoreAsset {
     }
 }
 
+//TODO Add validation to subclasses
+

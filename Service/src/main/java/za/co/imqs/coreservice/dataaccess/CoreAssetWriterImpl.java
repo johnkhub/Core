@@ -48,6 +48,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     // TODO: Retry
     // TODO: Transactions
     // TODO: More elegant mapping
+    // TODO: This will be very, very sloooooow
     @Override
     public void createAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {

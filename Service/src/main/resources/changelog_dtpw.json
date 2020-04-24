@@ -543,5 +543,23 @@
         }
       ]
     }
+  },
+  {
+    "changeSet": {
+      "id": "8e9d76f9-91fa-44bb-b9c6-c86f76d7484f",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "dtpw/checkconstraints.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
   }
 ]}

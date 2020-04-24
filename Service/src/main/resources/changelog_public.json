@@ -1433,27 +1433,6 @@
       ]
     }
   },
-
-  {
-    "changeSet": {
-      "id": "0000000000-1000000",
-      "author": "frankvr",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "sqlFile": {
-            "dbms" : "postgresql",
-            "encoding" : "utf8",
-            "path": "public/checkconstraints.sql",
-            "relativeToChangelogFile": false,
-            "endDelimiter" : "//"
-          }
-        }]
-
-    }
-  },
-
-
   {
     "changeSet": {
       "id": "c55ef5c4-6b58-41e6-8134-61d1c1ae225b-1",
@@ -1588,6 +1567,26 @@
       ]
     }
   },
+
+  {
+    "changeSet": {
+      "id": "0000000000-1000000",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/checkconstraints.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
+  },
+
 
 
   {
