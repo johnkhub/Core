@@ -172,12 +172,12 @@ A list of objects, with each object containing a field and value for each column
 
 Status codes: 200, 400, 403, 408
 
-### `GET /lookups/{source}/using_operators` (EXPERIMENTAL)
+### `GET /lookups/{source}/using_operators?f1="{'field':'...', value:'...'}"&f2="{'field':'...', value:'...'}"&"..."` (EXPERIMENTAL)
 Returns all columns from the table/view (`source`)
 
 Accepts: 
 
-A map of `field:{operator,value}`. Each such entity forms a filter criterion. The criteria are implicitly **AND**-ed.
+A map of `field:{operator : "...", value : ".."}` specified a URL paramreters. Each such entity forms a filter criterion. The criteria are implicitly **AND**-ed.
 
 The operator may be one of `<`,`>`,`=`,`!=`.
 

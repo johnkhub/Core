@@ -931,14 +931,19 @@
       "author": "frankvr (generated)",
       "changes": [
         {
-          "addUniqueConstraint": {
-            "columnNames": "lpi",
-            "constraintName": "a_tp_landparcel_lpi_key",
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "lpi"
+                }
+              }],
+            "indexName": "lpi_idx",
             "schemaName": "asset",
-            "tableName": "a_tp_landparcel"
+            "tableName": "a_tp_landparcel",
+            "unique": true
           }
         }]
-      
     }
   },
   

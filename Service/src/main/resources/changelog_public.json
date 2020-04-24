@@ -1569,6 +1569,21 @@
           ,
             "tableName": "tags"
           }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "tags_k_idx",
+            "schemaName": "public",
+            "tableName": "tags",
+            "unique": true
+          }
         }
       ]
     }
