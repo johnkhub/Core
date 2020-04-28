@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice;
 
+import com.zaxxer.hikari.HikariDataSource;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -66,8 +67,11 @@ public class SchemaManagement implements CliHandler{
     ) {
         try  (Connection c = ds.getConnection()) {
             final Liquibase l = new Liquibase(schema, new ClassLoaderResourceAccessor(), new JdbcConnection(c));
-            final Database mine = l.getDatabase();
-            final Database theirs = DatabaseFactory.getInstance().openDatabase(url, username, password, null, new FileSystemResourceAccessor());
+
+            //final Database mine = l.getDatabase();
+            final HikariDataSource ds = (HikariDataSource)this.ds.unwrap(HikariDataSource.class);
+            final Database mine = DatabaseFactory.getInstance().openDatabase(appendSchema(ds.getJdbcUrl(),schema), username, password, null, new FileSystemResourceAccessor());
+            final Database theirs = DatabaseFactory.getInstance().openDatabase(appendSchema(url,schema), username, password, null, new FileSystemResourceAccessor());
             final DiffResult diff = l.diff(mine, theirs, new CompareControl());
             new  DiffToReport(diff, System.out).print();
         } catch (Exception e) {
@@ -128,5 +132,10 @@ public class SchemaManagement implements CliHandler{
             return false;
         }
         return true;
+    }
+
+    private String appendSchema(String url, String json) {
+        String s = json.split("\\.")[0];
+        return url + "?currentSchema=" + s.split("_")[1];
     }
 }

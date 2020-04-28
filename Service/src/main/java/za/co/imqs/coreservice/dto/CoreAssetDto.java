@@ -3,7 +3,13 @@ package za.co.imqs.coreservice.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.processor.PreAssignmentProcessor;
+import com.opencsv.bean.validators.MustMatchRegexExpression;
+import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
+import za.co.imqs.coreservice.dto.imports.Rules;
 
 /**
  * (c) 2020 IMQS Software
@@ -31,21 +37,41 @@ import lombok.Data;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CoreAssetDto {
-    String asset_type_code;
-    String code;
-    String name;
-    String adm_path;
-    String func_loc_path;
-    String creation_date;
-    String deactivated_at;
+public class CoreAssetDto implements Rules {
 
-    String address;
-    String geom;
+    @CsvBindByName(required = true)
+    @PreAssignmentProcessor(processor = ConvertToUppercase.class)
+    @PreAssignmentValidator(validator = MustBeInSet.class, paramString = "ASSET,BUILDING,ROOM,FLOOR,SITE,FACILITY")
+    String asset_type_code;
+
+    @CsvCustomBindByName(required = true, column="func_loc_path", converter = TerminalNode.class)
+    @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_CODE)
+    String code;
+
+    @CsvBindByName(required = true) String name;
+    @CsvBindByName(required = false) String adm_path;
+
+    @CsvBindByName(required = true)
+    @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_PATH)
+    String func_loc_path;
+
+    @CsvBindByName(required = false) String creation_date;
+    @CsvBindByName(required = false) String deactivated_at;
+
+    @CsvBindByName(required = false) String address;
+
+    @CsvBindByName(required = false) String geom;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentValidator(validator = MustBeCoordinate.class)
     String latitude;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentValidator(validator = MustBeCoordinate.class)
     String longitude;
-    String barcode;
-    String serial_number;
+
+    @CsvBindByName(required = false) String barcode;
+    @CsvBindByName(required = false) String serial_number;
 }
 
 //

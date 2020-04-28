@@ -33,13 +33,13 @@ public class ServiceConfiguration {
         AUDIT_GLOBAL(false),
 
         @Label("Enable the command line option to sync schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_SYNC(false),
+        SCHEMA_MGMT_SYNC(true),
 
         @Label("Enable the command line option allow documenting database schemas - see SchemaManagment.java")
         SCHEMA_MGMT_DOC(false),
 
         @Label("Enable the command line option allow comparing a remote database within the current schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_COMPARE(false);
+        SCHEMA_MGMT_COMPARE(true);
 
         private final boolean enabled;
 

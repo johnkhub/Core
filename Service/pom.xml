@@ -182,6 +182,12 @@
             <version>1.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.0</version>
+    </dependency>
+
         <!--
             Test Scope. There is little need to be picky in this section as the jar files will not form part
             of the deployed artifact.
