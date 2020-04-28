@@ -1,49 +1,37 @@
-DROP TABLE asset_import CASCADE;
-DROP TABLE land_parcel_import;
-DROP TABLE modtrack_meta;
-DROP TABLE modtrack_tables;
-DROP TABLE migration_version;
 
-DROP VIEW IF EXISTS import_report_view;
-DROP VIEW IF EXISTS ar_lite_view;
+DROP TABLE access_control.entity_access;
+DROP TABLE access_control.access_type;
+DROP TABLE access_control.principal;
 
-CREATE TABLE public.asset_tags (
-	asset_id uuid NOT NULL,
-	tags _text NOT NULL,
-	CONSTRAINT "PK_ASSET_TAGS" PRIMARY KEY (asset_id)
-);
-ALTER TABLE public.asset_tags ADD CONSTRAINT asset_tags_asset_id_fkey FOREIGN KEY (asset_id) REFERENCES asset(asset_id);
-
-CREATE TABLE public.tags (
-	k varchar(10) NOT NULL,
-	v varchar NULL,
-	creation_date timestamp NOT NULL DEFAULT now(),
-	activated_at timestamp NULL,
-	deactivated_at timestamp NULL,
-	allow_delete bool NULL DEFAULT false,
-	CONSTRAINT tags_k_check CHECK ((((k)::text <> ''::text) AND ((k)::text ~ '^[\w]*$'::text)))
+CREATE TABLE access_control.entity_access (
+	entity_id uuid NOT NULL,
+	principal_id uuid NOT NULL,
+	access_types int4 NOT NULL DEFAULT 0,
+	grant_types int4 NOT NULL DEFAULT 0,
+	CONSTRAINT entity_access_pkey PRIMARY KEY (entity_id, principal_id)
 );
 
-CREATE UNIQUE INDEX tags_k_idx ON public.tags USING btree (k);
+CREATE TABLE access_control.access_type (
+	"name" varchar(10) NOT NULL,
+	mask int4 NOT NULL,
+	CONSTRAINT access_type_pkey PRIMARY KEY (name)
+);
 
+CREATE TABLE access_control.principal (
+	id serial NOT NULL,
+	principal_id uuid NULL,
+	group_id int4 NULL,
+	"name" text NOT NULL,
+	description text NULL,
+	is_group bool NOT NULL,
+	reserved bool NOT NULL DEFAULT false,
+	CONSTRAINT principal_name_key UNIQUE (name),
+	CONSTRAINT principal_pkey PRIMARY KEY (id),
+	CONSTRAINT principal_principal_id_key UNIQUE (principal_id),
+	CONSTRAINT principal_group_id_fkey FOREIGN KEY (group_id) REFERENCES access_control.principal(id)
+);
 
-DROP VIEW IF EXISTS public.asset_core_view;
-CREATE OR REPLACE VIEW public.asset_core_view
-AS SELECT a.asset_id,
-    a.asset_type_code AS asset_type,
-    a.name,
-    a.func_loc_path,
-    a.deactivated_at IS NULL AS active,
-    location.latitude,
-    location.longitude,
-    location.address,
-    geoms.geom,
-    identification.barcode,
-    identification.serial_number
-   FROM asset a
-     LEFT JOIN location ON a.asset_id = location.asset_id
-     LEFT JOIN geoms ON a.asset_id = geoms.asset_id
-     LEFT JOIN asset_identification identification ON a.asset_id = identification.asset_id;
+CREATE INDEX principal_group_id_idx ON access_control.principal USING btree (group_id);
+CREATE INDEX principal_principal_id_idx ON access_control.principal USING btree (principal_id);
 
-
-
+ALTER TABLE access_control.entity_access ADD CONSTRAINT entity_access_principal_id_fkey FOREIGN KEY (principal_id) REFERENCES access_control.principal(principal_id);

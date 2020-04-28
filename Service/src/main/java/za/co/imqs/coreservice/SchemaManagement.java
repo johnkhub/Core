@@ -29,7 +29,7 @@ import static za.co.imqs.coreservice.ServiceConfiguration.Features.*;
 public class SchemaManagement implements CliHandler{
 
     private final OptionGroup grp = new OptionGroup();
-    private final DataSource ds;
+    private final HikariDataSource ds;
     private final String[] schemas;
 
     @Autowired
@@ -37,7 +37,7 @@ public class SchemaManagement implements CliHandler{
             @Qualifier("core_ds") DataSource ds,
             @Qualifier("schemas") String ...schemas
     )  {
-        this.ds = ds;
+        this.ds = (HikariDataSource)ds;
         this.schemas = schemas;
 
         if (SCHEMA_MGMT_SYNC.isActive()) grp.addOption(Option.builder("sync").longOpt("sync-schema").desc("Synchronise the schema of the database with the embedded changelog").build());
@@ -68,8 +68,6 @@ public class SchemaManagement implements CliHandler{
         try  (Connection c = ds.getConnection()) {
             final Liquibase l = new Liquibase(schema, new ClassLoaderResourceAccessor(), new JdbcConnection(c));
 
-            //final Database mine = l.getDatabase();
-            final HikariDataSource ds = (HikariDataSource)this.ds.unwrap(HikariDataSource.class);
             final Database mine = DatabaseFactory.getInstance().openDatabase(appendSchema(ds.getJdbcUrl(),schema), username, password, null, new FileSystemResourceAccessor());
             final Database theirs = DatabaseFactory.getInstance().openDatabase(appendSchema(url,schema), username, password, null, new FileSystemResourceAccessor());
             final DiffResult diff = l.diff(mine, theirs, new CompareControl());

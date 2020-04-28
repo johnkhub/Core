@@ -47,6 +47,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -115,6 +118,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -238,6 +244,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"

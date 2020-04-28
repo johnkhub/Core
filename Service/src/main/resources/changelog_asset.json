@@ -439,6 +439,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -501,6 +504,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -563,6 +569,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -626,6 +635,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -688,6 +700,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -749,6 +764,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -811,6 +829,9 @@
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
@@ -1518,7 +1539,17 @@
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
-        }]
+        },
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "asset/kv_types_master_data.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }
+      ]
 
     }
   }

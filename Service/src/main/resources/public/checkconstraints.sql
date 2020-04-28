@@ -7,3 +7,7 @@ ALTER TABLE public.unit ADD CONSTRAINT unit_name_check CHECK (name::text <> ''::
 ALTER TABLE public.unit  ADD CONSTRAINT unit_symbol_check CHECK (symbol::text <> ''::text);
 ALTER TABLE public.tags ADD CONSTRAINT tags_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 
+ALTER TABLE kv_type ADD CONSTRAINT kv_type_code_check CHECK ((((code)::text <> ''::text) AND ((code)::text ~ '^[\w]*$'::text)));
+ALTER TABLE kv_type ADD CONSTRAINT kv_type_name_check CHECK (((name)::text <> ''::text));
+ALTER TABLE kv_type ADD CONSTRAINT kv_type_table_check CHECK (table_exists(("table")::text));
+

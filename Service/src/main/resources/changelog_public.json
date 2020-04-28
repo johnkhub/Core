@@ -86,7 +86,7 @@
                   "constraints": {
                     "nullable": false
                   },
-                  "defaultValueDate": "CURRENT_TIMESTAMP",
+                  "defaultValueComputed": "now()",
                   "name": "creation_date",
                   "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
                 }
@@ -143,7 +143,18 @@
                   "name": "responsible_dept_code",
                   "type": "VARCHAR(10)"
                 }
-              }]
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueBoolean": true,
+                  "name": "is_owned",
+                  "type": "boolean"
+                }
+              }
+            ]
             ,
             "tableName": "asset_classification"
           }
@@ -470,15 +481,19 @@
                   "constraints": {
                     "nullable": false
                   },
-                  "defaultValueDate": "CURRENT_TIMESTAMP",
+                  "defaultValueComputed": "now()",
                   "name": "creation_date",
                   "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
                 }
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "name": "activated_at",
-                  "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
+                  "type": "TIMESTAMP(6) WITHOUT TIME ZONE",
+                  "defaultValueComputed": "now()"
                 }
               },
               {
@@ -514,9 +529,6 @@
             "columns": [
               {
                 "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
                   "name": "code",
                   "type": "VARCHAR(10)"
                 }
@@ -766,7 +778,26 @@
             "constraintName": "asset_classification_pkey",
             "tableName": "asset_classification"
           }
-        }]
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "asset_id"
+                }
+              },
+              {
+                "column": {
+                  "name": "is_owned"
+                }
+              }]
+          ,
+            "indexName": "asset_classif_owned",
+            "tableName": "asset_classification"
+          }
+        }
+      ]
       
     }
   },
@@ -1521,14 +1552,18 @@
                   "constraints": {
                     "nullable": false
                   },
-                  "defaultValueDate": "CURRENT_TIMESTAMP",
+                  "defaultValueComputed": "now()",
                   "name": "creation_date",
                   "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
                 }
               },
               {
                 "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
                   "name": "activated_at",
+                  "defaultValueComputed": "now()",
                   "type": "TIMESTAMP(6) WITHOUT TIME ZONE"
                 }
               },
