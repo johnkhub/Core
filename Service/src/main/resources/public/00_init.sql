@@ -27,5 +27,5 @@ CREATE SCHEMA access_control;
 CREATE SCHEMA audit;
 CREATE SCHEMA dtpw;
 CREATE SCHEMA asset;
-CREATE SCHEMA map_engine;
+CREATE SCHEMA crud;
 //

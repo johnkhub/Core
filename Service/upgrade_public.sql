@@ -1,10 +1,7 @@
-CREATE SCHEMA map_engine;
+CREATE SCHEMA crud;
 
 DROP TABLE asset_import CASCADE;
 DROP TABLE land_parcel_import;
-DROP TABLE modtrack_meta;
-DROP TABLE modtrack_tables;
-DROP TABLE migration_version;
 DROP TABLE "ORMJS_CACHE_LOCK_V1";
 DROP TABLE "ORMJS_CACHE_INDEX_V1";
 

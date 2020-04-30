@@ -1680,5 +1680,23 @@
           }
         }]
     }
+  },
+  {
+    "changeSet": {
+      "id": "4090ac4b-735c-4ea7-adb8-d2082cddc365",
+      "author": "frankvr",
+      "comment" : "Modtrack",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/mod_track.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+    }
   }
 ]}
