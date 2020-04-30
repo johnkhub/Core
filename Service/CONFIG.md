@@ -109,10 +109,10 @@ Schema management
 Some aspects of schema management are exposed via commandline interface.
 >Note that this is mainly for development purposes.
 
-`sync-schemas` -  This is used to take on a database that did not previously have liquibase. Use compare schemas (below) to generate changelogs, then use this command to
-set the state of the database as in sync with these change logs.
+`sync-schemas` -  This is used to take on a database that did not previously have liquibase. Use compare schemas (below) to generate a report on the differences between the databases.
+Then, generate scripts to update the database. I do this by hand. Liquibase should in principle also be able to do this, but I have not looked at this yet. Once the databases are the same 
+use this command to generate the SQL that will generate the required changelog data in the database to bootstrap liquibase.
     
 `document-schemas` - Generates javadocs-like documentation for the database.
  
-`compare-schemas` - Compares an external database to the one managed by the service and generates a difference report.  
- 
+`compare-schemas` - Compares an external database to the one managed by the service and generates a difference report. 

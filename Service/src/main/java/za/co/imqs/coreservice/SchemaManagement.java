@@ -40,7 +40,7 @@ public class SchemaManagement implements CliHandler{
         this.ds = (HikariDataSource)ds;
         this.schemas = schemas;
 
-        if (SCHEMA_MGMT_SYNC.isActive()) grp.addOption(Option.builder("sync").longOpt("sync-schema").desc("Synchronise the schema of the database with the embedded changelog").build());
+        if (SCHEMA_MGMT_SYNC.isActive()) grp.addOption(Option.builder("sync").longOpt("sync-schemas").desc("Synchronise the schema of the database with the embedded changelog").build());
         if (SCHEMA_MGMT_DOC.isActive()) grp.addOption(Option.builder("doc").longOpt("document-schemas").desc("Document the embedded schemas").build());
         if (SCHEMA_MGMT_COMPARE.isActive()) {
             grp.addOption(Option.builder("cmp").
