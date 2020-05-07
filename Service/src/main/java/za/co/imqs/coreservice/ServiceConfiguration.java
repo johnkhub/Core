@@ -39,7 +39,10 @@ public class ServiceConfiguration {
         SCHEMA_MGMT_DOC(false),
 
         @Label("Enable the command line option allow comparing a remote database within the current schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_COMPARE(true);
+        SCHEMA_MGMT_COMPARE(true),
+
+        @Label("Enable to stop liquibase form managing the schema - see SchemaManagment.java")
+        SCHEMA_MGMT_SUPPRESS(false);
 
         private final boolean enabled;
 

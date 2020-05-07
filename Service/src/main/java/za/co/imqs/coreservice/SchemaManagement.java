@@ -51,12 +51,15 @@ public class SchemaManagement implements CliHandler{
                     desc("Compare this database against the one for which the parameters ars supplied").
                     build());
         }
+        if (SCHEMA_MGMT_SUPPRESS.isActive()) grp.addOption(Option.builder("none").longOpt("manual-schemas").desc("Disable liquibase schema management. ").build());
     }
 
     public void upgrade() {
-      for (String schema : schemas) {
-          DatabaseUtil.updateDb(ds, schema, true);
-      }
+        if (SCHEMA_MGMT_SUPPRESS.isActive())
+            return;
+        for (String schema : schemas) {
+            DatabaseUtil.updateDb(ds, schema, true);
+        }
     }
 
     public void generateDifferenceReport(
@@ -128,7 +131,11 @@ public class SchemaManagement implements CliHandler{
                 );
             }
             return false;
+        } else if (cmd.hasOption("none")) {
+            return true;
         }
+
+        upgrade();
         return true;
     }
 

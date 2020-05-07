@@ -55,7 +55,6 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                     new Boot.HttpPortHandler(),
                     new Boot.ConfigFileHandler()
             );
-            schema.upgrade();
 
         } finally {
             if(!serviceHealth.isAvailable()) {
@@ -79,7 +78,6 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                     handler.getOptions().getOptions().forEach(o -> options.addOption(o));
                 }
             }
-
 
             final CommandLine cmd = parser.parse(options, args);
 
