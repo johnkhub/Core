@@ -15,6 +15,9 @@ import java.util.UUID;
  */
 @Data
 public class CoreAsset {
+    public static final boolean CREATE = true;
+    public static final boolean UPDATE = false;
+
     private UUID asset_id;
     private String asset_type_code;
     private String code;
@@ -34,10 +37,18 @@ public class CoreAsset {
 
     private String geometry;
 
-    public void validate() {
+    private String responsible_dept_code;
+    private Boolean is_owned;
+
+    public void validate(boolean create) {
         if (asset_id == null) throw new ValidationFailureException("asset_id is null");
     }
+
+    protected void validateCode(String code) {
+        // TODO
+    }
+
+    protected void validateFunLocPath(String code) {
+        // TODO
+    }
 }
-
-//TODO Add validation to subclasses
-

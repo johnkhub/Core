@@ -98,10 +98,14 @@ CREATE TABLE asset_import
 	"SubCategory2" text NULL, -- IGNORED
 	
     "MapFeatureID_UPDATED_BY_IMQS" text UNIQUE CHECK ("MapFeatureID_UPDATED_BY_IMQS" ~ '^([a-zA-Z0-9_]*)$'), -- LPI  (Optional)
-    "Department" text,
-	  -- (Optional)	
+    "Department" text,	  -- (Optional)	
 	"LocationAddress" text,  -- (Optional)
-	"Geometry" text -- (Optional) In wellknown text format
+	"Geometry" text, -- (Optional) In wellknown text format
+
+	"Barcode" text UNIQUE, -- (Optional)
+	"EMIS" text, -- (Optional)
+
+	"Owned/Leased" boolean NULL -- (Optional)
 );
 ```
 * `IGNORED` fields are ignore and we may consider removing them from the source csv file and the table

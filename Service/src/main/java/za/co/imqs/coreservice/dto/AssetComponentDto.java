@@ -3,6 +3,7 @@ package za.co.imqs.coreservice.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * (c) 2020 IMQS Software
@@ -13,5 +14,6 @@ import lombok.EqualsAndHashCode;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @EqualsAndHashCode(callSuper=true)
+@ToString(callSuper=true, includeFieldNames=true)
 public class AssetComponentDto extends CoreAssetDto  {
 }

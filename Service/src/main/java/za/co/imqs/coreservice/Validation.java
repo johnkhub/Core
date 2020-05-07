@@ -41,7 +41,7 @@ public class Validation {
         try {
             return new BigDecimal(num);
         } catch (NumberFormatException e) {
-            throw new ValidationFailureException(e.getMessage());
+            throw new ValidationFailureException(num + " is not a valid number!");
         }
     }
 

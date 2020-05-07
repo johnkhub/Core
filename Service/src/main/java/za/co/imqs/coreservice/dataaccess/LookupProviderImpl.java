@@ -160,11 +160,11 @@ public class LookupProviderImpl implements LookupProvider {
                             ps.setString(1, kvs.get(i).getK());
                             ps.setString(2, kvs.get(i).getV());
 
-                            final Timestamp ts = (kvs.get(i).getCreation_date() == null) ? new Timestamp(System.currentTimeMillis()) : asTimestamp(kvs.get(i).getCreation_date());
+                            final Timestamp now = new Timestamp(System.currentTimeMillis());
 
-                            ps.setTimestamp(3, ts);
-                            ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at()));
-                            ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at()));
+                            ps.setTimestamp(3, asTimestamp(kvs.get(i).getCreation_date(), now));
+                            ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at(), now));
+                            ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at(), null));
                             ps.setBoolean(6, kvs.get(i).getAllow_delete() == null ? false : kvs.get(i).getAllow_delete());
                         }
 
@@ -185,6 +185,7 @@ public class LookupProviderImpl implements LookupProvider {
         if (profiles.contains(PROFILE_PRODUCTION)) {
             throw new RuntimeException("No way!");
         }
+        // -- noinspection SqlWithoutWhere
         cFact.get("kv").update("DELETE FROM "+ resolveTarget(target));
     }
 
@@ -197,9 +198,9 @@ public class LookupProviderImpl implements LookupProvider {
         }
     }
 
-    private static Timestamp asTimestamp(String s) {
+    private static Timestamp asTimestamp(String s, Timestamp def) {
         if (s == null)
-            return null;
+            return def;
         return Timestamp.valueOf(s);
     }
 

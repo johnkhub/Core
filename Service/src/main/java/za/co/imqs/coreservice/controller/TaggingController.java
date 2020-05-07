@@ -51,7 +51,7 @@ public class TaggingController {
     )
     public ResponseEntity getTags(@PathVariable UUID uuid) {
         final UserContext user = ThreadLocalUser.get();
-        // Authorisation
+        // TODO Authorisation
         try {
             return new ResponseEntity(
                     audit.tryIt(
@@ -71,7 +71,7 @@ public class TaggingController {
     )
     public ResponseEntity hasTags(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
-        // Authorisation
+        // TODO Authorisation
         try {
             final ArrayList<Boolean> result = new ArrayList<>();
             result.add(
@@ -94,7 +94,7 @@ public class TaggingController {
     )
     public ResponseEntity addTag(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
-        // Authorisation
+        // TODO Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_TAGS,
@@ -119,7 +119,7 @@ public class TaggingController {
     )
     public ResponseEntity deleteTag(@PathVariable UUID uuid, @PathVariable String tag1, @RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
-        // Authorisation
+        // TODO Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_TAGS,

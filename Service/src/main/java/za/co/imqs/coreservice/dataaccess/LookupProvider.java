@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -46,12 +47,12 @@ public interface LookupProvider {
 
     @Data
     public static class Kv {
-        private String k;
-        private String v;
-        private String creation_date;
-        private String activated_at;
-        private String deactivated_at;
-        private Boolean allow_delete;
+        @CsvBindByName(required = true) private String k;
+        @CsvBindByName(required = true) private String v;
+        private String creation_date; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private String activated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private Boolean allow_delete;// TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
 
         public static Kv pair(String k, String v) {
             final Kv kv = new Kv();
