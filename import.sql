@@ -1,28 +1,7 @@
 --
--- Client independant Master Data
--- 
-
-DELETE FROM asset_classification;
-
-DELETE FROM asset.a_tp_envelope;
-DELETE FROM asset.a_tp_building;
-DELETE FROM asset.a_tp_component;
-DELETE FROM asset.a_tp_facility;
-DELETE FROM asset.a_tp_floor;
-DELETE FROM asset.a_tp_room;
-DELETE FROM asset.a_tp_site;
-DELETE FROM asset.ref_suburb;
-DELETE FROM asset.ref_district;
-DELETE FROM asset.ref_town;
-DELETE FROM asset.ref_municipality;
-
-
-DELETE FROM "asset"."asset_landparcel";
-DELETE FROM asset.a_tp_landparcel;
-
---
 -- Client dependant Master Data (using its OWN SCHEMA)
 --
+/*
 DELETE FROM dtpw.ref_client_department;
 DELETE FROM dtpw.ref_chief_directorate;
 DELETE FROM dtpw.ref_branch;
@@ -43,6 +22,7 @@ SET responsible_dept_classif =
 		(SELECT branch_code FROM dtpw.ref_chief_directorate WHERE dtpw.ref_chief_directorate.k = dtpw.ref_client_department.chief_directorate_code ) || '.' || 
 		chief_directorate_code || '.' || 
 		k);
+		*/
 
 DROP VIEW IF EXISTS import_report_view;
 DROP VIEW IF EXISTS source_report_view;
@@ -102,18 +82,17 @@ CREATE TABLE asset_import
 	"Geometry" text, -- (Optional)
 	"Serial_Number" text  UNIQUE, -- (Optional) 
 	"Barcode" text UNIQUE, -- (Optional)
-	"EMIS" text -- (Optional)
+	"EMIS" text, -- (Optional)
+
+	"Owned/Leased" boolean NULL -- (Optional)
 );
 
 DELETE FROM asset_import;
 \copy asset_import FROM './DTPW Data/DTPW_Location Breakdown_V13B_20200212.csv' DELIMITER ',' CSV HEADER;
 
-
-
-\i 'Conversion/00_asset.sql'  
-\i 'Conversion/11_attributes.sql'
-\i 'Conversion/12_Land Parcels.sql'
-\i 'Conversion/13_Departments.sql'
+\i 'Conversion/00_generate_lookups.sql' 
+\i 'Conversion/01_asset.sql'
+\i 'Conversion/02_Land Parcels.sql'
 \i 'DTPW Data/emis.sql'
 
 DELETE FROM postal_code;

@@ -1,4 +1,17 @@
-SELECT '========================== 11_attributes.sql ===========================';
+--
+-- Given the table `asset_import`, populates
+--
+--      asset.ref_suburb
+--      asset.ref_district
+--      asset.ref_municipality
+--      asset.ref_town
+--
+-- NOTE: This clears out and repopulates the tables  
+
+DELETE FROM asset.ref_suburb;;
+DELETE FROM asset.ref_district;
+DELETE FROM asset.ref_municipality;
+DELETE FROM asset.ref_town;
 
 UPDATE asset_import  SET "SUBURB" = "SUBURB" || '_' || "Suburb_Id" WHERE "SUBURB" = 'BERGSIG';
 
@@ -43,27 +56,3 @@ FROM
 	(SELECT REGEXP_REPLACE(LEFT(REPLACE("TOWN", ' ', ''),9)||RIGHT(REPLACE("TOWN", ' ', ''),1), '[^[:alnum:]]', '','g') AS code, "TOWN" as name FROM asset_import) codes
 	ON names.name = codes.name
 ORDER BY names.name ASC;
-	
-INSERT INTO asset.a_tp_envelope (
-	asset_id,
-	municipality_code,
-	town_code,
-	suburb_code,
-	district_code
-)
-SELECT
-	DISTINCT ON (asset_id)
-	(SELECT asset_id FROM asset WHERE code = "AssetID") AS asset_id,
- 	(SELECT k FROM asset.ref_municipality WHERE v = "LOCAL") AS municipality_code,
- 	(SELECT k FROM asset.ref_town WHERE v = "TOWN") AS town_code,
-	"Suburb_Id" AS suburb_code,
-	(SELECT k FROM asset.ref_district WHERE v = "DISTRICT") AS district_code
-FROM asset_import
-WHERE "Level" = 'Asset'
-ORDER BY asset_id ASC;
-
-INSERT INTO "asset"."a_tp_facility" (asset_id,facility_type_code)
-SELECT
-	(SELECT (asset_id) FROM asset WHERE code = "Code (uk)") AS asset_id,
-	"AssetTypeID" AS facility_type_code
-FROM asset_import WHERE "AssetTypeID" IS NOT NULL;

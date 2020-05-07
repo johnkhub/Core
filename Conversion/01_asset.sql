@@ -1,4 +1,3 @@
-SELECT '========================== 00_asset.sql ===========================';
 -- 
 -- Import Envelopes, Facilities, Buildings, Sites, Floors and Rooms into the "asset" table
 ---
@@ -31,6 +30,19 @@ SELECT
 FROM asset_import WHERE "Level" = 'Asset' 
 ON CONFLICT (asset_id) DO
 UPDATE SET name = EXCLUDED.name, func_loc_path = EXCLUDED.func_loc_path, asset_type_code = EXCLUDED.asset_type_code;
+
+
+
+
+DELETE FROM asset.a_tp_envelope;
+DELETE FROM asset.a_tp_building;
+DELETE FROM asset.a_tp_component;
+DELETE FROM asset.a_tp_facility;
+DELETE FROM asset.a_tp_floor;
+DELETE FROM asset.a_tp_room;
+DELETE FROM asset.a_tp_site;
+
+
 
 INSERT INTO asset (asset_id, code, name, func_loc_path, asset_type_code)
 SELECT
@@ -110,4 +122,46 @@ ON CONFLICT (asset_id) DO
 UPDATE SET geom = EXCLUDED.geom;
 
 
--- serial, barcode go here 
+
+
+
+
+
+
+
+
+
+
+INSERT INTO asset.a_tp_envelope (
+	asset_id,
+	municipality_code,
+	town_code,
+	suburb_code,
+	district_code
+)
+SELECT
+	DISTINCT ON (asset_id)
+	(SELECT asset_id FROM asset WHERE code = "AssetID") AS asset_id,
+ 	(SELECT k FROM asset.ref_municipality WHERE v = "LOCAL") AS municipality_code,
+ 	(SELECT k FROM asset.ref_town WHERE v = "TOWN") AS town_code,
+	"Suburb_Id" AS suburb_code,
+	(SELECT k FROM asset.ref_district WHERE v = "DISTRICT") AS district_code
+FROM asset_import
+WHERE "Level" = 'Asset'
+ORDER BY asset_id ASC;
+
+
+INSERT INTO "asset"."a_tp_facility" (asset_id,facility_type_code)
+SELECT
+	(SELECT (asset_id) FROM asset WHERE code = "Code (uk)") AS asset_id,
+	"AssetTypeID" AS facility_type_code
+FROM asset_import WHERE "AssetTypeID" IS NOT NULL;
+
+
+ALTER TABLE asset_import ADD COLUMN  dept_code text;
+UPDATE asset_import SET dept_code = (SELECT k FROM "dtpw"."ref_client_department" WHERE v = "Department");
+
+DELETE FROM asset_classification;
+INSERT INTO asset_classification(asset_id,responsible_dept_code)
+SELECT asset_id, dept_code
+FROM asset JOIN asset_import ON asset.func_loc_path <@ text2ltree("AssetID") AND dept_code IS NOT NULL;
