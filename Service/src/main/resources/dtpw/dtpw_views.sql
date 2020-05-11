@@ -1,3 +1,15 @@
+-- noinspection SyntaxErrorForFile
+
+-- noinspection SyntaxErrorForFile
+
+-- noinspection SyntaxErrorForFile
+
+-- noinspection SyntaxErrorForFile
+
+-- noinspection SyntaxErrorForFile
+
+-- noinspection SyntaxErrorForFile
+
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_view AS
 SELECT
     core.*,

@@ -77,6 +77,7 @@ public interface Rules {
     public static class MustBeCoordinate implements StringValidator {
         private static final DecimalFormat FORMAT = new DecimalFormat("00.0000000000");
 
+        @SuppressWarnings("UnusedAssignment")
         @Override
         public boolean isValid(String s) {
             try {

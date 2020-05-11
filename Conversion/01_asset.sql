@@ -42,6 +42,8 @@ DELETE FROM asset.a_tp_floor;
 DELETE FROM asset.a_tp_room;
 DELETE FROM asset.a_tp_site;
 
+DELETE FROM asset_classification;
+
 
 
 INSERT INTO asset (asset_id, code, name, func_loc_path, asset_type_code)
@@ -161,7 +163,6 @@ FROM asset_import WHERE "AssetTypeID" IS NOT NULL;
 ALTER TABLE asset_import ADD COLUMN  dept_code text;
 UPDATE asset_import SET dept_code = (SELECT k FROM "dtpw"."ref_client_department" WHERE v = "Department");
 
-DELETE FROM asset_classification;
 INSERT INTO asset_classification(asset_id,responsible_dept_code)
 SELECT asset_id, dept_code
 FROM asset JOIN asset_import ON asset.func_loc_path <@ text2ltree("AssetID") AND dept_code IS NOT NULL;

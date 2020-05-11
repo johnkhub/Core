@@ -26,6 +26,8 @@ public class AssetFactory {
         return update(uuid, dto, createAsset(dto));
     }
 
+
+    // TODO - this should be using a generic mapping implementation
     private static <T extends CoreAsset, D extends CoreAssetDto> T createAsset(D dto) {
         if (dto instanceof AssetLandparcelDto) {
             final AssetLandparcel a = new AssetLandparcel();
@@ -78,6 +80,7 @@ public class AssetFactory {
         throw new IllegalArgumentException("Unknown type " + dto.getClass().getCanonicalName());
     }
 
+
     private <T extends CoreAsset, D extends CoreAssetDto> T create(UUID uuid, D dto, T asset) {
         handleMandatoryCreateFields(dto, asset);
         asset.setAsset_id(uuid);
@@ -85,9 +88,7 @@ public class AssetFactory {
         if (dto.getAdm_path() != null) asset.setAdm_path(asPath(dto.getAdm_path()));
         if (dto.getCreation_date() != null) asset.setCreation_date(asTimestamp(dto.getCreation_date()));
 
-        asset = handleOptionalFields(dto, asset);
-
-        return asset;
+        return handleOptionalFields(dto, asset);
     }
 
     private <T extends CoreAsset, D extends CoreAssetDto> T update(UUID uuid, D dto, T asset) {
@@ -109,9 +110,7 @@ public class AssetFactory {
         if (dto.getAdm_path() != null) asset.setAdm_path(asPath(dto.getAdm_path()));
         if (dto.getCreation_date() != null) asset.setCreation_date(asTimestamp(dto.getCreation_date()));
 
-        asset = handleOptionalFields(dto, asset);
-
-        return asset;
+        return handleOptionalFields(dto, asset);
     }
 
     private <T extends CoreAsset, D extends CoreAssetDto> T  handleMandatoryCreateFields(D dto, T asset) {

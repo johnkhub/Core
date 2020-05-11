@@ -8,7 +8,7 @@
 --
 -- NOTE: This clears out and repopulates the tables  
 
-DELETE FROM asset.ref_suburb;;
+DELETE FROM asset.ref_suburb;
 DELETE FROM asset.ref_district;
 DELETE FROM asset.ref_municipality;
 DELETE FROM asset.ref_town;

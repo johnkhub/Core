@@ -9,7 +9,7 @@
       "acquireIncrement": "5",
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
-      "jdbcUrlXXXX": "jdbc:postgresql://pcs-dtpw-qa:5432/core_liquibase",
+      "jdbcUrlXXXX": "jdbc:postgresql://localhost:5432/dtpw_uat_liquibase",
       "jdbcUrl": "jdbc:postgresql://localhost/test_core",
       "username": "imqs",
       "password": "1mq5p@55w0rd"

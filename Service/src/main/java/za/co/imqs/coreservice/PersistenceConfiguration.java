@@ -41,6 +41,7 @@ public class PersistenceConfiguration {
 
     private final ConfigClient configClient;
 
+    @SuppressWarnings("InstantiationOfUtilityClass")
     private final ORM orm = new ORM();
 
     @Autowired

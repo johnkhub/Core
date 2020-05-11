@@ -58,7 +58,8 @@ public class AssetController {
             @PathVariable UUID uuid,
             @RequestBody CoreAssetDto asset,
             @RequestParam(required = false, defaultValue = "false", name="isImport") boolean isImport,
-            @RequestParam(required = false, defaultValue ="UPSERT", name="importMode") String importMode
+            @RequestParam(required = false, defaultValue ="UPSERT", name="importMode") String importMode,
+            @RequestParam(required = false, defaultValue ="false", name="testRun") boolean testRun
     ) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
@@ -67,7 +68,11 @@ public class AssetController {
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         if (isImport) {
-                            assetWriter.importAssets(Collections.singletonList(aFact.create(uuid, asset)), CoreAssetWriter.AssetImportMode.valueOf(importMode));
+                            assetWriter.importAssets(
+                                    Collections.singletonList(aFact.create(uuid, asset)),
+                                    CoreAssetWriter.AssetImportMode.valueOf(importMode),
+                                    testRun
+                            );
                         } else {
                             assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
                         }

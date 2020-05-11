@@ -23,9 +23,9 @@ public interface CoreAssetWriter {
     public void updateAssets(List<CoreAsset> assets);
     public void deleteAssets(List<UUID> uuids);
 
-    public void importAssets(List<CoreAsset> assets, AssetImportMode mode);
-    default void importAsset(List<CoreAsset> assets) {
-        importAssets(assets, AssetImportMode.UPSERT);
+    public void importAssets(List<CoreAsset> assets, AssetImportMode mode, boolean testRun);
+    default void importAsset(List<CoreAsset> assets, boolean testRun) {
+        importAssets(assets, AssetImportMode.UPSERT, testRun);
     }
 
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId);

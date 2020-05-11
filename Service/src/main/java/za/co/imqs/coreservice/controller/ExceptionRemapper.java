@@ -24,6 +24,8 @@ public class ExceptionRemapper {
             return new ResponseEntity(exception.getMessage(), HttpStatus.PRECONDITION_FAILED);
         } else if (exception instanceof ResubmitException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.REQUEST_TIMEOUT); // So the client can resubmit
+        } else if (exception instanceof ExplicitRollbackException) {
+            return new ResponseEntity(HttpStatus.CREATED);
         } else {
             final String stacktrace = ExceptionUtils.getStackTrace(exception);
             return new ResponseEntity(exception.getMessage() + "\n" + stacktrace, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -74,6 +74,8 @@ public interface LookupProvider {
 
     public String getKv(String target, String key);
 
+    public List<Kv> getEntireKvTable(String target);
+
     // upsert
     public void acceptKv(String target, List<Kv> kv);
 

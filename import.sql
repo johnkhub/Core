@@ -90,6 +90,7 @@ CREATE TABLE asset_import
 DELETE FROM asset_import;
 \copy asset_import FROM './DTPW Data/DTPW_Location Breakdown_V13B_20200212.csv' DELIMITER ',' CSV HEADER;
 
+
 \i 'Conversion/00_generate_lookups.sql' 
 \i 'Conversion/01_asset.sql'
 \i 'Conversion/02_Land Parcels.sql'

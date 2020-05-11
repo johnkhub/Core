@@ -147,6 +147,29 @@ public class LookupProviderImpl implements LookupProvider {
     }
 
     @Override
+    public List<Kv> getEntireKvTable(String target) {
+        final String fqn = resolveTarget(target);
+        try {
+            return cFact.get("kv").query("SELECT * FROM " + fqn,
+                    (rs, i) -> {
+                        final Kv kv = new Kv();
+                        kv.setActivated_at(rs.getTimestamp("activated_at").toString());
+                        kv.setCreation_date(rs.getTimestamp("creation_date").toString());
+                        kv.setK(rs.getString("k"));
+                        kv.setV(rs.getString("v"));
+                        kv.setAllow_delete(rs.getBoolean("allow_delete"));
+                        if (rs.getTimestamp("deactivated_at") != null)
+                            kv.setDeactivated_at(rs.getTimestamp("deactivated_at").toString());
+                        return kv;
+                    });
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }  catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     @Transactional("lookup_tx_mgr")
     public void acceptKv(String target, List<Kv> kvs) {
         final String fqn = resolveTarget(target);

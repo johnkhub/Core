@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
+import za.co.imqs.coreservice.dataaccess.exception.ExplicitRollbackException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.AssetLandparcel;
@@ -102,7 +103,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {
@@ -154,9 +155,10 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
-    @Transactional("core_tx_mgr")
+
     @Override
-    public void importAssets(List<CoreAsset> assets, AssetImportMode mode) {
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void importAssets(List<CoreAsset> assets, AssetImportMode mode, boolean testRun) {
         switch(mode) {
             case INSERT:
                 createAssets(assets);
@@ -175,17 +177,19 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 createAssets(assets);
                 break;
         }
+
+        if (testRun) throw new ExplicitRollbackException("Rolling back import batch");
     }
 
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteAssets(List<UUID> uuid) {
         throw new UnsupportedOperationException("Deletion of asset not implemented");
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void obliterateAssets(List<UUID> uuids) {
         final List<String> profiles = Arrays.asList(env.getActiveProfiles());
         if (profiles.contains(PROFILE_PRODUCTION)) {
@@ -208,7 +212,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, externalIdType, externalId);
@@ -218,7 +222,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
@@ -283,6 +287,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
+    // TODO: this could make use of update T set F = coalesce(F, new value), which will simplify the code significantly
+    // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateUpdate(String target, MapSqlParameterSource map) {
         final StringBuffer update = new StringBuffer("UPDATE ").append(target).append(" SET ");
         for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
@@ -295,6 +301,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         return update;
     }
 
+    // TODO: this could make use of the DEFAULT feature, to insert the defaukt value into the non-specified columns which will simplify the code significantly
+    // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateInsert(String target, MapSqlParameterSource map) {
         final StringBuffer insert = new StringBuffer("INSERT INTO ").append(target).append(" (");
         for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
@@ -335,6 +343,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private boolean getExisting(CoreAsset candidate) {
         try {
+            //noinspection ConstantConditions
             candidate.setAsset_id(UUID.fromString(jdbc.getJdbcTemplate().queryForObject("SELECT asset_id FROM asset WHERE code = ?", String.class, candidate.getCode())));
             return true;
         } catch (IncorrectResultSizeDataAccessException ignore) {
@@ -388,7 +397,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         String rootNode = null;
         try {
             rootNode = parcel.getFunc_loc_path().split("\\.")[0];
-            final UUID parent = UUID.fromString(
+            @SuppressWarnings("ConstantConditions") final UUID parent = UUID.fromString(
                     jdbc.getJdbcOperations().queryForObject(
                             "SELECT asset_id FROM public.asset WHERE code = ?",
                             String.class,

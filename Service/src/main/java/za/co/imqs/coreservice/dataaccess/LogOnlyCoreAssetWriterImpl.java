@@ -2,10 +2,8 @@ package za.co.imqs.coreservice.dataaccess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +36,7 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    public void importAssets(List<CoreAsset> assets, AssetImportMode mode) {
+    public void importAssets(List<CoreAsset> assets, AssetImportMode mode, boolean testRun) {
         try {
             log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(assets));
 
