@@ -1,28 +1,24 @@
 package za.co.imqs.api;
 
-import com.jayway.restassured.response.Response;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
-import za.co.imqs.coreservice.dto.*;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.dto.imports.Rules;
 import za.co.imqs.coreservice.model.Importer;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.UUID;
-
-import static com.jayway.restassured.RestAssured.given;
 
 @Slf4j
 public class TestImport extends AbstractAssetControllerAPITest {
@@ -37,7 +33,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
                         "jdbc:postgresql://localhost:5432/test_core","postgres","1mq5p@55w0rd"
                 )
         );
-
+/*
         importer.importLookups("BRANCH", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch_202005041507.csv"));
         importer.importLookups("DISTRICT", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_district_202005041508.csv"));
         importer.importLookups("MUNIC", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_municipality_202005041508.csv"));
@@ -46,20 +42,11 @@ public class TestImport extends AbstractAssetControllerAPITest {
         importer.importLookups("TOWN", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_town_202005041509.csv"));
         importer.importLookups("FACIL_TYPE", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type_202005041508.csv"));
 
-        /*
-        private static LookupProvider.Kv getClass(String name) {
-            if (name.equals("CHIEF_DIR"))
-                return new Importer.ChiefDirectorateKv();
-            else  if (name.equals("CLIENT_DEP"))
-                return new Importer.ClientDeptKv();
-            else
-        }
-        */
+  */
+        importer.importLookups("CHIEF_DIR", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_chief_directorate_202005041507.csv" ), new LookupProvider.ChiefDirectorateKv());
+        //importer.importLookups("CLIENT_DEPT", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department_202005041508.csv"), new ClientDeptKv());
 
-        importer.importLookups("CHIEF_DIR", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_chief_directorate_202005041507.csv" ));
-        importer.importLookups("CLIENT_DEP", Paths.get("/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department_202005041508.csv"));
-
-
+/*
         final Map<String,String> towns = importer.getReverseLookups("TOWN");
         final Map<String,String> suburbs = importer.getReverseLookups("SUBURB");
         final Map<String,String> municipality = importer.getReverseLookups("MUNIC");
@@ -130,9 +117,9 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
         log.info("Import Land Parcels");
         importer.importLandParcel(Paths.get("/home/frank/Development/Core/DTPW Data/LPI Land Parcels linked to AssetID_V2_20200317 (copy).csv"));
+        */
+
     }
-
-
 
     private static <T extends CoreAssetDto> T remap(T dto) {
         dto.setFunc_loc_path(dto.getAssetId() + "-" + dto.getFunc_loc_path());

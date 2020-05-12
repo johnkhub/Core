@@ -9,6 +9,9 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.configuration.client.ConfigClient;
@@ -175,6 +178,13 @@ public class LookupProviderImpl implements LookupProvider {
         final String fqn = resolveTarget(target);
 
         try {
+            // https://www.baeldung.com/spring-jdbc-jdbctemplate
+            final SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(kvs.toArray());
+            int[] updateCounts = new NamedParameterJdbcTemplate(cFact.get("kv")).batchUpdate(
+                    "INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (:k,:v,:creation_date,:activated_at,:deactivated_at,:allow_delete) ON CONFLICT DO NOTHING", batch);
+
+
+
             int[] updateCounts = cFact.get("kv").batchUpdate(
                     String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
                     new BatchPreparedStatementSetter() {

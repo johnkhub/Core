@@ -35,11 +35,19 @@ public class Importer implements CliHandler {
     }
 
     public void importLookups(String lookupType, Path path) throws Exception  {
+        importLookups(lookupType, path, new LookupProvider.Kv());
+    }
+
+    public <T extends LookupProvider.Kv> void importLookups(String lookupType, Path path, T kv) throws Exception  {
         log.info("Importing Lookup {} from {}", lookupType, path.toString());
-        final CsvImporter<LookupProvider.Kv> kvImporter = new CsvImporter<>();
+        final CsvImporter<T> kvImporter = new CsvImporter<>();
         try (Reader reader = Files.newBufferedReader(path)) {
-            kvImporter.stream(reader, new LookupProvider.Kv()).forEach(
+            kvImporter.stream(reader, kv).forEach(
                     (dto) -> {
+                        if (kv.getClass() != LookupProvider.Kv.class) {
+                            dto.setType(lookupType);
+                        }
+
                         dto.setCreation_date(null); // TODO must validate this in CSV import
                         dto.setActivated_at(null); // TODO must validate this in CSV import
 
@@ -48,6 +56,10 @@ public class Importer implements CliHandler {
                                 contentType(ContentType.JSON).body(Collections.singleton(dto)).
                                 put("/lookups/kv/{target}", lookupType).
                                 then().statusCode(200);
+
+
+
+
                     }
             );
         }

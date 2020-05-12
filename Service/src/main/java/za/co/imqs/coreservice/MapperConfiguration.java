@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,8 @@ public class MapperConfiguration {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JodaModule()); // joda time
         mapper.setSerializationInclusion(NON_NULL);
+
+        //mapper.registerSubtypes(new NamedType());
         return mapper;
     }
 }
