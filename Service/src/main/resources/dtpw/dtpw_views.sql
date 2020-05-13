@@ -1,15 +1,3 @@
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_view AS
 SELECT
     core.*,
@@ -20,7 +8,8 @@ SELECT
 
     a_tp_f.facility_type_code,
 
-    responsible_dept_code,
+    classification.responsible_dept_code,
+    classification.is_owned,
     asset_link.external_id AS "EMIS"
 FROM
     public.asset_core_view core
@@ -57,6 +46,8 @@ CREATE INDEX m1_suburb_code_idx ON dtpw.dtpw_core_report_view USING btree (subur
 CREATE INDEX m1_town_code_idx ON dtpw.dtpw_core_report_view USING btree (town_code);
 CREATE INDEX "m1_EMIS_idx" ON dtpw.dtpw_core_report_view USING btree ("EMIS");
 CREATE INDEX m1_responsible_dept_code_idx ON dtpw.dtpw_core_report_view USING btree (responsible_dept_code);
+CREATE INDEX m1_is_owned_idx ON dtpw.dtpw_core_report_view USING btree (is_owned);
+
 //
 COMMENT ON MATERIALIZED VIEW dtpw.dtpw_core_report_view IS 'This an example of a materialized view that flattens out the information in the core. It should be useful as the basis for many reports.';
 //
