@@ -9,6 +9,9 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.configuration.client.ConfigClient;
@@ -147,12 +150,42 @@ public class LookupProviderImpl implements LookupProvider {
     }
 
     @Override
+    public List<Kv> getEntireKvTable(String target) {
+        final String fqn = resolveTarget(target);
+        try {
+            return cFact.get("kv").query("SELECT * FROM " + fqn,
+                    (rs, i) -> {
+                        final Kv kv = new Kv();
+                        kv.setActivated_at(rs.getTimestamp("activated_at").toString());
+                        kv.setCreation_date(rs.getTimestamp("creation_date").toString());
+                        kv.setK(rs.getString("k"));
+                        kv.setV(rs.getString("v"));
+                        kv.setAllow_delete(rs.getBoolean("allow_delete"));
+                        if (rs.getTimestamp("deactivated_at") != null)
+                            kv.setDeactivated_at(rs.getTimestamp("deactivated_at").toString());
+                        return kv;
+                    });
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }  catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     @Transactional("lookup_tx_mgr")
     public void acceptKv(String target, List<Kv> kvs) {
         final String fqn = resolveTarget(target);
 
         try {
-            int[] updateCounts = cFact.get("kv").batchUpdate(
+            // https://www.baeldung.com/spring-jdbc-jdbctemplate
+            final SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(kvs.toArray());
+            int[] updateCounts = new NamedParameterJdbcTemplate(cFact.get("kv")).batchUpdate(
+                    "INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (:k,:v,:creation_date,:activated_at,:deactivated_at,:allow_delete) ON CONFLICT DO NOTHING", batch);
+
+
+
+            int[] updateCouns = cFact.get("kv").batchUpdate(
                     String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
                     new BatchPreparedStatementSetter() {
                         @Override
@@ -160,11 +193,11 @@ public class LookupProviderImpl implements LookupProvider {
                             ps.setString(1, kvs.get(i).getK());
                             ps.setString(2, kvs.get(i).getV());
 
-                            final Timestamp ts = (kvs.get(i).getCreation_date() == null) ? new Timestamp(System.currentTimeMillis()) : asTimestamp(kvs.get(i).getCreation_date());
+                            final Timestamp now = new Timestamp(System.currentTimeMillis());
 
-                            ps.setTimestamp(3, ts);
-                            ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at()));
-                            ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at()));
+                            ps.setTimestamp(3, asTimestamp(kvs.get(i).getCreation_date(), now));
+                            ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at(), now));
+                            ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at(), null));
                             ps.setBoolean(6, kvs.get(i).getAllow_delete() == null ? false : kvs.get(i).getAllow_delete());
                         }
 
@@ -185,6 +218,7 @@ public class LookupProviderImpl implements LookupProvider {
         if (profiles.contains(PROFILE_PRODUCTION)) {
             throw new RuntimeException("No way!");
         }
+        // -- noinspection SqlWithoutWhere
         cFact.get("kv").update("DELETE FROM "+ resolveTarget(target));
     }
 
@@ -197,9 +231,9 @@ public class LookupProviderImpl implements LookupProvider {
         }
     }
 
-    private static Timestamp asTimestamp(String s) {
+    private static Timestamp asTimestamp(String s, Timestamp def) {
         if (s == null)
-            return null;
+            return def;
         return Timestamp.valueOf(s);
     }
 

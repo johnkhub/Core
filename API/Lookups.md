@@ -50,13 +50,14 @@ The current implementation of this API:
 |`allow_delete`|``|o||
 
 
-### `GET /lookups/kv`
-Returns the list of defined kv tables.
+### `GET /lookups/kv/{code}`
+Returns all of the K/V values in the specified KV table
 
 Accepts: *Nothing*
 
-Returns: `[Lookup type]`
-Status codes: 200, 400, 403, 408
+Returns: `[Lookup value]`
+Status codes: 200, 204, 400, 403, 408
+
 
 ### `GET /lookups/v/{code}/{k}`
 Returns the lookup value from the kv table with the specified code, using the specified key (`k`).

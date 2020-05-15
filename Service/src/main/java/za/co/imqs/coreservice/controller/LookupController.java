@@ -109,6 +109,23 @@ public class LookupController {
     }
 
     @RequestMapping(
+            method = RequestMethod.GET, value = "/kv/{view}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity getEntireTable(@PathVariable String view) {
+        try {
+            final List<LookupProvider.Kv> result = lookups.getEntireKvTable(view.replace("+","."));
+            if (result.isEmpty()) {
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity(result, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
             method = RequestMethod.GET, value = "/kv",
             produces = MediaType.APPLICATION_JSON_VALUE
     )

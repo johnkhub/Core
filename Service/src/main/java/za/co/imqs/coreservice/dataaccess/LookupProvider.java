@@ -1,6 +1,10 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
+import za.co.imqs.coreservice.dto.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,14 +48,28 @@ public interface LookupProvider {
         }
     }
 
+
+
     @Data
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.EXISTING_PROPERTY,
+            property = "type",
+            visible =  true
+    )
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = ClientDeptKv.class, name = "CLIENT_DEPT"),
+            @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR")
+    })
     public static class Kv {
-        private String k;
-        private String v;
-        private String creation_date;
-        private String activated_at;
-        private String deactivated_at;
-        private Boolean allow_delete;
+        @CsvBindByName(required = true) private String k;
+        @CsvBindByName(required = true) private String v;
+        private String creation_date; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private String activated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+        private Boolean allow_delete;// TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+
+        private String type;
 
         public static Kv pair(String k, String v) {
             final Kv kv = new Kv();
@@ -60,6 +78,18 @@ public interface LookupProvider {
 
             return kv;
         }
+    }
+
+    // TODO these need to movve to dynamic mapping per client schema etc. https://stackoverflow.com/questions/34079050/add-subtype-information-at-runtime-using-jackson-for-polymorphism
+    @Data
+    public static class ClientDeptKv extends Kv {
+        @CsvBindByName(required = false) private String chief_directorate_code;
+        @CsvBindByName(required = false) private String responsible_dept_classif;
+    }
+
+    @Data
+    public static class ChiefDirectorateKv extends Kv {
+        @CsvBindByName(required = false) private String branch_code;
     }
 
     public List<KvDef> getKvTypes();
@@ -72,6 +102,8 @@ public interface LookupProvider {
 
 
     public String getKv(String target, String key);
+
+    public List<Kv> getEntireKvTable(String target);
 
     // upsert
     public void acceptKv(String target, List<Kv> kv);
