@@ -1,15 +1,17 @@
 package za.co.imqs.coreservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvCustomBindByName;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
 import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
 import za.co.imqs.coreservice.dto.imports.Rules;
+
+import static za.co.imqs.coreservice.dto.imports.Rules.VALID_PATH;
 
 /**
  * (c) 2020 IMQS Software
@@ -32,46 +34,83 @@ import za.co.imqs.coreservice.dto.imports.Rules;
         @JsonSubTypes.Type(value = AssetFloorDto.class, name = "FLOOR"),
         @JsonSubTypes.Type(value = AssetRoomDto.class, name = "ROOM"),
         @JsonSubTypes.Type(value = AssetComponentDto.class, name = "COMPONENT"),
-        @JsonSubTypes.Type(value = AssetLandParcelDto.class, name = "LANDPARCEL")
+        @JsonSubTypes.Type(value = AssetLandparcelDto.class, name = "LANDPARCEL")
 })
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CoreAssetDto implements Rules {
+public class CoreAssetDto {
+
+    // Purely for csv conversion
+    @CsvBindByName(required = true)
+    @JsonIgnore
+    private String assetId;
+
 
     @CsvBindByName(required = true)
-    @PreAssignmentProcessor(processor = ConvertToUppercase.class)
-    @PreAssignmentValidator(validator = MustBeInSet.class, paramString = "ASSET,BUILDING,ROOM,FLOOR,SITE,FACILITY")
-    String asset_type_code;
+    @PreAssignmentProcessor(processor = Rules.ConvertToUppercase.class)
+    @PreAssignmentValidator(validator = Rules.MustBeInSet.class, paramString = "ENVELOPE,BUILDING,ROOM,FLOOR,SITE,FACILITY")
+    private String asset_type_code;
 
-    @CsvCustomBindByName(required = true, column="func_loc_path", converter = TerminalNode.class)
+    /*
+    @CsvCustomBindByName(required = true, column="func_loc_path", converter = Rules.TerminalNode.class)
     @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_CODE)
-    String code;
+     */
+    private String code;
 
-    @CsvBindByName(required = true) String name;
-    @CsvBindByName(required = false) String adm_path;
+    @CsvBindByName(required = true)
+    private String name;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String adm_path;
 
     @CsvBindByName(required = true)
     @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_PATH)
-    String func_loc_path;
-
-    @CsvBindByName(required = false) String creation_date;
-    @CsvBindByName(required = false) String deactivated_at;
-
-    @CsvBindByName(required = false) String address;
-
-    @CsvBindByName(required = false) String geom;
+    private String func_loc_path;
 
     @CsvBindByName(required = false)
-    @PreAssignmentValidator(validator = MustBeCoordinate.class)
-    String latitude;
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String creation_date;
 
     @CsvBindByName(required = false)
-    @PreAssignmentValidator(validator = MustBeCoordinate.class)
-    String longitude;
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String deactivated_at;
 
-    @CsvBindByName(required = false) String barcode;
-    @CsvBindByName(required = false) String serial_number;
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String address;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String geom;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentValidator(validator = Rules.MustBeCoordinate.class)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String latitude;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentValidator(validator = Rules.MustBeCoordinate.class)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String longitude;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String barcode;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String serial_number;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String responsible_dept_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private Boolean is_owned;
+
 }
 
 //

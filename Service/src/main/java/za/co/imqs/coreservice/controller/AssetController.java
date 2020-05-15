@@ -11,7 +11,7 @@ import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
-import za.co.imqs.coreservice.model.CoreAssetFactory;
+import za.co.imqs.coreservice.model.AssetFactory;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
@@ -38,7 +38,7 @@ public class AssetController {
 
     private final CoreAssetWriter assetWriter;
 
-    private final CoreAssetFactory aFact = new CoreAssetFactory();
+    private final AssetFactory aFact = new AssetFactory();
     private final AuditLoggingProxy audit;
 
     @Autowired
@@ -54,14 +54,28 @@ public class AssetController {
             method = RequestMethod.PUT, value = "/{uuid}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity addAsset(@PathVariable UUID uuid, @RequestBody CoreAssetDto asset) {
+    public ResponseEntity addAsset(
+            @PathVariable UUID uuid,
+            @RequestBody CoreAssetDto asset,
+            @RequestParam(required = false, defaultValue = "false", name="isImport") boolean isImport,
+            @RequestParam(required = false, defaultValue ="UPSERT", name="importMode") String importMode,
+            @RequestParam(required = false, defaultValue ="false", name="testRun") boolean testRun
+    ) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
+                        if (isImport) {
+                            assetWriter.importAssets(
+                                    Collections.singletonList(aFact.create(uuid, asset)),
+                                    CoreAssetWriter.AssetImportMode.valueOf(importMode),
+                                    testRun
+                            );
+                        } else {
+                            assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
+                        }
                         return null;
                     }
             );

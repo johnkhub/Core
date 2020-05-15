@@ -1,8 +1,10 @@
 package za.co.imqs.coreservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * (c) 2020 IMQS Software
@@ -13,7 +15,8 @@ import lombok.EqualsAndHashCode;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class AssetLandParcelDto extends CoreAssetDto  {
-    private String description;
-    private String lpi;
+@ToString(callSuper=true, includeFieldNames=true)
+public class AssetLandparcelDto extends CoreAssetDto  {
+    @CsvBindByName(required = false) private String description;
+    @CsvBindByName(required = false) private String lpi;
 }
