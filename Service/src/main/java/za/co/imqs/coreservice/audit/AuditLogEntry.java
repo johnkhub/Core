@@ -63,7 +63,7 @@ public class AuditLogEntry {
 
     public String toString() {
         return String.format(
-                "%s : %s attempt to %s %s %s. %s",
+                "%s : %s attempted to %s %s. %s",
                 at.toString(), userId, operation, parameters.toString(), result
         );
     }
