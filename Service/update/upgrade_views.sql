@@ -39,7 +39,8 @@ SELECT
 
     a_tp_f.facility_type_code,
 
-    responsible_dept_code,
+    classification.responsible_dept_code,
+    classification.is_owned,
     asset_link.external_id AS "EMIS"
 FROM
     public.asset_core_view core
@@ -62,10 +63,7 @@ FROM
         JOIN asset.landparcel_view p ON l.landparcel_asset_id = p.asset_id;
 COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dtpw_view ';
 
-
 CREATE MATERIALIZED VIEW dtpw.dtpw_core_report_view AS SELECT * FROM dtpw.asset_core_dtpw_view;
-
---SELECT * FROM public.index_definition_by_view_view
 
 CREATE UNIQUE INDEX m1_asset_id_idx ON dtpw.dtpw_core_report_view USING btree (asset_id);
 CREATE INDEX m1_func_loc_path_idx  ON dtpw.dtpw_core_report_view USING gist (func_loc_path);
@@ -76,6 +74,8 @@ CREATE INDEX m1_suburb_code_idx ON dtpw.dtpw_core_report_view USING btree (subur
 CREATE INDEX m1_town_code_idx ON dtpw.dtpw_core_report_view USING btree (town_code);
 CREATE INDEX "m1_EMIS_idx" ON dtpw.dtpw_core_report_view USING btree ("EMIS");
 CREATE INDEX m1_responsible_dept_code_idx ON dtpw.dtpw_core_report_view USING btree (responsible_dept_code);
+CREATE INDEX m1_is_owned_idx ON dtpw.dtpw_core_report_view USING btree (is_owned);
+
 
 COMMENT ON MATERIALIZED VIEW dtpw.dtpw_core_report_view IS 'This an example of a materialized view that flattens out the information in the core. It should be useful as the basis for many reports.';
 

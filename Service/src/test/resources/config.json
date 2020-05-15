@@ -10,7 +10,7 @@
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
       "jdbcUrlXXXX": "jdbc:postgresql://localhost:5432/dtpw_uat_liquibase",
-      "jdbcUrl": "jdbc:postgresql://localhost/test_core",
+      "jdbcUrl": "jdbc:postgresql://localhost/dtpw_uat_liquibase",
       "username": "imqs",
       "password": "1mq5p@55w0rd"
     },

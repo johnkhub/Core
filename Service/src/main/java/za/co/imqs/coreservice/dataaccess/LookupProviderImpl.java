@@ -185,7 +185,7 @@ public class LookupProviderImpl implements LookupProvider {
 
 
 
-            int[] updateCounts = cFact.get("kv").batchUpdate(
+            int[] updateCouns = cFact.get("kv").batchUpdate(
                     String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
                     new BatchPreparedStatementSetter() {
                         @Override

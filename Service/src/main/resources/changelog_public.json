@@ -138,7 +138,7 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": false
+                    "nullable": true
                   },
                   "name": "responsible_dept_code",
                   "type": "VARCHAR(10)"
@@ -1695,23 +1695,6 @@
             "path": "public/mod_track.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
-          }
-        }]
-    }
-  },
-  {
-    "changeSet": {
-      "id": "68fde912-c96b-4637-94db-6d00ba7561f2",
-      "author": "frankvr",
-      "comment" : "Made responsible dept nullable",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "dropNotNullConstraint": {
-            "columnDataType": "text",
-            "columnName": "responsible_dept_code",
-            "schemaName": "public",
-            "tableName": "classification"
           }
         }]
     }

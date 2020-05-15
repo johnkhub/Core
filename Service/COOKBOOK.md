@@ -68,3 +68,49 @@ Delete record(s)
 ```
 DELETE FROM fn_delete_asset(asset_id) WHERE code like'20358A%'
 ```
+
+
+Admin
+---------------------------
+
+```
+WITH cteTableInfo AS 
+(
+	SELECT 
+		COUNT(1) AS ct
+		,SUM(length(t::text)) AS TextLength  
+		,'public.asset'::regclass AS TableName  
+	FROM public.asset AS t  
+)
+,cteRowSize AS 
+(
+   SELECT ARRAY [pg_relation_size(TableName)
+               , pg_relation_size(TableName, 'vm')
+               , pg_relation_size(TableName, 'fsm')
+               , pg_table_size(TableName)
+               , pg_indexes_size(TableName)
+               , pg_total_relation_size(TableName)
+               , TextLength
+             ] AS val
+        , ARRAY ['Total Relation Size'
+               , 'Visibility Map'
+               , 'Free Space Map'
+               , 'Table Included Toast Size'
+               , 'Indexes Size'
+               , 'Total Toast and Indexes Size'
+               , 'Live Row Byte Size'
+             ] AS Name
+   FROM cteTableInfo
+)
+SELECT 
+	unnest(name) AS Description
+	,unnest(val) AS Bytes
+	,pg_size_pretty(unnest(val)) AS BytesPretty
+	,unnest(val) / ct AS bytes_per_row
+FROM cteTableInfo, cteRowSize
+ 
+UNION ALL SELECT '------------------------------', NULL, NULL, NULL
+UNION ALL SELECT 'TotalRows', ct, NULL, NULL FROM cteTableInfo
+UNION ALL SELECT 'LiveTuples', pg_stat_get_live_tuples(TableName), NULL, NULL FROM cteTableInfo
+UNION ALL SELECT 'DeadTuples', pg_stat_get_dead_tuples(TableName), NULL, NULL FROM cteTableInfo;
+```

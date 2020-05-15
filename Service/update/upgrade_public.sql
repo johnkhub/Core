@@ -28,7 +28,7 @@ ALTER TABLE public.asset_tags ADD CONSTRAINT asset_tags_asset_id_fkey FOREIGN KE
 CREATE UNIQUE INDEX tags_k_idx ON public.tags USING btree (k);
 
 
-DROP VIEW IF EXISTS public.asset_core_view;
+DROP VIEW IF EXISTS public.asset_core_view CASCADE;
 CREATE OR REPLACE VIEW public.asset_core_view
 AS SELECT a.asset_id,
     a.asset_type_code AS asset_type,
@@ -59,3 +59,7 @@ DROP INDEX kv_type_owner_idx;
 DROP INDEX kv_type_table_idx;
 
 ALTER TABLE public.asset_classification ADD is_owned bool NOT NULL DEFAULT true;
+ALTER TABLE public.asset_classification ALTER COLUMN is_owned SET DEFAULT true;
+
+
+CREATE INDEX asset_classif_owned ON public.asset_classification USING btree (asset_id, is_owned);
