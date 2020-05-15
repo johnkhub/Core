@@ -27,4 +27,4 @@ set -e
 tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
 dockerise "asset-core-service" "$tag"
-sudo chown -R `whoami` ./target
+sudo chown -R "$(whoami)" ./target

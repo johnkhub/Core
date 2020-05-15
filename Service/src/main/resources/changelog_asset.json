@@ -267,7 +267,7 @@
                 "column": {
                   "name": "lpi",
                   "remarks": "Land Parcel Identifier",
-                  "type": "VARCHAR(21)"
+                  "type": "VARCHAR(26)"
                 }
               },
               {
