@@ -2,14 +2,14 @@
   "Properties": {
     "jdbc": {
       "idleConnectionTestPeriod": "60",
-      "idleMaxAge": "240",
+      "idleMaxAge": "30",
       "minConnectionsPerPartition": "1",
-      "maxConnectionsPerPartition": "5",
+      "maxConnectionsPerPartition": "2",
       "partitionCount": "2",
-      "acquireIncrement": "5",
+      "acquireIncrement": "2",
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
-      "jdbcUrl": "jdbc:postgresql://localhost:5432/core12feb_2",
+      "jdbcUrl": "jdbc:postgresql://localhost/core",
       "username": "imqs",
       "password": "1mq5p@55w0rd"
     },
