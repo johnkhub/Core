@@ -13,13 +13,13 @@ SELECT
     asset_link.external_id AS "EMIS"
 FROM
     public.asset_core_view core
-        JOIN asset e ON subpath(core.func_loc_path, 0, 1) = e.func_loc_path
+        LEFT JOIN asset e ON subpath(core.func_loc_path, 0, 1) = e.func_loc_path
         LEFT JOIN asset.a_tp_envelope a_tp_e ON e.asset_id = a_tp_e.asset_id
 
-        JOIN asset f ON subpath(core.func_loc_path, 0, 2) = f.func_loc_path
+        LEFT JOIN asset f ON subpath(core.func_loc_path, 0, 2) = f.func_loc_path
         LEFT JOIN asset.a_tp_facility a_tp_f ON f.asset_id = a_tp_f.asset_id
 
-        JOIN asset_classification classification ON core.asset_id = classification.asset_id
+        LEFT JOIN asset_classification classification ON core.asset_id = classification.asset_id
         LEFT JOIN asset_link ON core.asset_id = asset_link.asset_id AND asset_link.external_id_type = (SELECT type_id FROM external_id_type WHERE name = 'EMIS');
 //
 COMMENT ON VIEW dtpw.asset_core_dtpw_view IS 'DTPW view. Joins facility and envelope information onto core information. Incorporates EMIS number and responsible department.';
