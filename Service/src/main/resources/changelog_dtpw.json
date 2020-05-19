@@ -570,5 +570,24 @@
         }]
 
     }
+  },
+  {
+    "changeSet": {
+      "id": "a3606bec-1fa8-4183-871e-d52ec90aecc4",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "comment" : "Apply view changes for versioning and bug fixing",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "dtpw/dtpw_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
   }
 ]}

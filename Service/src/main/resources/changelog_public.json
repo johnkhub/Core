@@ -1698,5 +1698,42 @@
           }
         }]
     }
+  },
+  {
+    "changeSet": {
+      "id": "4815ae50-1a8f-47d9-a772-790692e935d9",
+      "author": "frankvr",
+      "comment" : "Modtrack",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/accentless_search.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "a3606bec-1fa8-4183-871e-d52ec90aecc4",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "comment" : "Apply view changes for versioning and bug fixing",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/asset_core_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }]
+
+    }
   }
 ]}
