@@ -1297,6 +1297,29 @@
       
     }
   },
+
+  {
+    "changeSet": {
+      "id": "bc4cdbb488b32c229df99217e16a71906577f66f-1",
+      "author": "fritzonfire",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "name"
+                }
+              }]
+            ,
+            "indexName": "asset_name_idx",
+            "tableName": "asset"
+          }
+        }]
+      
+    }
+  },
   
   {
     "changeSet": {

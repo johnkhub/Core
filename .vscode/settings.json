@@ -1,0 +1,6 @@
+{
+	"[json]": {
+		"editor.formatOnSave": false,
+		"files.trimTrailingWhitespace": false
+	}
+}
