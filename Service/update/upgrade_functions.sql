@@ -411,10 +411,15 @@ END; $$
 ;
 
 
-select *
-into broken_paths
-from asset
-where fn_is_valid_func_loc_path(func_loc_path) = false
+CREATE OR REPLACE FUNCTION public.f_unaccent(text)
+    RETURNS text
+    LANGUAGE sql
+    IMMUTABLE PARALLEL SAFE STRICT
+AS $function$
+SELECT public.unaccent('public.unaccent', $1)  -- schema-qualify function and dictionary
+$function$
+;
+
 
 
 
