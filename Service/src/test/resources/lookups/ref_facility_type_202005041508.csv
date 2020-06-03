@@ -1,0 +1,56 @@
+"k","v","creation_date","deactivated_at","allow_delete","activated_at"
+CHI,Child/Youth Care,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+LAND,Land,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+LANU,Land Undeveloped,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+LEAR,Learning Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+OFF,Offices,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+RES,Residential,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+ROAR,Road Reserve,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHC,School College,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHO,School Other,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHP,School Primary,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHR,School Remedial,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHS,School Secondary,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCHT,School Technical,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+SCP,School Special,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+TERT,Tertiary Institution,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+ARC,Archives,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+COM,Community Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+FARM,Farm,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+GOV,Government Garage,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+GRA,Grave,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+HOSP,Hospital - Private,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+LIB,Library,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+MULT,Multi-Purpose,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+MUS,Museum,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+NAT,Nature Reserve,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+PARK,Parking,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+POF,Post Office,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+POL,Police Station,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+POS,Place Of Safety,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+PROP,Proposed,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+PUB,Public Open Space,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+ROA,Roads,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+RVR,Reservoir,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+STA,Stadium,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+STO,Stores,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+THEA,Theatre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+TRAF,Traffic Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+TRAI,Training Facility,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+TREA,Treatment Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+UNK,Unknown Structure,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+UNU,Unutilized,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+WORK,Workshop,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+AMB,Ambulance Station,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+CAMB,CDC & Ambulance Station,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+CLI,Clinic,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+COMD,Community Day Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+COMH,Community Health Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+EMS,Emergency Medical Service Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+FOR,Forensic Pathology,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+HEA,Health Facility,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+HOS,Hospital,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+IPS,Intermediate Psychiatric Care,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+LAU,Laundry,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+NUR,Nurses Hostel,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
+TAR,Training And Rehabilitation Centre,2020-02-12 16:11:42,,false,2020-04-30 08:30:09
