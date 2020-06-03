@@ -5,22 +5,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
+import za.co.imqs.coreservice.dataaccess.exception.ExplicitRollbackException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.model.AssetLandparcel;
 import za.co.imqs.coreservice.model.CoreAsset;
 
 import javax.sql.DataSource;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static za.co.imqs.coreservice.model.CoreAsset.*;
+import static za.co.imqs.coreservice.model.ORM.SUB_CLASSES;
+import static za.co.imqs.coreservice.model.ORM.getTableName;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 
 /**
@@ -46,21 +53,21 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     // TODO: Retry
-    // TODO: Transactions
     // TODO: More elegant mapping
     // TODO: This will be very, very sloooooow
     @Override
     public void createAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {
-                a.validate();
+                a.validate(CREATE);
 
                 final MapSqlParameterSource tAsset = new MapSqlParameterSource();
                 final MapSqlParameterSource tLocation = new MapSqlParameterSource();
                 final MapSqlParameterSource tAssetIdentification = new MapSqlParameterSource();
                 final MapSqlParameterSource tGeoms = new MapSqlParameterSource();
+                final MapSqlParameterSource tAssetClassification = new MapSqlParameterSource();
 
-                process(a, tAsset, tLocation, tAssetIdentification, tGeoms);
+                process(a, tAsset, tLocation, tAssetIdentification, tGeoms, tAssetClassification);
                 if (tAsset.getValues().size() > 1) {
                     jdbc.update(generateInsert("asset", tAsset).toString(), tAsset);
                 }
@@ -76,6 +83,20 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     tGeoms.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
                     jdbc.update("INSERT INTO geoms (asset_id, geom) VALUES (:asset_id, ST_GeomFromText(:geom, 4326))", tGeoms);
                 }
+                if (tAssetClassification.getValues().size() > 0) {
+                    tAssetClassification.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
+                    jdbc.update(generateInsert("asset_classification", tAssetClassification).toString(), tAssetClassification);
+                }
+
+                final MapSqlParameterSource tAssetExt = mapExtension(a.getAsset_id(), a);
+                final String tableName = getTableName(a);
+                if (!tAssetExt.getValues().isEmpty() && !tableName.equals("asset.a_tp_core")) {
+                    jdbc.update(generateInsert(tableName, tAssetExt).toString(), tAssetExt);
+
+                    if (a instanceof AssetLandparcel) {
+                        linkLandParcelToAsset((AssetLandparcel)a);
+                    }
+                }
             } catch(Exception e) {
                 throw exceptionMapperAsset(e, a);
             }
@@ -83,18 +104,19 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {
-                a.validate();
+                a.validate(UPDATE);
 
                 final MapSqlParameterSource tAsset = new MapSqlParameterSource();
                 final MapSqlParameterSource tLocation = new MapSqlParameterSource();
                 final MapSqlParameterSource tAssetIdentification = new MapSqlParameterSource();
                 final MapSqlParameterSource tGeoms = new MapSqlParameterSource();
+                final MapSqlParameterSource tAssetClassification = new MapSqlParameterSource();
 
-                process(a, tAsset, tLocation, tAssetIdentification, tGeoms);
+                process(a, tAsset, tLocation, tAssetIdentification, tGeoms, tAssetClassification);
                 int count = 0;
                 if (tAsset.getValues().size() > 1) {
                     count += jdbc.update(generateUpdate("asset", tAsset).toString(), tAsset);
@@ -112,23 +134,72 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     //count += jdbc.update(generateUpdate("geoms", tGeoms).toString(), tGeoms);
                     count += jdbc.update("UPDATE geoms SET geom = ST_GeomFromText(:geom, 4326) WHERE asset_id = :asset_id", tGeoms);
                 }
+                if (tAssetClassification.getValues().size() > 0) {
+                    tAssetClassification.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
+                    count += jdbc.update(generateUpdate("asset_classification", tAssetClassification).toString(), tAssetClassification);
+                }
+
+                final MapSqlParameterSource tAssetExt = mapExtension(a.getAsset_id(), a);
+                final String tableName = getTableName(a);
+                if (tAssetExt.getValues().size() > 1 && !tableName.equals("asset.a_tp_core")) {
+                    count += jdbc.update(generateUpdate(getTableName(a), tAssetExt).toString(), tAssetExt);
+
+                    if (a instanceof AssetLandparcel) {
+                        linkLandParcelToAsset((AssetLandparcel)a);
+                    }
+                }
+
                 if (count == 0)
                     throw new NotFoundException("Asset " + a.getAsset_id() + " does not exist");
+
             } catch (Exception e) {
                 throw exceptionMapperAsset(e, a);
             }
         }
     }
 
+/*
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void importAssets(List<CoreAsset> assets, AssetImportMode mode, boolean testRun) {
+        switch(mode) {
+            case INSERT:
+                // TODO check that none of them have uuids
+                createAssets(assets);
+                break;
+            case UPSERT:
+                final List<CoreAsset> inserts = new LinkedList<>();
+                final List<CoreAsset> updates = new LinkedList<>();
+
+                for (CoreAsset asset : assets ) {
+                    if (asset.getAsset_id() == null) {
+                        inserts.add(asset);
+                    } else {
+                        updates.add(asset);
+                    }
+                }
+
+                createAssets(inserts);
+                updateAssets(updates);
+                break;
+            case REPLACE:
+                deleteAssets(assets.stream().map((a) -> a.getAsset_id()).filter((a) -> a != null).collect(Collectors.toList()));
+                createAssets(assets);
+                break;
+        }
+
+        if (testRun) throw new ExplicitRollbackException("Rolling back import batch");
+    }
+*/
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteAssets(List<UUID> uuid) {
         throw new UnsupportedOperationException("Deletion of asset not implemented");
     }
 
-
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void obliterateAssets(List<UUID> uuids) {
         final List<String> profiles = Arrays.asList(env.getActiveProfiles());
         if (profiles.contains(PROFILE_PRODUCTION)) {
@@ -136,26 +207,42 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
 
         for (UUID uuid : uuids) {
+            // TODO improve REPLACE WITH CALL TO THE STORED PROCEDURE!
+            for (String subClass : SUB_CLASSES) {
+                jdbc.getJdbcTemplate().update("DELETE FROM "+getTableName(subClass)+" WHERE asset_id=?", uuid);
+            }
+
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id=?", uuid);
             jdbc.getJdbcTemplate().update("DELETE FROM location WHERE asset_id=?", uuid);
             jdbc.getJdbcTemplate().update("DELETE FROM geoms WHERE asset_id=?", uuid);
             jdbc.getJdbcTemplate().update("DELETE FROM asset_identification WHERE asset_id=?", uuid);
             jdbc.getJdbcTemplate().update("DELETE FROM asset WHERE asset_id=?", uuid);
+            jdbc.getJdbcTemplate().update("DELETE FROM asset_classification WHERE asset_id=?", uuid);
         }
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?)", uuid, externalIdType, externalId);
+            jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, externalIdType, externalId);
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
     }
 
     @Override
-    @Transactional("core_tx_mgr")
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId) {
+        try {
+            jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?);", externalId, uuid, externalIdType);
+        } catch (Exception e) {
+            throw exceptionMapperExternalLink(e, uuid, externalId);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
@@ -169,7 +256,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             MapSqlParameterSource tAsset,
             MapSqlParameterSource tLocation,
             MapSqlParameterSource tAssetIdentification,
-            MapSqlParameterSource tGeoms
+            MapSqlParameterSource tGeoms,
+            MapSqlParameterSource tAssetClassification
     ) {
         if (asset.getAdm_path() != null) {
             tAsset.addValue("adm_path", asset.getAdm_path(), Types.OTHER);
@@ -210,8 +298,17 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getSerial_number() != null) {
             tAssetIdentification.addValue("serial_number", asset.getSerial_number(), Types.VARCHAR);
         }
+
+        if (asset.getResponsible_dept_code() != null) {
+            tAssetClassification.addValue("responsible_dept_code", asset.getResponsible_dept_code(), Types.VARCHAR);
+        }
+        if (asset.getIs_owned() != null) {
+            tAssetClassification.addValue("is_owned", asset.getIs_owned(), Types.BOOLEAN);
+        }
     }
 
+    // TODO: this could make use of update T set F = coalesce(F, new value), which will simplify the code significantly
+    // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateUpdate(String target, MapSqlParameterSource map) {
         final StringBuffer update = new StringBuffer("UPDATE ").append(target).append(" SET ");
         for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
@@ -224,6 +321,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         return update;
     }
 
+    // TODO: this could make use of the DEFAULT feature, to insert the defaukt value into the non-specified columns which will simplify the code significantly
+    // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateInsert(String target, MapSqlParameterSource map) {
         final StringBuffer insert = new StringBuffer("INSERT INTO ").append(target).append(" (");
         for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
@@ -261,4 +360,80 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             return new RuntimeException(e);
         }
     }
+
+    private boolean getExisting(CoreAsset candidate) {
+        try {
+            //noinspection ConstantConditions
+            candidate.setAsset_id(UUID.fromString(jdbc.getJdbcTemplate().queryForObject("SELECT asset_id FROM asset WHERE code = ?", String.class, candidate.getCode())));
+            return true;
+        } catch (IncorrectResultSizeDataAccessException ignore) {
+        }
+        return false;
+    }
+
+    private <T extends CoreAsset> MapSqlParameterSource mapExtension(UUID assetId, T asset) throws Exception {
+        final MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("asset_id", assetId, Types.OTHER);
+
+        final Set<PropertyDescriptor> superClass = new HashSet<>(Arrays.asList(Introspector.getBeanInfo(asset.getClass().getSuperclass()).getPropertyDescriptors()));
+        for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(asset.getClass()).getPropertyDescriptors()) {
+            final Method getter = propertyDescriptor.getReadMethod();
+            //final String methodName = getter.getName().substring(getter.getName().lastIndexOf(".")+1);
+
+            if (getter != null) {
+                final StringBuilder msg = new StringBuilder("ORM Mapping ").append(getter.getName()).append(":").append(getter.getReturnType()).append(" ");
+                if (!superClass.contains(propertyDescriptor)) {
+                    final Object result = getter.invoke(asset);
+
+                    if (result != null) {
+                        final String field = getter.getName().substring(3);
+                        parameters.addValue(field, result, mapType(getter.getReturnType()));
+                        msg.append(" -> ").append(field);
+                    } else {
+                        msg.append("SKIPPING null value");
+                    }
+                } else {
+                    msg.append("IGNORED superclass method.");
+                }
+
+                log.debug(msg.toString());
+            }
+        }
+
+
+        return parameters;
+    }
+
+    private int mapType(Class cls) {
+        switch (cls.getName()) {
+            case "String" : return Types.VARCHAR;
+            case "Timestamp" : return Types.TIMESTAMP;
+            case "BigDecimal" : return Types.DECIMAL;
+        }
+        return Types.OTHER;
+    }
+
+    private void linkLandParcelToAsset(AssetLandparcel parcel) {
+        String rootNode = null;
+        try {
+            rootNode = parcel.getFunc_loc_path().split("\\.")[0];
+            @SuppressWarnings("ConstantConditions") final UUID parent = UUID.fromString(
+                    jdbc.getJdbcOperations().queryForObject(
+                            "SELECT asset_id FROM public.asset WHERE code = ?",
+                            String.class,
+                            rootNode
+                    )
+            );
+            jdbc.getJdbcOperations().update("INSERT INTO asset.asset_landparcel (asset_id, landparcel_asset_id) VALUES (?,?) ON CONFLICT DO NOTHING;", parent, parcel.getAsset_id());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            final String msg = String.format(
+                    "No Envelope with code %s exists to link Land Parcel %s to. To link a Land Parcel to an Envelope, the Envelop must have " +
+                            "already been craeted or imported.",
+                    rootNode, parcel.toString());
+            log.warn(msg);
+            //throw new NotFoundException(msg);
+
+        }
+    }
+
 }

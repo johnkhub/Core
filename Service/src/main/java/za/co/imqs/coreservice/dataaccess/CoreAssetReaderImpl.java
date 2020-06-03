@@ -46,12 +46,15 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
                             "location.latitude, location.longitude ," +
                             "ST_AsText(geoms.geom) AS geom, " +
                             "asset_identification.barcode, " +
-                            "asset_identification.serial_number " +
+                            "asset_identification.serial_number, " +
+                            "asset_classification.responsible_dept_code, " +
+                            "asset_classification.is_owned " +
                             "FROM " +
                             "   asset " +
                             "LEFT JOIN location ON asset.asset_id = location.asset_id " +
                             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
                             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
+                            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
                             "WHERE asset.asset_id = ?",
                     (ResultSet rs, int rowNum)-> {
                         final CoreAsset asset = new CoreAsset();
@@ -71,6 +74,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
                         asset.setReference_count(rs.getInt("reference_count"));
                         asset.setSerial_number(rs.getString("serial_number"));
 
+                        asset.setResponsible_dept_code(rs.getString("responsible_dept_code"));
+                        asset.setIs_owned(rs.getBoolean("is_owned"));
                         return asset;
                     },
                     uuid);

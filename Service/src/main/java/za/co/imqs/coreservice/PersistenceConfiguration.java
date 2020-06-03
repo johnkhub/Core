@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import za.co.imqs.configuration.client.ConfigClient;
+import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
@@ -39,6 +40,9 @@ public class PersistenceConfiguration {
     };
 
     private final ConfigClient configClient;
+
+    @SuppressWarnings("InstantiationOfUtilityClass")
+    private final ORM orm = new ORM();
 
     @Autowired
     public PersistenceConfiguration(ConfigClient configClient) {

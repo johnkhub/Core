@@ -19,6 +19,7 @@ public interface CoreAssetWriter {
 
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId);
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId);
+    public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId);
 
     //
     // Extra methods for *Testing*

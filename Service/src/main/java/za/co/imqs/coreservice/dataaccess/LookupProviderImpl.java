@@ -110,7 +110,7 @@ public class LookupProviderImpl implements LookupProvider {
                     final String operator = p.getValue().getOperator();
                     if (!VALID.contains(operator)) throw new ValidationFailureException(operator + " is not a valid selection operator");
                     query.append("\"").append(p.getKey()).append("\"").append(operator).append(" ? ").append(i < parameters.size() ? " and " : "");
-                    values.add("'"+p.getValue().getValue()+"'");
+                    values.add(p.getValue().getValue());
                     i++;
                 }
             }
@@ -180,12 +180,7 @@ public class LookupProviderImpl implements LookupProvider {
         try {
             // https://www.baeldung.com/spring-jdbc-jdbctemplate
             final SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(kvs.toArray());
-            int[] updateCounts = new NamedParameterJdbcTemplate(cFact.get("kv")).batchUpdate(
-                    "INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (:k,:v,:creation_date,:activated_at,:deactivated_at,:allow_delete) ON CONFLICT DO NOTHING", batch);
-
-
-
-            int[] updateCouns = cFact.get("kv").batchUpdate(
+            int[] updateCounts = cFact.get("kv").batchUpdate(
                     String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
                     new BatchPreparedStatementSetter() {
                         @Override

@@ -63,7 +63,8 @@ public class LookupControllerKvAPITest {
 
                     def("BRANCH", "Branch", "dtpw.ref_branch", null),
                     def("CHIEF_DIR", "Chief Directorate", "dtpw.ref_chief_directorate", null),
-                    def("CLIENT_DEP", "Client Department", "dtpw.ref_client_department", null)
+                    def("CLIENT_DEP", "Client Department", "dtpw.ref_client_department", null),
+                    def("FACIL_TYPE","Facility Type", "asset.ref_facility_type", null)
                 )
         );
     }

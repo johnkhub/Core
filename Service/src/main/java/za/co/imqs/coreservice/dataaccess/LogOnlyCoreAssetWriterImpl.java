@@ -55,6 +55,11 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
+    public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId) {
+        log.info("Update link {} of type {} to {}", externalId, externalIdType, uuid );
+    }
+
+    @Override
     public void obliterateAssets(List<UUID> uuids) {
 
     }

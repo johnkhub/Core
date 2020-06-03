@@ -1,9 +1,10 @@
 Import specification
 ====================
 
- Data specification
- --------------------
-**NOTE**: Import data must be UTF-8
+ Data specification (General)
+ -----------------------------
+
+> **NOTE**: Import data must be **UTF-8**
 
 
 ## Codes and key values ('k') 
@@ -12,7 +13,7 @@ Import specification
  * Case sensitive
  * Our **convention** is to use ALL CAPS
 
-This means *removing whitespace* from such strings.
+This means uou must *remove whitespace* from such strings.
 
 ## Path values
 A path is a dash ('-') delimited sequence of path segments. A segment
@@ -27,103 +28,68 @@ DTPW data
 ---------
 
 ## Pre-defined master data
-Predefined data must be prepared upfront.
+
+* The master data must be loaded into the system before asset imports can happen.  
+* Subsequent loads of lookups will merge with existing data meaning that updates can be incremental.
+
+> All fields are **mandatory**
 
 |Type|Description|File|Format|
 |----|-----------|----|-------|
-|Branch|Branch data|Branch.csv|k,v|
-|Chief Directorate|Chief Directorate and mapping to Branch. Use k from Branch.csv as `branch` |Branch.csv|k,v,branch|
-|Client Department|Client Department and mapping to Chief Directorate. Use k from ChiefDirectorate.csv as `directorate_code` |Branch.csv|k,v,directorate_code|
-|Facility Type|Facility Type |FacilityType.csv|k,v|
+|Branch|Branch data|csv|k,v|
+|Chief Directorate|Chief Directorate and mapping to Branch. Use k from Branch.csv as `branch` |csv|k,v,branch|
+|Client Department|Client Department and mapping to Chief Directorate. Use k from ChiefDirectorate.csv as `directorate_code` |csv|k,v,directorate_code|
+|Facility Type|Facility Type |csv|k,v|
+|District|District|csv|k,v|
+|Region|Region|csv|k,v|
+|Municipality|Municipality|csv|k,v|
+|Suburb|Suburb|csv|k,v|
+|Town|Town|csv|k,v|
 
 
-## Imported asset data
+## Importing asset data 
 
-The Code field is actually a Path and as such must adhere to the requirements of a Path as listed above.  Code must **uniquely** identify an asset.  
+* This is the `csv` format that we will use to import and export data  
+* The ordering of fields is not important
+* It is **case sensitive**
 
-This data will result in the automatic population of some lookup tables.
+> Note that if the asset_id column is populated it must contain the asset_id (UUID) of an existing asset and will result in an update of that asset. .If you do not specify an asset_id a new asset will be created and a UUID will be assigned to it.
 
-* District
-* Municipality
-* Suburb
-* Town
-
-*This means that the codes are fabricated by the system.*
-
-Note that the data must contain valid values (as defined in the predefined master data for) Facility Type as "AssetTypeID" and Department.
-
-The data must fit this table definition
-```
-CREATE TABLE asset_import 
-(
-	"AssetID" text NOT NULL CHECK("AssetID" ~ '^([a-zA-Z0-9_]+([-][a-zA-Z0-9_]+)*)$'), -- Mandatory
-	"Facility/Asset Name" text, -- Mandatory
-	"Level" text NOT NULL CHECK("Level" = 'Asset' OR  "Level" = 'Facility' OR "Level" = 'Building' OR "Level" = 'Site' OR "Level" = 'Floor' OR "Level" = 'Room'), -- Mandatory
-	"Level (info)" text, -- Mandatory
-	"Code (uk)" text  NOT NULL CHECK ("Code (uk)" ~ '^([a-zA-Z0-9_]+([-][a-zA-Z0-9_]+)*)$'), -- Mandatory
-	
-
-	"Code Name" text, -- IGNORED
-	"SubCategory" text, -- IGNORED
-	"Type" text, -- IGNORED
-	"Code(uk)_V9" text, -- IGNORED
-
-    "Y" text,   -- Latitude (Optional)
-	"X" text,   -- Longitude (Optional)
-	"Suburb_Nam" text, -- (Optional)
-	"Suburb_Id" text,  -- (Optional)
-	
-	"PRCL_KEY" text, -- IGNORED
-	"TAG_X" text, -- IGNORED
-	"TAG_Y" text, -- IGNORED
-	"TAG_VALUE" text, -- IGNORED
-	"ID" text, -- IGNORED
-	"PARCEL_NO" text, -- IGNORED
-	"PORTION" text, -- IGNORED
-	"COUNTRY" text, -- IGNORED
-	"PROVINCE" text, -- IGNORED
-	
-	"DISTRICT" text, -- (Optional)
-	"LOCAL" text, -- (Optional)
-	"TOWN" text, -- (Optional)
-	"MAIN_NAME" text, -- IGNORED
-	"SUBURB" text, --  (Optional)
-	"Area" text, -- IGNORED
+|Field                  |Description|M/O|Applies to|
+|-----------------------|-----------|---|----------|
+|asset_id				|UUID. If populated the system will upsert this asset. Leave blank for insert|o|ALL|
+|asset_type				|Text. One of `ENVELOPE`, `FACILITY`, `SITE`, `BUILDING`, `FLOOR`, `ROOM`, `LANDPARCEL`,`COMPONENT`|m|ALL|
+|name					|Free format Text|m|ALL|
+|func_loc_path			|Path value|m|ALL|
+|active					|Currently ignored|o|ALL|
+|latitude				|Text|o|ALL|
+|longitude				|Text|o|ALL|
+|address				|Free format text|o|ALL|
+|barcode				|Text|o|ALL|
+|serial_number			|Master data (k)|o|ALL|
+|district_code			|Master data (k)|o|`ENVELOPE`|
+|municipality_code		|Master data (k)|o|`ENVELOPE`|
+|town_code				|Master data (k)|o|`ENVELOPE`|
+|suburb_code			|Master data (k)|o|`ENVELOPE`|
+|facility_type_code		|Master data (k)|o|`FACILITY`|
+|responsible_dept_code	|Master data (k)|o|ALL|
+|is_owned				|TRUE=owned|o|ALL|
+|EMIS					|EI EMIS number |o|ALL|
+|LPI					|Land Parcel Identifier |o|`LANDPARCEL`|
+|geom					|In wellknown text format|o|ALL|
 
 
-    "AssetTypeID" text NULL CHECK ("AssetTypeID" ~ '^([a-zA-Z0-9_]*)$'), -- (Optional)
-	"AssetTypeName" text NULL,  -- IGNORED
-	
-	"SubCategoryID2" text NULL, -- IGNORED
-	"SubCategory2" text NULL, -- IGNORED
-	
-    "MapFeatureID_UPDATED_BY_IMQS" text UNIQUE CHECK ("MapFeatureID_UPDATED_BY_IMQS" ~ '^([a-zA-Z0-9_]*)$'), -- LPI  (Optional)
-    "Department" text,	  -- (Optional)	
-	"LocationAddress" text,  -- (Optional)
-	"Geometry" text, -- (Optional) In wellknown text format
+## Associating Land Parcels to Envelopes
 
-	"Barcode" text UNIQUE, -- (Optional)
-	"EMIS" text, -- (Optional)
+This is imported separately from the asset data as there is 1:many relationship between ENVELOPES and LANDPARCELS.
 
-	"Owned/Leased" boolean NULL -- (Optional)
-);
-```
-* `IGNORED` fields are ignore and we may consider removing them from the source csv file and the table
-* `Optional` fields are optional and are supplied if we have the data
-* `Mandatory` fields must be present in each row in the csv file
+* This is the `csv` format that we will use to import and export data  
+* The ordering of fields is not important
+* It is **case sensitive**
 
+> Both the ENVELOPES and LANDPARCELS must already exist.
 
-## Land Parcels 
-
-This is imported separately from the asset data as there is 1:many relationship between assets and land parcels.
-
-```
-CREATE TABLE IF NOT EXISTS land_parcel_import (
-    "AssetId" text NOT NULL,
-    "ClientAssetID" text, -- IGNORED
-    "AssetFacilityName" text, -- IGNORED
-    "LocationSGcode FROM FAR" text, -- IGNORED
-    "MapFeatureID UPDATED BY IMQS" text NOT NULL
-);
-```
-
+|Field           |Description                            |M/O|
+|----------------|---------------------------------------|---|
+|envelope_path	 |Functional location path of ENVELOPE   |m  |
+|landparcel_path |Functional location path of LANDPARCEL |m  |

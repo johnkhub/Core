@@ -13,27 +13,40 @@ NOTES
  8. The final changes are in `CoreAssetWriterImpl`. Unless you need to execute something other 
  than simple update/insert statements using simple data types you should not need to make any 
  changes here.
- 
+
+# Adding a Kv sub-type
+
+ > Similar to the above
+
  # Imports
  
  1. If asset_id column set, then we do an update?
+ 2. Add asset_report_view to liquibase
+    * Add a view to show the num links of a specific external type
+    * Use this view to add counts of emis to view - **this can be gotten from the report view**
+    * Add a view to show the num tags of a specific type
  
- 
- # Known problem that came out 
+ # Known problems that came out 
  
  * After creating but before restoring the db, we need to install the extensions manually?
  * There were asset entries in both envelope and facility for the same asset - how can we impose a db constraint avoid this
- * We need a delete function to clear out all the various tables.
-     * One for the core tables
-     * Other ones for the extensions?
- * Must now ensure validation on the paths in the core all codes in the path need to exist
-     * Can probably implement a function to validate the path as part of a trigger?
-     * This might imply that we need to insert entries in path order so parent is always created before child - implies sorting 
- * Need a mechanism to find garbage in the database
-     * Assets linked to multiple sub-types as mentioned above
-     * Assets with invalid paths as mentioned above
+ *  
      
- * The DTPW view does not  seem to show everything it should - maybe when there are holes in the path? Definitely an issue with Land Parcels
+ * The DTPW view does not seem to show everything it should - maybe when there are holes in the path? Definitely an issue with Land Parcels
  * Especially the LPI import had lost of issue with whitespace around values and space/empty strings instead of blanks
- * Responsible dept made nullable
- * Length LPI column now 26 and check constraint to check exactly 21 characters was removed 
+ 
+ ## In progress
+  * Must now ensure validation on the paths in the core all codes in the path need to exist
+      * Can probably implement a function to validate the path as part of a trigger?
+      * This might imply that we need to insert entries in path order so parent is always created before child - implies sorting 
+  * Need a mechanism to find garbage in the database
+      * Assets linked to multiple sub-types as mentioned above
+      * Assets with invalid paths as mentioned above
+      
+ ## Done
+  * Responsible dept made nullable
+  * Length LPI column now 26 and check constraint to check exactly 21 characters was removed
+  * We need a delete function to clear out all the various tables - as an internal tool 
+      * One for the core tables
+      * Other ones for the extensions? 
+ 

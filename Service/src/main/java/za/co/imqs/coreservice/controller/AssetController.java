@@ -57,8 +57,6 @@ public class AssetController {
     public ResponseEntity addAsset(
             @PathVariable UUID uuid,
             @RequestBody CoreAssetDto asset,
-            @RequestParam(required = false, defaultValue = "false", name="isImport") boolean isImport,
-            @RequestParam(required = false, defaultValue ="UPSERT", name="importMode") String importMode,
             @RequestParam(required = false, defaultValue ="false", name="testRun") boolean testRun
     ) {
         final UserContext user = ThreadLocalUser.get();
@@ -67,15 +65,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        if (isImport) {
-                            assetWriter.importAssets(
-                                    Collections.singletonList(aFact.create(uuid, asset)),
-                                    CoreAssetWriter.AssetImportMode.valueOf(importMode),
-                                    testRun
-                            );
-                        } else {
-                            assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
-                        }
+                        assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
                         return null;
                     }
             );
@@ -109,7 +99,8 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method = RequestMethod.PATCH, value = "/{uuid}"
+            method = RequestMethod.PATCH, value = "/{uuid}",
+            consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity updateAsset(@PathVariable UUID uuid, @RequestBody CoreAssetDto asset) {
         final UserContext user = ThreadLocalUser.get();
@@ -149,6 +140,25 @@ public class AssetController {
         }
     }
 
+    @RequestMapping(
+            method = RequestMethod.PATCH, value = "/link/{uuid}/to/{external_id_type}"
+    )
+    public ResponseEntity updateExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type, @PathVariable String external_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.updateExternalLink(uuid, external_id_type, external_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )

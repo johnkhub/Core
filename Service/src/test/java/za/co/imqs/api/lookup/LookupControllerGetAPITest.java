@@ -123,6 +123,12 @@ public class LookupControllerGetAPITest {
         fail("Not implemented");
     }
 
+    @Test
+    public void testGetAnEntireLookupTable() {
+        // method = RequestMethod.GET, value = "/kv/{view}",
+        fail("Not implemented");
+    }
+
     private static class MapBuilder {
         private final Map<String,String> map = new HashMap<>();
 

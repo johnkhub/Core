@@ -151,7 +151,7 @@ Accepts: *Nothing*
 
 Returns: *Nothing*
 
-Status codes: 200, 400, 403, 408, 409, 412
+Status codes: 200, 400, 403, 408, 412
 
 ### `DELETE asset/link/{uuid}/to/{external_id_type}/{external_id}`
 

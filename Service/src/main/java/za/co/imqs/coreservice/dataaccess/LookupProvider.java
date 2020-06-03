@@ -58,7 +58,8 @@ public interface LookupProvider {
             visible =  true
     )
     @JsonSubTypes({
-            @JsonSubTypes.Type(value = ClientDeptKv.class, name = "CLIENT_DEPT"),
+            @JsonSubTypes.Type(value = Kv.class, name = "KV"),
+            @JsonSubTypes.Type(value = ClientDeptKv.class, name = "CLIENT_DEP"),
             @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR")
     })
     public static class Kv {
@@ -69,7 +70,7 @@ public interface LookupProvider {
         private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private Boolean allow_delete;// TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
 
-        private String type;
+        private String type = "KV";
 
         public static Kv pair(String k, String v) {
             final Kv kv = new Kv();

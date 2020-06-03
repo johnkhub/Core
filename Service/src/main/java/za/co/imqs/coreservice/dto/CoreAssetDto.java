@@ -41,15 +41,15 @@ import static za.co.imqs.coreservice.dto.imports.Rules.VALID_PATH;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CoreAssetDto {
 
-    // Purely for csv conversion
-    @CsvBindByName(required = true)
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.Trim.class)
     @JsonIgnore
-    private String assetId;
+    private String asset_id;
 
 
     @CsvBindByName(required = true)
     @PreAssignmentProcessor(processor = Rules.ConvertToUppercase.class)
-    @PreAssignmentValidator(validator = Rules.MustBeInSet.class, paramString = "ENVELOPE,BUILDING,ROOM,FLOOR,SITE,FACILITY")
+    @PreAssignmentValidator(validator = Rules.MustBeInSet.class, paramString = "ENVELOPE,BUILDING,ROOM,FLOOR,SITE,FACILITY,COMPONENT,LANDPARCEL")
     private String asset_type_code;
 
     /*
@@ -59,6 +59,7 @@ public class CoreAssetDto {
     private String code;
 
     @CsvBindByName(required = true)
+    @PreAssignmentProcessor(processor = Rules.Trim.class)
     private String name;
 
     @CsvBindByName(required = false)
@@ -66,6 +67,7 @@ public class CoreAssetDto {
     private String adm_path;
 
     @CsvBindByName(required = true)
+    @PreAssignmentProcessor(processor = Rules.Trim.class)
     @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_PATH)
     private String func_loc_path;
 

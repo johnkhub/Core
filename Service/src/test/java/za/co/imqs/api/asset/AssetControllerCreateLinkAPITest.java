@@ -3,6 +3,7 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
@@ -60,6 +61,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     }
 
     @Test
+    @Ignore("At the moment we ignore duplicates")
     public void addAssetCreateLinkDuplicate() throws Exception  {
         given().
                 header("Cookie", session).

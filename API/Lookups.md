@@ -140,7 +140,7 @@ Status codes: 200, 400, 403, 408, 412
 ## Generic table/view lookup interface
 
 
->**This interface operates on the raw database names and as such the scehma name must be included in the name of the source being read from. The period in the name should be replaces with `%2E`.**
+>**This interface operates on the raw database names and as such the scehma name must be included in the name of the source being read from. The period in the name should be replaces with `+`.**
 
 
 ### `GET /lookups/{source}` 

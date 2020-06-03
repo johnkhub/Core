@@ -15,6 +15,7 @@ public interface AuditLogger {
 
         ADD_ASSET_LINK,
         DELETE_ASSET_LINK,
+        UPDATE_ASSET_LINK,
 
         ADD_KV_TYPE,
 

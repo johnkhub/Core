@@ -13,6 +13,7 @@ import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.model.AssetEnvelope;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
@@ -27,6 +28,8 @@ import static org.junit.Assert.assertNull;
 import static za.co.imqs.TestUtils.BOING;
 import static za.co.imqs.TestUtils.SERVICES;
 import static za.co.imqs.TestUtils.ServiceRegistry.PG;
+import static za.co.imqs.coreservice.model.ORM.SUB_CLASSES;
+import static za.co.imqs.coreservice.model.ORM.getTableName;
 
 /**
  * (c) 2020 IMQS Software
@@ -86,6 +89,39 @@ public class CoreAssetWriterImplTest {
     }
 
     @Test
+    public void addNewAllFieldsEnvelope() {
+        final CoreAsset expected = getObject();
+
+        final AssetEnvelope underTest = new AssetEnvelope();
+        underTest.setSerial_number(expected.getSerial_number());
+        underTest.setReference_count(null);
+        underTest.setName(expected.getName());
+        underTest.setLongitude(expected.getLongitude());
+        underTest.setLatitude(expected.getLatitude());
+        underTest.setGeometry(expected.getGeometry());
+        underTest.setFunc_loc_path(expected.getFunc_loc_path());
+        underTest.setCode(expected.getCode());
+        underTest.setBarcode(expected.getBarcode());
+        underTest.setAsset_type_code(expected.getAsset_type_code());
+        underTest.setAsset_id(expected.getAsset_id());
+        underTest.setAdm_path(expected.getAdm_path());
+        underTest.setCreation_date(expected.getCreation_date());
+        underTest.setDeactivated_at(expected.getDeactivated_at());
+
+
+        //jdbc.update("INSERT INTO asset.ref_district (k,v) VALUES ('WESTCOAST','West Coast')");
+        //jdbc.update("INSERT INTO asset.ref_town (k,v) VALUES ('ATLANTIS','Atlantis')");
+
+        underTest.setDistrict_code("WESTCOAST");
+        underTest.setTown_code("ATLANTIS");
+
+        final CoreAssetReader reader = new CoreAssetReaderImpl(jdbc.getDataSource());
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(), BOING);
+        writer.createAssets(Collections.singletonList(underTest));
+        assertEquals(expected, reader.getAsset(expected.getAsset_id()));
+    }
+
+    @Test
     public void addExisting() {
         expect.expect(AlreadyExistsException.class);
 
@@ -110,6 +146,7 @@ public class CoreAssetWriterImplTest {
         final CoreAsset underTest = reader.getAsset(THE_ASSET_ID);
         underTest.setBarcode(expected.getBarcode());
         underTest.setAsset_id(expected.getAsset_id());
+        underTest.setIs_owned(false);
 
         final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
         writer.updateAssets(Collections.singletonList(underTest));
@@ -206,12 +243,16 @@ public class CoreAssetWriterImplTest {
 
     // REPLACE WITH obliterate
     private void clearAsset(UUID uuid) {
+        // TODO improve
+        for (String subClass : SUB_CLASSES) {
+            jdbc.update("DELETE FROM "+getTableName(subClass)+" WHERE asset_id=?", uuid);
+        }
+
         jdbc.update("DELETE FROM asset_link WHERE asset_id=?", uuid);
         jdbc.update("DELETE FROM location WHERE asset_id=?", uuid);
         jdbc.update("DELETE FROM geoms WHERE asset_id=?", uuid);
         jdbc.update("DELETE FROM asset_identification WHERE asset_id=?", uuid);
         jdbc.update("DELETE FROM asset WHERE asset_id=?", uuid);
-
     }
 
 
@@ -239,6 +280,7 @@ public class CoreAssetWriterImplTest {
         expected.setAdm_path("x.y.z");
         expected.setCreation_date(new Timestamp(System.currentTimeMillis()));
         expected.setDeactivated_at(null);
+        expected.setIs_owned(false);
         return expected;
     }
 }

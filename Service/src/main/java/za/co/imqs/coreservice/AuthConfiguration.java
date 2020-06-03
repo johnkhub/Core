@@ -120,7 +120,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     private URL applyOverride(String serviceName, URL toOverride) {
         if (configClient.getProperty(serviceName) != null) {
             try {
-                return new URL( "http://"+ (String) configClient.getProperty(serviceName)+"/auth2");
+                return new URL( "http://"+ configClient.getProperty(serviceName) +"/auth2");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
