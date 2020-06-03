@@ -1,22 +1,18 @@
 package za.co.imqs.coreservice.dto.imports;
 
-import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.processor.StringProcessor;
 import com.opencsv.bean.validators.StringValidator;
-import com.opencsv.exceptions.CsvConstraintViolationException;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 
 public interface Rules {
 
@@ -25,25 +21,24 @@ public interface Rules {
     //
     public static final String VALID_K = "^[\\w]*$";
     public static final String VALID_CODE = "^[\\w]*$";
-    public static final String VALID_PATH = "^(\\w+([-]\\w+)*)$";
+    public static final String VALID_PATH = "^(\\w+([.]\\w+)*)$";
 
     //
     // Validators
     //
     public static class MustBeInSet implements StringValidator {
-        private Set<String> validValues = new HashSet<>();
+        private final Set<String> validValues = new HashSet<>();
 
         @Override
         public boolean isValid(String s) {
-            final boolean b = isNotEmpty(s) && validValues.contains(s);
-            return b;
+            return isNotEmpty(s) && validValues.contains(s);
         }
 
         @Override
         public void validate(String s, BeanField beanField) throws CsvValidationException {
             if (!this.isValid(s)) {
                 throw new CsvValidationException(
-                        String.format("Value %s for column %s is not one of (%s)", s, beanField.getField().getName(), s, String.join(",", this.validValues))
+                        String.format("Value %s for column %s is not one of (%s)", s, beanField.getField().getName(), String.join(",", this.validValues))
                 );
             }
         }
@@ -54,14 +49,39 @@ public interface Rules {
         }
     }
 
+    public static class MustHaveExactLength implements StringValidator {
+        private int desiredLength = -1;
+
+        @Override
+        public boolean isValid(String s) {
+            return isNotEmpty(s) && s.length() == desiredLength;
+        }
+
+        @Override
+        public void validate(String s, BeanField beanField) throws CsvValidationException {
+            if (!this.isValid(s)) {
+                throw new CsvValidationException(
+                        String.format("Length of value %s for column %s does not have an exact length of %s", s, beanField.getField().getName(), desiredLength)
+                );
+            }
+        }
+
+        @Override
+        public void setParameterString(String s) {
+            desiredLength = Integer.parseInt(s);
+        }
+    }
+
+
     @Slf4j
     public static class MustBeCoordinate implements StringValidator {
         private static final DecimalFormat FORMAT = new DecimalFormat("00.0000000000");
 
+        @SuppressWarnings("UnusedAssignment")
         @Override
         public boolean isValid(String s) {
             try {
-                if (s.length() >= 1 ) {
+                if (StringUtils.isNotEmpty(s)) {
                     synchronized (FORMAT) {
                         if (s.charAt(0) == '-' || s.charAt(0) == '+') {
                             s = s.charAt(0) + FORMAT.format(FORMAT.parse(s.substring(1)));
@@ -74,8 +94,8 @@ public interface Rules {
                 }
                 return true;
 
-            } catch (Exception e) {
-                log.debug("", e);
+            } catch (Exception ignore) {
+                log.debug("", ignore);
             }
             return false;
         }
@@ -103,7 +123,7 @@ public interface Rules {
             if (value == null || value.trim().isEmpty()) {
                 return defaultValue;
             }
-            return value.toUpperCase();
+            return value.toUpperCase().trim();
         }
 
         @Override
@@ -112,14 +132,31 @@ public interface Rules {
         }
     }
 
-    //
-    // Custom bindings
-    //
-    public static class TerminalNode<T> extends AbstractBeanField {
+    public class ConvertEmptyOrBlankStringsToNull implements StringProcessor {
         @Override
-        protected String convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
-            final String[] x =  s.split("-");
-            return x[x.length-1];
+        public String processString(String value) {
+            if (value == null || value.trim().isEmpty()) {
+                return null;
+            }
+            return value.trim();
+        }
+
+        @Override
+        public void setParameterString(String value) {
+        }
+    }
+
+    public class Trim implements StringProcessor {
+        @Override
+        public String processString(String value) {
+            if (value == null || value.trim().isEmpty()) {
+                return null;
+            }
+            return value.trim();
+        }
+
+        @Override
+        public void setParameterString(String value) {
         }
     }
 }
