@@ -76,10 +76,11 @@ java
 |configurationService|Host and port of the Configuration Service |
 |serveruser|For use with inter-service auth|
 |authService|Optional - allow for pointing calls to auth to another host and port|
+|sql-schedules|Schedules SQL execution accoring to cron schedules|
 
 ##### Example 
 ```
-"jdbc": {
+   "jdbc": {
       "idleConnectionTestPeriod": "60",
       "idleMaxAge": "240",
       "minConnectionsPerPartition": "1",
@@ -102,6 +103,21 @@ java
     "authService" : "legendqa:8001"
   }
 ```
+
+This is a very basic mechanism and intended for simple tasks such the one illustrated here: updating
+materialized views.
+
+```
+   "sql-schedules" : [
+    {
+      "name" : "refresh_report_view",
+      "description" : "",
+      "sql" : "REFRESH MATERIALIZED VIEW dtpw.dtpw_core_report_view;",
+      "cron" : "0 */5 * * * *"
+    }
+  ]
+```
+In this example the (verbatim) sql will execute every 5 minutes. **Note** the use of the schema name.
 
 Schema management
 -------------------
