@@ -24,8 +24,7 @@ END; $$
     SECURITY DEFINER
 ;
 
-
-select * from fn_is_valid_func_loc_path('11567.11567.BB.L1.09'::ltree)
+//
 
 CREATE OR REPLACE FUNCTION public.fn_is_valid_func_loc_path(path ltree) RETURNS boolean AS $$
 DECLARE
@@ -46,11 +45,32 @@ END; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
 ;
+//
+COMMENT ON FUNCTION public.fn_is_valid_func_loc_path IS 'Identifies if a segment of a path does not have a corresponding asset associated with it. E.g. select * from h(''11567.11567.BB.L1.09''::ltree) or select * into broken_paths from asset where fn_is_valid_func_loc_path(func_loc_path) = false';
+//
 
+CREATE OR REPLACE FUNCTION public.fn_identify_multiple_subclasses(the_asset uuid) RETURNS boolean AS $$
+DECLARE
+    sub_classes  text[];
+    stmt text;
+    num int;
+    total int;
+BEGIN
+    num := 0;
+    total := 0;
+    sub_classes := 	ARRAY(SELECT code FROM assettype);
+    FOR clss IN 1..array_upper(sub_classes,1)
+        LOOP
+            stmt := format('SELECT count(asset_id) FROM asset.a_tp_%s WHERE asset_id=''%s''::UUID', sub_classes[clss], the_asset);
+            EXECUTE stmt into num;
+            total := total + num;
+        END LOOP;
 
-select *
-into broken_paths
-from asset
-where fn_is_valid_func_loc_path(func_loc_path) = false
+    raise notice 'Number %', total;
 
-
+END ; $$
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER
+;
+//
+COMMENT ON FUNCTION public.fn_identify_multiple_subclasses IS 'Identifies if the same asset has multiple subclasses e.g. same uuid in say envelope and facility. This is an invalid state but at the moment there is nothing in the database constraints that stops you from doing this.';
