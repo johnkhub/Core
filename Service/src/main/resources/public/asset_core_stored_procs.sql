@@ -66,8 +66,8 @@ BEGIN
             total := total + num;
         END LOOP;
 
-    raise notice 'Number %', total;
-
+    --raise notice 'Number %', total;
+    RETURN total > 1;
 END ; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER

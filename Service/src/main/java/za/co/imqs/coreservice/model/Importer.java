@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 
 @Slf4j
 public class Importer {
-    private static final boolean FORCE_INSERT = false;
+    private static final boolean FORCE_INSERT = true;
     //
     //  We make path and code the same value. Both dot delimited.
     //
