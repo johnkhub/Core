@@ -1,8 +1,9 @@
 Use of data types
 =================
 
-* Code fields and Keys ('k') in Lookup Tables are VARCHAR(10)
-* Money is DECIMAL(19,4)
+* Code fields and Keys (`k`) in Lookup Tables are `VARCHAR(10)`
+* Money is `DECIMAL(19,4)`
+* Lat/Lon is `DECIMAL(11,8)`
 
 Naming rules
 ============

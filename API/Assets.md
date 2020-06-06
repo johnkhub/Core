@@ -1,6 +1,7 @@
 Operations
 ==========
 
+TBD
 
 Operations
 - Acquisitions adds assets (PCS, Acquisitions module(in Outsystems))
@@ -9,7 +10,7 @@ Operations
 
 Rules
 ----
-
+TBD
 
 API
 ---
@@ -17,6 +18,7 @@ API
 ### Security
 
 See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
+
 The current implementation of this API: 
 * *Currently* only supports token based authentication, **not** inter-service authentication
 * *Currently* only enforces authentication and **not** authorisation
