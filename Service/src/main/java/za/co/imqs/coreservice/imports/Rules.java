@@ -1,4 +1,4 @@
-package za.co.imqs.coreservice.dto.imports;
+package za.co.imqs.coreservice.imports;
 
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.processor.StringProcessor;
@@ -135,7 +135,7 @@ public interface Rules {
     public class ConvertEmptyOrBlankStringsToNull implements StringProcessor {
         @Override
         public String processString(String value) {
-            if (value == null || value.trim().isEmpty()) {
+            if (value == null || value.trim().isEmpty() || value.trim().equalsIgnoreCase("NULL")) {
                 return null;
             }
             return value.trim();
