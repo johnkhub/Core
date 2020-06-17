@@ -446,6 +446,15 @@
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
                 }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
               }]
             ,
             "schemaName": "asset",
@@ -520,8 +529,7 @@
       
     }
   },
-  
-   {
+  {
     "changeSet": {
       "id": "1583403835611-11",
       "author": "frankvr (generated)",
@@ -576,7 +584,26 @@
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
                 }
-              }]
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "district_k",
+                  "type": "VARCHAR(10)"
+                }
+              }
+            ]
             ,
             "schemaName": "asset",
             "tableName": "ref_municipality"
@@ -585,8 +612,6 @@
       
     }
   },
-    
-    
   {
     "changeSet": {
       "id": "1583403835611-6",
@@ -642,6 +667,15 @@
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
                 }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
               }]
             ,
             "schemaName": "asset",
@@ -651,7 +685,6 @@
       
     }
   },
-  
   {
     "changeSet": {
       "id": "1583403835611-7",
@@ -707,7 +740,35 @@
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
                 }
-              }]
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "ward_k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "town_k",
+                  "type": "VARCHAR(10)"
+                }
+              }
+            ]
             ,
             "schemaName": "asset",
             "tableName": "ref_suburb"
@@ -715,7 +776,6 @@
         }]
     }
   },
-  
   {
     "changeSet": {
       "id": "1583403835611-3",
@@ -771,7 +831,26 @@
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
                 }
-              }]
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "local_municipality_k",
+                  "type": "VARCHAR(10)"
+                }
+              }
+            ]
             ,
             "schemaName": "asset",
             "tableName": "ref_town"
@@ -780,7 +859,6 @@
       
     }
   },
-  
   {
     "changeSet": {
       "id": "1583403835611-4",
@@ -835,6 +913,24 @@
                   "defaultValueComputed": "now()",
                   "name": "activated_at",
                   "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+             {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "local_municipality_k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
                 }
               }]
             ,
@@ -1133,7 +1229,7 @@
             "indexName": "ref_district_v_idx",
             "schemaName": "asset",
             "tableName": "ref_district",
-            "unique": true
+            "unique": false
           }
         }]
       
@@ -1565,6 +1661,79 @@
             "path": "asset/import_report.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "354e2a2f-1ee6-4ac9-b061-09b0ec7c3042",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "ward_k",
+            "baseTableName": "ref_suburb",
+            "baseTableSchemaName": "asset",
+            "constraintName": "fk_ward",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_ward",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "town_k",
+            "baseTableName": "ref_suburb",
+            "baseTableSchemaName": "asset",
+            "constraintName": "fk_town",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_town",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "local_municipality_k",
+            "baseTableName": "ref_town",
+            "baseTableSchemaName": "asset",
+            "constraintName": "fk_local",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_municipality",
+            "referencedTableSchemaName": "asset",
+            "validate": true
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "district_k",
+            "baseTableName": "ref_municipality",
+            "baseTableSchemaName": "asset",
+            "constraintName": "fk_district",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_district",
+            "referencedTableSchemaName": "asset",
+            "validate": true
           }
         }
       ]

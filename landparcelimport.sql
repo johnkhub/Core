@@ -1,0 +1,1 @@
+\copy land_parcel_import FROM '/home/frank/Documents/Naming updates 20200512/LPI Land Parcels linked to AssetID_V3_20200512_Geometry added.csv' DELIMITER '|' CSV HEADER;
