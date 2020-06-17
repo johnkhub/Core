@@ -1,6 +1,6 @@
 CREATE OR REPLACE VIEW public.asset_core_view AS
 SELECT a.asset_id,
-       a.asset_type_code AS asset_type,
+       a.asset_type_code,
        a.name,
        a.func_loc_path,
        a.deactivated_at IS NULL AS active,

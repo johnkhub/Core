@@ -37,9 +37,9 @@ COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dt
 
 CREATE MATERIALIZED VIEW dtpw.dtpw_core_report_view AS
     SELECT asset_core_dtpw_view.asset_id,
-          asset_core_dtpw_view.asset_type as asset_type_code,
+          asset_core_dtpw_view.asset_type_code,
           asset_core_dtpw_view.name,
-          asset_core_dtpw_view.func_loc_path,
+          asset_core_dtpw_view.func_loc_path::text,
           asset_core_dtpw_view.active,
           asset_core_dtpw_view.latitude,
           asset_core_dtpw_view.longitude,
@@ -60,7 +60,7 @@ WITH DATA;
 
 
 CREATE UNIQUE INDEX m1_asset_id_idx ON dtpw.dtpw_core_report_view USING btree (asset_id);
-CREATE INDEX m1_func_loc_path_idx  ON dtpw.dtpw_core_report_view USING gist (func_loc_path);
+CREATE INDEX m1_func_loc_path_idx  ON dtpw.dtpw_core_report_view USING btree (func_loc_path);
 CREATE INDEX m1_geom_idx  ON dtpw.dtpw_core_report_view USING gist (geom);
 CREATE INDEX m1_district_code_idx ON dtpw.dtpw_core_report_view USING btree (district_code);
 CREATE INDEX m1_municipality_code_idx ON dtpw.dtpw_core_report_view USING btree (municipality_code);
