@@ -1,0 +1,7 @@
+k,v,creation_date,deactivated_at,allow_delete,activated_at,branch_code
+CD_PPP,Public Private Partnerships,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_PPW
+CD_IAM,Immovable Asset Management,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_PPW
+CD_GI,General Infrastructure,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_PPW
+CD_EI,Education Infrastructure,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_PPW
+CD_HI,Health Infrastructure,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_PPW
+CD_RNM,Road Network Management,2020-02-12 16:11:42.772192,,f,2020-05-15 12:22:21.868655,B_RNM
