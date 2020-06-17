@@ -3,8 +3,11 @@ package za.co.imqs.coreservice.dataaccess;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
-import za.co.imqs.coreservice.dto.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import za.co.imqs.coreservice.imports.Rules;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +62,12 @@ public interface LookupProvider {
     )
     @JsonSubTypes({
             @JsonSubTypes.Type(value = Kv.class, name = "KV"),
+            @JsonSubTypes.Type(value = KvWard.class, name = "WARD"),
+            @JsonSubTypes.Type(value = KvDistrict.class, name = "DISTRICT"),
+            @JsonSubTypes.Type(value = KvSuburb.class, name = "SUBURB"),
+            @JsonSubTypes.Type(value = KvTown.class, name = "TOWN"),
+            @JsonSubTypes.Type(value = KvMunicipality.class, name = "MUNIC"),
+
             @JsonSubTypes.Type(value = ClientDeptKv.class, name = "CLIENT_DEP"),
             @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR")
     })
@@ -69,6 +78,11 @@ public interface LookupProvider {
         private String activated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private Boolean allow_delete;// TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
+
+
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
 
         private String type = "KV";
 
@@ -81,14 +95,84 @@ public interface LookupProvider {
         }
     }
 
-    // TODO these need to movve to dynamic mapping per client schema etc. https://stackoverflow.com/questions/34079050/add-subtype-information-at-runtime-using-jackson-for-polymorphism
     @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class KvSuburb extends Kv {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String town_k;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String ward_k;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class KvWard extends Kv {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String local_municipality_k;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class KvTown extends Kv {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String local_municipality_k;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class KvMunicipality extends Kv {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String district_k;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class KvDistrict extends Kv {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String geom;
+    }
+
+
+    // TODO these need to move to dynamic mapping per client schema etc. https://stackoverflow.com/questions/34079050/add-subtype-information-at-runtime-using-jackson-for-polymorphism
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
     public static class ClientDeptKv extends Kv {
         @CsvBindByName(required = false) private String chief_directorate_code;
         @CsvBindByName(required = false) private String responsible_dept_classif;
     }
 
     @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
     public static class ChiefDirectorateKv extends Kv {
         @CsvBindByName(required = false) private String branch_code;
     }
@@ -107,10 +191,10 @@ public interface LookupProvider {
     public List<Kv> getEntireKvTable(String target);
 
     // upsert
-    public void acceptKv(String target, List<Kv> kv);
+    public <T extends Kv> void acceptKv(String target, List<T> kvs) ;
 
     // upsert
-    default void acceptKv(String target, Kv ...kv) {
+    default <T extends Kv> void acceptKv(String target, T ...kv) {
         acceptKv(target, Arrays.asList(kv));
     }
 

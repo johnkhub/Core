@@ -11,7 +11,6 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriterImpl;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
-import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.AssetEnvelope;
 import za.co.imqs.coreservice.model.CoreAsset;
@@ -241,18 +240,8 @@ public class CoreAssetWriterImplTest {
         assertEquals(link, getExternalLink(fakeAsset, V6_EXT_ID));
     }
 
-    // REPLACE WITH obliterate
     private void clearAsset(UUID uuid) {
-        // TODO improve
-        for (String subClass : SUB_CLASSES) {
-            jdbc.update("DELETE FROM "+getTableName(subClass)+" WHERE asset_id=?", uuid);
-        }
-
-        jdbc.update("DELETE FROM asset_link WHERE asset_id=?", uuid);
-        jdbc.update("DELETE FROM location WHERE asset_id=?", uuid);
-        jdbc.update("DELETE FROM geoms WHERE asset_id=?", uuid);
-        jdbc.update("DELETE FROM asset_identification WHERE asset_id=?", uuid);
-        jdbc.update("DELETE FROM asset WHERE asset_id=?", uuid);
+       new CoreAssetWriterImpl(jdbc.getDataSource(), BOING).obliterateAssets(uuid);
     }
 
 

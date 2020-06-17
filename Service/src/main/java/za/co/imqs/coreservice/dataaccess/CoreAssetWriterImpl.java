@@ -6,27 +6,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
-import za.co.imqs.coreservice.dataaccess.exception.ExplicitRollbackException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.AssetLandparcel;
 import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.ORM;
 
 import javax.sql.DataSource;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static za.co.imqs.coreservice.model.CoreAsset.*;
-import static za.co.imqs.coreservice.model.ORM.SUB_CLASSES;
+import static za.co.imqs.coreservice.model.CoreAsset.CREATE;
+import static za.co.imqs.coreservice.model.CoreAsset.UPDATE;
 import static za.co.imqs.coreservice.model.ORM.getTableName;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 
@@ -39,6 +38,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_P
 @Slf4j
 @Repository
 public class CoreAssetWriterImpl implements CoreAssetWriter {
+    private static final Set<String> EXCLUDED_GETTERS = Collections.unmodifiableSet(ORM.getReadMethods(CoreAsset.class));
 
     private final NamedParameterJdbcTemplate jdbc;
     private final Environment env;
@@ -190,6 +190,16 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
         if (testRun) throw new ExplicitRollbackException("Rolling back import batch");
     }
+
+    private boolean getExisting(CoreAsset candidate) {
+        try {
+            //noinspection ConstantConditions
+            candidate.setAsset_id(UUID.fromString(jdbc.getJdbcTemplate().queryForObject("SELECT asset_id FROM asset WHERE code = ?", String.class, candidate.getCode())));
+            return true;
+        } catch (IncorrectResultSizeDataAccessException ignore) {
+        }
+        return false;
+    }
 */
 
     @Override
@@ -206,19 +216,18 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             throw new RuntimeException("No way!");
         }
 
-        for (UUID uuid : uuids) {
-            // TODO improve REPLACE WITH CALL TO THE STORED PROCEDURE!
-            for (String subClass : SUB_CLASSES) {
-                jdbc.getJdbcTemplate().update("DELETE FROM "+getTableName(subClass)+" WHERE asset_id=?", uuid);
-            }
+        jdbc.getJdbcTemplate().batchUpdate(
+                "select public.fn_delete_asset(?)",
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setObject(1, uuids.get(i));
+                    }
 
-            jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id=?", uuid);
-            jdbc.getJdbcTemplate().update("DELETE FROM location WHERE asset_id=?", uuid);
-            jdbc.getJdbcTemplate().update("DELETE FROM geoms WHERE asset_id=?", uuid);
-            jdbc.getJdbcTemplate().update("DELETE FROM asset_identification WHERE asset_id=?", uuid);
-            jdbc.getJdbcTemplate().update("DELETE FROM asset WHERE asset_id=?", uuid);
-            jdbc.getJdbcTemplate().update("DELETE FROM asset_classification WHERE asset_id=?", uuid);
-        }
+                    public int getBatchSize() {
+                        return uuids.size();
+                    }
+                }
+        );
     }
 
     @Override
@@ -288,6 +297,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
         if (asset.getLongitude() != null) {
             tLocation.addValue("longitude", asset.getLongitude(), Types.DECIMAL);
+        }
+        if (asset.getAddress() != null) {
+            tLocation.addValue("address", asset.getAddress(), Types.VARCHAR);
         }
         if (asset.getName() != null) {
             tAsset.addValue("name", asset.getName(), Types.VARCHAR);
@@ -361,56 +373,10 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
-    private boolean getExisting(CoreAsset candidate) {
-        try {
-            //noinspection ConstantConditions
-            candidate.setAsset_id(UUID.fromString(jdbc.getJdbcTemplate().queryForObject("SELECT asset_id FROM asset WHERE code = ?", String.class, candidate.getCode())));
-            return true;
-        } catch (IncorrectResultSizeDataAccessException ignore) {
-        }
-        return false;
-    }
-
     private <T extends CoreAsset> MapSqlParameterSource mapExtension(UUID assetId, T asset) throws Exception {
-        final MapSqlParameterSource parameters = new MapSqlParameterSource();
+        final MapSqlParameterSource parameters = ORM.mapToSql(asset, EXCLUDED_GETTERS);
         parameters.addValue("asset_id", assetId, Types.OTHER);
-
-        final Set<PropertyDescriptor> superClass = new HashSet<>(Arrays.asList(Introspector.getBeanInfo(asset.getClass().getSuperclass()).getPropertyDescriptors()));
-        for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(asset.getClass()).getPropertyDescriptors()) {
-            final Method getter = propertyDescriptor.getReadMethod();
-            //final String methodName = getter.getName().substring(getter.getName().lastIndexOf(".")+1);
-
-            if (getter != null) {
-                final StringBuilder msg = new StringBuilder("ORM Mapping ").append(getter.getName()).append(":").append(getter.getReturnType()).append(" ");
-                if (!superClass.contains(propertyDescriptor)) {
-                    final Object result = getter.invoke(asset);
-
-                    if (result != null) {
-                        final String field = getter.getName().substring(3);
-                        parameters.addValue(field, result, mapType(getter.getReturnType()));
-                        msg.append(" -> ").append(field);
-                    } else {
-                        msg.append("SKIPPING null value");
-                    }
-                } else {
-                    msg.append("IGNORED superclass method.");
-                }
-
-                log.debug(msg.toString());
-            }
-        }
-
-
         return parameters;
-    }
-
-    private int mapType(Class cls) {
-        switch (cls.getName()) {
-            case "String" : return Types.VARCHAR;
-            case "Timestamp" : return Types.TIMESTAMP;
-            case "BigDecimal" : return Types.DECIMAL;
-        }
-        return Types.OTHER;
     }
 
     private void linkLandParcelToAsset(AssetLandparcel parcel) {
@@ -435,5 +401,4 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
         }
     }
-
 }

@@ -6,26 +6,23 @@ import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.configuration.client.ConfigClient;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 import za.co.imqs.libimqs.utils.ConfigClientExt;
 import za.co.imqs.libimqs.utils.SimpleConfigClient;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -94,7 +91,6 @@ public class LookupProviderImpl implements LookupProvider {
             return Collections.emptyList();
         }
     }
-
 
     public List<Map<String,Object>> getWithOperators(String viewName, Map<String, Field> parameters) {
         try {
@@ -174,36 +170,20 @@ public class LookupProviderImpl implements LookupProvider {
 
     @Override
     @Transactional("lookup_tx_mgr")
-    public void acceptKv(String target, List<Kv> kvs) {
+    public <T extends Kv> void acceptKv(String target, List<T> kvs) {
         final String fqn = resolveTarget(target);
 
         try {
-            // https://www.baeldung.com/spring-jdbc-jdbctemplate
-            final SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(kvs.toArray());
-            int[] updateCounts = cFact.get("kv").batchUpdate(
-                    String.format("INSERT INTO %s (k,v,creation_date,activated_at,deactivated_at,allow_delete) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING", fqn),
-                    new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            ps.setString(1, kvs.get(i).getK());
-                            ps.setString(2, kvs.get(i).getV());
+            final Mapper<T> mapper = new Mapper<>(kvs);
+            final SqlParameterSource[] source = mapper.getParameters();
+            new NamedParameterJdbcTemplate(cFact.get("kv")).batchUpdate(mapper.getStatement(fqn,source[0]), source);
 
-                            final Timestamp now = new Timestamp(System.currentTimeMillis());
-
-                            ps.setTimestamp(3, asTimestamp(kvs.get(i).getCreation_date(), now));
-                            ps.setTimestamp(4, asTimestamp(kvs.get(i).getActivated_at(), now));
-                            ps.setTimestamp(5, asTimestamp(kvs.get(i).getDeactivated_at(), null));
-                            ps.setBoolean(6, kvs.get(i).getAllow_delete() == null ? false : kvs.get(i).getAllow_delete());
-                        }
-
-                        @Override
-                        public int getBatchSize() {
-                            return kvs.size();
-                        }
-                    }
-            );
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
+        } catch (DataIntegrityViolationException d) {
+            throw new ValidationFailureException(d.getMessage());
+        } catch (Exception s) {
+            throw new RuntimeException(s);
         }
     }
 
@@ -217,19 +197,12 @@ public class LookupProviderImpl implements LookupProvider {
         cFact.get("kv").update("DELETE FROM "+ resolveTarget(target));
     }
 
-
     private String resolveTarget(String target) {
         try {
            return cFact.get("kv").queryForObject("SELECT * FROM kv_type WHERE code = ?", KV_TYPE_MAPPER, target).getTable();
         }  catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("'%s' is not a valid kv type!", target));
         }
-    }
-
-    private static Timestamp asTimestamp(String s, Timestamp def) {
-        if (s == null)
-            return def;
-        return Timestamp.valueOf(s);
     }
 
     // Double quotes each segment of the fully qualified name
@@ -259,6 +232,57 @@ public class LookupProviderImpl implements LookupProvider {
                 dataSources.put(viewName, ds);
             }
             return ds;
+        }
+    }
+
+
+    private class Mapper<T extends Kv> {
+        private final Collection<T> elements;
+
+        public Mapper(Collection<T> elements) {
+            this.elements = elements;
+        }
+
+        public SqlParameterSource[] getParameters() throws Exception {
+            SqlParameterSource[] result = new SqlParameterSource[elements.size()];
+            int i = 0;
+            for (T e : elements) {
+                result[i] = mapKv(e);
+                i++;
+            }
+
+            return result;
+        }
+
+        public String getStatement(String fqn, SqlParameterSource src) {
+            StringBuilder statement = new StringBuilder("INSERT INTO ").append(fqn).append("(");
+            for (String n : src.getParameterNames()) {
+                statement.append(n).append(",");
+            }
+            statement.delete(statement.length()-1,statement.length());
+
+            statement.append(") VALUES (");
+            for (String n : src.getParameterNames()) {
+                statement.append(":").append(n).append(",");
+            }
+            statement.delete(statement.length()-1,statement.length());
+            statement.append(") ON CONFLICT (k) DO UPDATE SET ");
+
+            for (String n : src.getParameterNames()) {
+                if (!n.equals("k"))
+                    statement.append(n).append("=").append("EXCLUDED.").append(n).append(",");
+            }
+            statement.delete(statement.length()-1,statement.length());
+
+            return statement.append(";").toString();
+        }
+
+        private <T extends Kv> MapSqlParameterSource mapKv(T kv) throws Exception {
+            return mapKv(kv, new HashSet<>(Arrays.asList("getClass", "getType")));
+        }
+
+        private <T extends Kv> MapSqlParameterSource mapKv(T kv, HashSet<String> exclude) throws Exception {
+           return ORM.mapToSql(kv, exclude);
         }
     }
 }

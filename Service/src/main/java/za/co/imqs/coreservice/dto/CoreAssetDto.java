@@ -9,9 +9,9 @@ import com.opencsv.bean.processor.PreAssignmentProcessor;
 import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
-import za.co.imqs.coreservice.dto.imports.Rules;
+import za.co.imqs.coreservice.imports.Rules;
 
-import static za.co.imqs.coreservice.dto.imports.Rules.VALID_PATH;
+import static za.co.imqs.coreservice.imports.Rules.VALID_PATH;
 
 /**
  * (c) 2020 IMQS Software
@@ -52,10 +52,6 @@ public class CoreAssetDto {
     @PreAssignmentValidator(validator = Rules.MustBeInSet.class, paramString = "ENVELOPE,BUILDING,ROOM,FLOOR,SITE,FACILITY,COMPONENT,LANDPARCEL")
     private String asset_type_code;
 
-    /*
-    @CsvCustomBindByName(required = true, column="func_loc_path", converter = Rules.TerminalNode.class)
-    @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_CODE)
-     */
     private String code;
 
     @CsvBindByName(required = true)
