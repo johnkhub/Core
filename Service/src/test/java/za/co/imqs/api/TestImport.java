@@ -1,6 +1,7 @@
 package za.co.imqs.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
 import org.junit.Test;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
 import za.co.imqs.coreservice.imports.Importer;
@@ -8,6 +9,7 @@ import za.co.imqs.coreservice.imports.Importer;
 @Slf4j
 public class TestImport extends AbstractAssetControllerAPITest {
 
+    @Ignore("Fixup")
     @Test
     public void loadLookups() throws Exception {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
@@ -18,7 +20,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_town.csv", "TOWN"});
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_suburb.csv", "SUBURB"});
 
-        // Doe snot exist in upgrade scenario
+        // Does not exist in upgrade scenario
         //Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
@@ -26,6 +28,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
     }
 
+    @Ignore("Fixup")
     @Test
     public void fixMappings() throws Exception {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
@@ -34,6 +37,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "assets", "/home/frank/Development/Core/Service/update/00_schema/Suburb updates.csv"});
     }
 
+    @Ignore("Fixup")
     @Test
     public void fixCodes() throws Exception {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
@@ -48,6 +52,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation/Conville PS_Facilty add_New Template.csv"});
     }
 
+    @Ignore("Fixup")
     @Test
     public void fixCodes2() throws Exception {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";

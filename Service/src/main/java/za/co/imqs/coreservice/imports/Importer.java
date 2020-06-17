@@ -257,13 +257,17 @@ public class Importer {
         final String cmd = args[1];
         final Path file = Paths.get(args[2]);
 
+
         if (cmd.equalsIgnoreCase("lookups")) {
+            final String lookupType = args[3];
             Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
-            i.importLookups(args[3], file, get(args[3]));
+            i.importLookups(lookupType, file, get(lookupType));
         }
 
         if (cmd.equalsIgnoreCase("assets")) {
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            //Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            //final String flags = args[3];
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.of(Flags.FORCE_INSERT));
             i.importAssets(file);
         }
 

@@ -122,7 +122,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
 
         final  AssetEnvelopeDto update = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 type("ENVELOPE").
-                funcloc("other").
+                funcloc("other.doesnotexist"). // this should fail as soon as we add the constraint!
                 get();
 
         given().

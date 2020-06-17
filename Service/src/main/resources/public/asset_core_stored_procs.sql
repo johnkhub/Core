@@ -18,6 +18,7 @@ BEGIN
     DELETE FROM geoms WHERE asset_id=the_asset;
     DELETE FROM asset_identification WHERE asset_id=the_asset;
     DELETE FROM asset_classification WHERE asset_id=the_asset;
+    DELETE FROM asset_tags WHERE asset_id = the_asset;
     DELETE FROM asset WHERE asset_id=the_asset;
 END; $$
     LANGUAGE PLPGSQL

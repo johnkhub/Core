@@ -35,9 +35,6 @@ public class CsvImporter<T> {
     // have been applied, so we need a way to filter out what we don't want before we start creating beans
     // There appears to be no direct way of getting the column names here so we fudge it and hope that one of the other fields do not contain values
     // that match the asset_type_codes
-    //
-    // MAYBE INSIST THAT THE TYPE BE THE FIRST COLUMN>???
-    //
     private static class Filter implements CsvToBeanFilter {
         private final String type;
         private final HashSet<String> typeNamesUpper = new HashSet<>();

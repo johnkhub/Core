@@ -49,6 +49,29 @@ public interface Rules {
         }
     }
 
+    public static class MustNotBeNull implements StringValidator {
+
+        @Override
+        public boolean isValid(String s) {
+            s = s.trim();
+            return isNotEmpty(s) && !"NULL".equalsIgnoreCase(s);
+        }
+
+        @Override
+        public void validate(String s, BeanField beanField) throws CsvValidationException {
+            if (!this.isValid(s)) {
+                throw new CsvValidationException(
+                        String.format("Value %s for column %s is required", s, beanField.getField().getName())
+                );
+            }
+        }
+
+        @Override
+        public void setParameterString(String s) {
+        }
+    }
+
+
     public static class MustHaveExactLength implements StringValidator {
         private int desiredLength = -1;
 
@@ -112,6 +135,7 @@ public interface Rules {
             }
         }
     }
+
     //
     // Processors
     //
