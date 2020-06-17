@@ -103,9 +103,11 @@ public class AssetFactory {
         if (dto.getCode() != null) asset.setCode(dto.getCode());
         if (dto.getAsset_type_code() != null) asset.setAsset_type_code(dto.getAsset_type_code());
         */
-        assertNotSet(dto.getFunc_loc_path(), "func_loc_path", "");
+        //assertNotSet(dto.getFunc_loc_path(), "func_loc_path", "");
         //assertNotSet(dto.getAsset_type_code(), "asset_type_code", ""); type code must be set in message for unmarshalling to work, but we ignore it
-        assertNotSet(dto.getCode(), "code", dto);
+        //assertNotSet(dto.getCode(), "code", dto);
+        if (dto.getFunc_loc_path() != null) asset.setFunc_loc_path(dto.getFunc_loc_path());
+        if (dto.getCode() != null) asset.setCode(dto.getCode());
 
         if (dto.getAdm_path() != null) asset.setAdm_path(asPath(dto.getAdm_path()));
         if (dto.getCreation_date() != null) asset.setCreation_date(asTimestamp(dto.getCreation_date()));
