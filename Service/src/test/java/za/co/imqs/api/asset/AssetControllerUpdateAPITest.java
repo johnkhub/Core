@@ -38,7 +38,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place").
+                funcloc("at").
                 serial("1234").
                 get();
 
@@ -74,7 +74,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place").
+                funcloc("at").
                 get();
 
         given().
@@ -108,7 +108,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place").
+                funcloc("at").
                 get();
 
         given().
@@ -122,7 +122,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
 
         final  AssetEnvelopeDto update = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 type("ENVELOPE").
-                funcloc("at.the.other.place").
+                funcloc("other").
                 get();
 
         given().
@@ -147,7 +147,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place")
+                funcloc("at")
                 .get();
 
         final  AssetEnvelopeDto update = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).

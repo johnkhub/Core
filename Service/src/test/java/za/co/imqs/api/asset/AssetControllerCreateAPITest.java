@@ -35,7 +35,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place")
+                funcloc("at")
                 .get();
 
 
@@ -77,7 +77,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place")
+                funcloc("at")
                 .get();
 
         given().

@@ -31,7 +31,7 @@ public class Populate {
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at.the.place")
+                funcloc("at")
                 .get();
 
         given().
