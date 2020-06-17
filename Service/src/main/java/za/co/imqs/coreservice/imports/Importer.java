@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.*;
@@ -28,10 +29,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.RunnableFuture;
 import java.util.function.Predicate;
 
 @Slf4j
 public class Importer {
+    private static final String EMIS = "4a6a4f78-2dc4-4b29-aa9e-5033b834a564";
+
     enum Flags {
         FORCE_INSERT,
         FORCE_CONTINUE
@@ -84,6 +88,10 @@ public class Importer {
     }
 
     public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type, Writer exceptionFile) throws Exception {
+        importType(path, asset, skipper, type, exceptionFile, (a) -> {});
+    }
+
+    public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type, Writer exceptionFile, After then) throws Exception {
         final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
         final StatefulBeanToCsv<T> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
 
@@ -101,6 +109,9 @@ public class Importer {
                                     restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
                                 }
                             }
+
+                            then.perform(dto);
+
                         } catch (Exception e) {
                             if (!flags.contains(Flags.FORCE_CONTINUE)) {
                                 throw e;
@@ -120,6 +131,10 @@ public class Importer {
         if (exceptionFile != null) {
             exceptionFile.close();
         }
+    }
+
+    public interface After<T> {
+        void perform(T t);
     }
 
     public Map<String,String> getReverseLookups(String lookupType) throws Exception {
@@ -177,40 +192,67 @@ public class Importer {
         log.info("Importing Components...");
         importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT", new FileWriter("component_exceptions.csv"));
 
-        /*
+/*
         log.info("Importing EMIS...");
-        Map<String,UUID> codeToUuid = cacheCodeToUuid(jdbc);
         importType(assets, new ExternalLinks(),
                 (dto)-> {
-                    if (dto.getEmis() != null) {
-                        final UUID assetId = codeToUuid.get(dto.getFunc_loc_path());
-                        if (assetId != null) {
-                            // TODO remove previous mapping here
+                    // WE SHOULD REALLY MOVE THIS INTO THE AFTER METHOD
+
+
+
+                    // Get the uuid & external id here
+                    // if we find the external id then we need we need to update else we do an add
+                    final UUID assetId = null;
+                    final String emis = null;
+
+
+                    if (assetId != null) {
+                        if (dto.getEmis() == null) {
+                           // delete emis
                             restTemplate.exchange(
-                                    baseUrl+"/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                    HttpMethod.PUT,
+                                    baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                    HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
-                                    assetId, "4a6a4f78-2dc4-4b29-aa9e-5033b834a564", dto.getEmis()
+                                    assetId, EMIS, dto.getEmis()
                             );
                         } else {
-                            log.warn("No asset found with code {} to link external data {} to.", dto.getCode(), dto.toString());
+                            if (emis != null) {
+                                // update
+                                restTemplate.exchange(
+                                        baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                        HttpMethod.PATCH,
+                                        jsonEntity(null),
+                                        Void.class,
+                                        assetId, EMIS, dto.getEmis()
+                                );
+                            } else {
+                                // add
+                                restTemplate.exchange(
+                                        baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                        HttpMethod.PUT,
+                                        jsonEntity(null),
+                                        Void.class,
+                                        assetId, EMIS, dto.getEmis()
+                                );
+                            }
                         }
+                    } else {
+                        log.warn("No asset found with code {} to link external data {} to.", dto.getCode(), dto.toString());
                     }
+
 
                     remap(dto); // this must happen last
 
                     return false; // we don't want to add assets
                 }, null, new FileWriter("emis_exceptions.csv")
         );
-        */
 
-        /*
+ */
+/*
         log.info("Importing Land Parcels...");
-        importType(assets, new AssetLandparcelDto(), (dto)-> remap(dto).getAsset_type_code().equals("LANDPARCEL");
-        // TODO add code to link landparcels to envelopes here
-
-         */
+        importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true; }, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
+ */
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
@@ -267,7 +309,7 @@ public class Importer {
         if (cmd.equalsIgnoreCase("assets")) {
             //Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
             //final String flags = args[3];
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.of(Flags.FORCE_INSERT));
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.of(Flags.FORCE_CONTINUE));
             i.importAssets(file);
         }
 

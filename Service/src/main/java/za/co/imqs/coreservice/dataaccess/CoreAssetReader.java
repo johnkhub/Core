@@ -13,5 +13,9 @@ import java.util.UUID;
  */
 public interface CoreAssetReader {
     CoreAsset getAsset(UUID uuid);
+    CoreAsset getAssetByFuncLocPath(String path);
+    CoreAsset getAssetByXXPath(String pathName, String value);
+    CoreAsset getAssetByExternalId(String externalType, String externalId);
+
     List<String> getExternalLinks(UUID uuid, UUID external_id_type);
 }

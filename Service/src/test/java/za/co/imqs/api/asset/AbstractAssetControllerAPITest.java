@@ -45,7 +45,7 @@ public class AbstractAssetControllerAPITest {
     protected static CoreAssetDto getAsset(UUID uuid) {
         return given().
                 header("Cookie", session).
-                get("/assets/testing/{uuid}", uuid).
+                get("/assets/{uuid}", uuid).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
                 extract().as(CoreAssetDto.class);

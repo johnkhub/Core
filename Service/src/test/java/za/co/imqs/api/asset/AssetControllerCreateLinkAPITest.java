@@ -39,7 +39,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
 
         given().
                 header("Cookie", session).
-                delete("/assets/testing/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
+                delete("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
     }
