@@ -6,7 +6,7 @@ import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import za.co.imqs.coreservice.dto.imports.Rules;
+import za.co.imqs.coreservice.imports.Rules;
 
 /**
  * (c) 2020 IMQS Software
