@@ -25,9 +25,8 @@
 
         <libimqstest>1.0.70-SNAPSHOT</libimqstest>
         <libimqs>1.0.70-SNAPSHOT</libimqs>
-        <coreframework>1.0.70-SNAPSHOT</coreframework>
         <core-tools>1.0.70-SNAPSHOT</core-tools>
-        <form-service-base>1.0.70-SNAPSHOT</form-service-base>
+        <form-service-base>1.0.71a-SNAPSHOT</form-service-base>
     </properties>
 
     <dependencies>
@@ -38,11 +37,6 @@
             <groupId>za.co.imqs.coredb</groupId>
             <artifactId>libimqs</artifactId>
             <version>${libimqs}</version>
-        </dependency>
-        <dependency>
-            <groupId>za.co.imqs.coredb</groupId>
-            <artifactId>coreframework</artifactId>
-            <version>${coreframework}</version>
         </dependency>
         <dependency>
             <groupId>za.co.imqs.coredb</groupId>
