@@ -16,7 +16,7 @@ Import specification
 This means uou must *remove whitespace* from such strings.
 
 ## Path values
-A path is a dash ('-') delimited sequence of path segments. A segment
+A path is a dot ('.') delimited sequence of path segments. A segment
 
 *  Valid characters are 'a-zA-Z0-9_'
 *  Case sensitive
@@ -31,6 +31,8 @@ DTPW data
 
 * The master data must be loaded into the system before asset imports can happen.  
 * Subsequent loads of lookups will merge with existing data meaning that updates can be incremental.
+
+See the [Template](import_template.csv)
 
 > All fields are **mandatory**
 
@@ -58,7 +60,7 @@ DTPW data
 |Field                  |Description|M/O|Applies to|
 |-----------------------|-----------|---|----------|
 |asset_id				|UUID. If populated the system will upsert this asset. Leave blank for insert|o|ALL|
-|asset_type				|Text. One of `ENVELOPE`, `FACILITY`, `SITE`, `BUILDING`, `FLOOR`, `ROOM`, `LANDPARCEL`,`COMPONENT`|m|ALL|
+|asset_type_code				|Text. One of `ENVELOPE`, `FACILITY`, `SITE`, `BUILDING`, `FLOOR`, `ROOM`, `LANDPARCEL`,`COMPONENT` (case sensitive) |m|ALL|
 |name					|Free format Text|m|ALL|
 |func_loc_path			|Path value|m|ALL|
 |active					|Currently ignored|o|ALL|
@@ -71,7 +73,7 @@ DTPW data
 |municipality_code		|Master data (k)|o|`ENVELOPE`|
 |town_code				|Master data (k)|o|`ENVELOPE`|
 |suburb_code			|Master data (k)|o|`ENVELOPE`|
-|facility_type_code		|Master data (k)|o|`FACILITY`|
+|facility_type_code		|Master data (k)|m|`FACILITY`|
 |responsible_dept_code	|Master data (k)|o|ALL|
 |is_owned				|TRUE=owned|o|ALL|
 |EMIS					|EI EMIS number |o|ALL|
