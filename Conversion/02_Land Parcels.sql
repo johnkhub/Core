@@ -27,7 +27,7 @@ delete from asset where asset_type_code  = 'LANDPARCEL';
 INSERT INTO asset (asset_id, code, name, func_loc_path, asset_type_code)
 SELECT   DISTINCT ON ("LPI Code")
     uuid_generate_v4(),
-    "AssetId"||'.'||"LPI Code",
+    "AssetId"||'-'||"LPI Code",
     'Parcel ' || "LPI Code",
     text2ltree("AssetId"||'.'||"LPI Code"),
     'LANDPARCEL'
