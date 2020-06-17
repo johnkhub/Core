@@ -1,9 +1,13 @@
-package za.co.imqs.coreservice.dto.imports;
+package za.co.imqs.coreservice.imports;
 
 import com.opencsv.bean.*;
+import za.co.imqs.coreservice.model.ORM;
 
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class CsvImporter<T> {
@@ -35,25 +39,25 @@ public class CsvImporter<T> {
     // MAYBE INSIST THAT THE TYPE BE THE FIRST COLUMN>???
     //
     private static class Filter implements CsvToBeanFilter {
-        private String type;
-        private MappingStrategy ms;
+        private final String type;
+        private final HashSet<String> typeNamesUpper = new HashSet<>();
 
-        public Filter(String type,MappingStrategy ms) {
+        public Filter(String type, MappingStrategy ms) {
             this.type = type;
-            this.ms = ms;
+            ORM.SUB_CLASSES.forEach(s -> typeNamesUpper.add(s.toUpperCase()));
         }
 
         @Override
         public boolean allowLine(String[] strings) {
-            for (String s : strings) {
-                if (s.equals(type)) return true;
+            if (!typeNamesUpper.contains(strings[1].toUpperCase())) {
+                throw new IllegalArgumentException("Unknown asset type "+strings[1]);
             }
-            return false;
+           return strings[1].equalsIgnoreCase(type);
         }
     }
 
-    private static class NullFilter implements CsvToBeanFilter {
 
+    private static class NullFilter implements CsvToBeanFilter {
 
         @Override
         public boolean allowLine(String[] strings) {

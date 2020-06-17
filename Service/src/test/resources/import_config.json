@@ -1,0 +1,6 @@
+{
+  "authUrl" : "http://localhost/auth2/login",
+  "serviceUrl": "http://localhost:8669",
+  "dbUsername" : "dev",
+  "dbPassword": "dev"
+}

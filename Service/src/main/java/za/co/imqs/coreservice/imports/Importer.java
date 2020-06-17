@@ -1,8 +1,11 @@
-package za.co.imqs.coreservice.model;
+package za.co.imqs.coreservice.imports;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.BeanVerifier;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,16 +19,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.*;
-import za.co.imqs.coreservice.dto.imports.CsvImporter;
-import za.co.imqs.coreservice.dto.imports.Rules;
-import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
-import javax.sql.DataSource;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +32,12 @@ import java.util.function.Predicate;
 
 @Slf4j
 public class Importer {
-    private static final boolean FORCE_INSERT = true;
+    enum Flags {
+        FORCE_INSERT,
+        FORCE_CONTINUE
+    }
+
+
     //
     //  We make path and code the same value. Both dot delimited.
     //
@@ -42,19 +45,19 @@ public class Importer {
     private static final Predicate<org.springframework.http.HttpStatus> SUCCESS = org.springframework.http.HttpStatus::is2xxSuccessful;
     private static final Predicate<org.springframework.http.HttpStatus> FAILURE = SUCCESS.negate();
 
-    private String session;
-    private JdbcTemplate jdbc;
-    private RestTemplate restTemplate;
-    private String baseUrl;
+    private final String session;
+    private final RestTemplate restTemplate;
+    private final String baseUrl;
+    private final EnumSet<Flags> flags;
 
-    public Importer(String baseUrl, String session, JdbcTemplate jdbc) {
+    public Importer(String baseUrl, String session, EnumSet<Flags> flags) {
         this.session = session;
-        this.jdbc = jdbc;
 
         //this.restTemplate = new RestTemplate();  Else PATCH is not supported
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         this.restTemplate = new RestTemplate(requestFactory);
         this.baseUrl = baseUrl;
+        this.flags = flags;
     }
 
     public void importLookups(String lookupType, Path path) throws Exception  {
@@ -80,22 +83,42 @@ public class Importer {
         }
     }
 
-    public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type) throws Exception {
+    public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type, Writer exceptionFile) throws Exception {
         final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<T> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
+
         try (Reader reader = Files.newBufferedReader(path)) {
             assetImporter.stream(reader, asset, skipper, type).forEach(
                     (dto) -> {
-                        if (FORCE_INSERT) {
-                            restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
-                        } else {
-                            if (dto.getAsset_id() == null) {
-                                restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
+                        try {
+                            if (flags.contains(Flags.FORCE_INSERT)) {
+                                restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
                             } else {
-                                restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
+                                if (dto.getAsset_id() == null) {
+                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
+                                } else {
+                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
+                                }
+                            }
+                        } catch (Exception e) {
+                            if (!flags.contains(Flags.FORCE_CONTINUE)) {
+                                throw e;
+                            }
+                            //log.warn("Ignoring error on {}", dto, e);
+                            if (sbc != null) {
+                                try {
+                                    sbc.write((T) dto);
+                                } catch (Exception w) {
+                                    log.error("Unable to update exceptions file:", e);
+                                }
                             }
                         }
                     }
             );
+        }
+        if (exceptionFile != null) {
+            exceptionFile.close();
         }
     }
 
@@ -132,24 +155,151 @@ public class Importer {
         }
     }
 
-    @Data
-    public static class ClientDeptKv extends LookupProvider.Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String chief_directorate_code;
+    public void importAssets(Path assets) throws Exception {
+        log.info("Importing Envelopes...");
+        importType(assets, new AssetEnvelopeDto(), (dto)-> { dto = remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String responsible_dept_classif;
+        log.info("Importing Facilities...");
+        importType(assets, new AssetFacilityDto(), (dto)->{ remap(dto); return true;},"FACILITY", new FileWriter("facility_exceptions.csv"));
 
+        log.info("Importing Buildings...");
+        importType(assets, new AssetBuildingDto(), (dto)->{ remap(dto); return true;}, "BUILDING", new FileWriter("building_exceptions.csv"));
+
+        log.info("Importing Sites...");
+        importType(assets, new AssetSiteDto(), (dto)->{ remap(dto); return true;}, "SITE", new FileWriter("site_exceptions.csv"));
+
+        log.info("Importing Floors...");
+        importType(assets, new AssetFloorDto(), (dto)->{ remap(dto); return true;}, "FLOOR",new FileWriter("floor_exceptions.csv"));
+
+        log.info("Importing Rooms...");
+        importType(assets, new AssetRoomDto(), (dto)->{ remap(dto); return true;}, "ROOM", new FileWriter("room_exceptions.csv"));
+
+        log.info("Importing Components...");
+        importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT", new FileWriter("component_exceptions.csv"));
+
+        /*
+        log.info("Importing EMIS...");
+        Map<String,UUID> codeToUuid = cacheCodeToUuid(jdbc);
+        importType(assets, new ExternalLinks(),
+                (dto)-> {
+                    if (dto.getEmis() != null) {
+                        final UUID assetId = codeToUuid.get(dto.getFunc_loc_path());
+                        if (assetId != null) {
+                            // TODO remove previous mapping here
+                            restTemplate.exchange(
+                                    baseUrl+"/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                    HttpMethod.PUT,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    assetId, "4a6a4f78-2dc4-4b29-aa9e-5033b834a564", dto.getEmis()
+                            );
+                        } else {
+                            log.warn("No asset found with code {} to link external data {} to.", dto.getCode(), dto.toString());
+                        }
+                    }
+
+                    remap(dto); // this must happen last
+
+                    return false; // we don't want to add assets
+                }, null, new FileWriter("emis_exceptions.csv")
+        );
+        */
+
+        /*
+        log.info("Importing Land Parcels...");
+        importType(assets, new AssetLandparcelDto(), (dto)-> remap(dto).getAsset_type_code().equals("LANDPARCEL");
+        // TODO add code to link landparcels to envelopes here
+
+         */
     }
 
-    @Data
-    public static class ChiefDirectorateKv extends LookupProvider.Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String branch_code;
+    private static <T extends CoreAssetDto> T remap(T dto) {
+        dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
+        /*
+        if (dto.getAsset_id() != null && !FORCE_INSERT) {
+            dto.setFunc_loc_path(null);
+            dto.setCode(null);
+        }
+         */
+        return dto;
     }
+
+    private static String getAuthSession(String authUrl, String username, String password)  {
+        try {
+            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
+            PostMethod post = new PostMethod(authUrl);
+            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
+            client.executeMethod(post);
+            if (post.getStatusCode() != 200)
+                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
+            return post.getResponseHeader("Set-Cookie").getValue();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <T> HttpEntity<T> jsonEntity(T object) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Cookie", session);
+        return new HttpEntity<>(object, headers);
+    }
+
+    public static int main(String[] args) throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        Config config = null;
+        try (InputStream is = new FileInputStream(args[0])) {
+            config = mapper.readerFor(Config.class).readValue(is);
+        }
+
+        final String session = getAuthSession(config.getAuthUrl(), config.getDbUsername(), config.getDbPassword()) ;
+
+        final String cmd = args[1];
+        final Path file = Paths.get(args[2]);
+
+        if (cmd.equalsIgnoreCase("lookups")) {
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            i.importLookups(args[3], file, get(args[3]));
+        }
+
+        if (cmd.equalsIgnoreCase("assets")) {
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            i.importAssets(file);
+        }
+
+        if (cmd.equalsIgnoreCase("landparcels")) {
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            i.importLandParcel(file);
+        }
+
+        return 0;
+    }
+
+    // TODO Find a way to handle this in LookupProvider since it knows this relationship
+    private static <T extends LookupProvider.Kv> T get(String s) {
+        switch(s) {
+            case "DISTRICT":
+                return (T) new LookupProvider.KvDistrict();
+            case "MUNIC":
+                return (T) new LookupProvider.KvMunicipality();
+            case "WARD":
+                return (T) new LookupProvider.KvWard();
+            case "TOWN":
+                return (T) new LookupProvider.KvTown();
+            case "SUBURB":
+                return (T) new LookupProvider.KvSuburb();
+            case "FACIL_TYPE":
+                return (T) new LookupProvider.Kv();
+            case "BRANCH":
+                return (T) new LookupProvider.Kv();
+            case "CHIEF_DIR":
+                return (T) new LookupProvider.ChiefDirectorateKv();
+            case "CLIENT_DEP":
+                return (T) new LookupProvider.ClientDeptKv();
+        }
+        return null;
+    }
+
 
     @Data
     @EqualsAndHashCode(callSuper=true)
@@ -177,158 +327,4 @@ public class Importer {
         private String lpi;
     }
 
-    public void importAssets(Path assets) throws Exception {
-        final Map<String,String> towns = getReverseLookups("TOWN");
-        final Map<String,String> suburbs = getReverseLookups("SUBURB");
-        final Map<String,String> municipality = getReverseLookups("MUNIC");
-        final Map<String,String> district = getReverseLookups("DISTRICT");
-
-        log.info("Importing Envelopes...");
-        importType(assets, new AssetEnvelopeDto(),
-                (dto)-> {
-                   dto = remap(dto);
-
-                    if (dto.getTown_code() != null) dto.setTown_code(towns.get(dto.getTown_code()));
-                    //if (dto.getSuburb_code() != null) dto.setSuburb_code(suburbs.get(dto.getSuburb_code())); not reverse lookup
-                    if (dto.getMunicipality_code() != null)
-                        dto.setMunicipality_code(municipality.get(dto.getMunicipality_code()));
-                    if (dto.getDistrict_code() != null) dto.setDistrict_code(district.get(dto.getDistrict_code()));
-
-                    return true;
-                }, "ENVELOPE");
-
-
-        log.info("Importing Facilities...");
-        importType(assets, new AssetFacilityDto(), (dto)->{ remap(dto); return true;},"FACILITY");
-
-        log.info("Importing Buildings...");
-        importType(assets, new AssetBuildingDto(), (dto)->{ remap(dto); return true;}, "BUILDING");
-
-        log.info("Importing Sites...");
-        importType(assets, new AssetSiteDto(), (dto)->{ remap(dto); return true;}, "SITE");
-
-        log.info("Importing Floors...");
-        importType(assets, new AssetFloorDto(), (dto)->{ remap(dto); return true;}, "FLOOR");
-
-        log.info("Importing Rooms...");
-        importType(assets, new AssetRoomDto(), (dto)->{ remap(dto); return true;}, "ROOM");
-
-        log.info("Importing Components...");
-        importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT");
-
-        log.info("Importing EMIS...");
-        Map<String,UUID> codeToUuid = cacheCodeToUuid(jdbc);
-        importType(assets, new ExternalLinks(),
-                (dto)-> {
-                    if (dto.getEmis() != null) {
-                        final UUID assetId = codeToUuid.get(dto.getFunc_loc_path());
-                        if (assetId != null) {
-                            // TODO remove previous mapping here
-                            restTemplate.exchange(
-                                    baseUrl+"/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                    HttpMethod.PUT,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    assetId, "4a6a4f78-2dc4-4b29-aa9e-5033b834a564", dto.getEmis()
-                            );
-                        } else {
-                            log.warn("No asset found with code {} to link external data {} to.", dto.getCode(), dto.toString());
-                        }
-                    }
-
-                    remap(dto); // this must happen last
-
-                    return false; // we don't want to add assets
-                }, null
-        );
-
-
-        /*
-        log.info("Importing Land Parcels...");
-        importType(assets, new AssetLandparcelDto(), (dto)-> remap(dto).getAsset_type_code().equals("LANDPARCEL");
-        // TODO add code to link landparcels to envelopes here
-
-         */
-    }
-
-    private static <T extends CoreAssetDto> T remap(T dto) {
-        dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
-        if (dto.getAsset_id() != null && !FORCE_INSERT) {
-            dto.setFunc_loc_path(null);
-            dto.setCode(null);
-        }
-        return dto;
-    }
-
-
-    private Map<String,UUID> cacheCodeToUuid(JdbcTemplate jdbc) {
-        final Map<String,UUID> results = new HashMap<>();
-        jdbc.query("SELECT asset_id, code FROM asset", (rs, i) -> {
-            results.put(rs.getString("code"), UUID.fromString(rs.getString("asset_id")));
-            return null;
-        });
-        return results;
-    }
-
-    private static String getAuthSession(String authUrl, String username, String password)  {
-        try {
-            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod(authUrl);
-            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-            client.executeMethod(post);
-            if (post.getStatusCode() != 200)
-                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
-            return post.getResponseHeader("Set-Cookie").getValue();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private <T> HttpEntity<T> jsonEntity(T object) {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Cookie", session);
-        return new HttpEntity<>(object, headers);
-    }
-
-    public static int main(String[] args) throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-        final Config config = mapper.readerFor(Config.class).readValue(args[0]);
-
-        // TODO get these from a file should be the first parameter
-        final String session = getAuthSession(config.getAuthUrl(), args[1], args[2]) ;
-        final DataSource ds = HikariCPClientConfigDatasourceHelper.getDefaultDataSource(
-                config.getJdbcUrl(),config.getDbUsername(), config.getDbPassword()
-        );
-        final JdbcTemplate jdbc = new JdbcTemplate(ds);
-
-
-        final String cmd = args[3];
-        final Path file = Paths.get(args[4]);
-
-        if (cmd.equalsIgnoreCase("lookups")) {
-            Importer i = new Importer("", session, jdbc);
-            i.importLookups(args[5], file);
-        }
-
-        if (cmd.equalsIgnoreCase("assets")) {
-            Importer i = new Importer("", session, jdbc);
-            i.importAssets(file);
-        }
-
-        if (cmd.equalsIgnoreCase("landparcels")) {
-            Importer i = new Importer("",session, jdbc);
-            i.importLandParcel(file);
-        }
-
-        return 0;
-    }
-
-    @Data
-    private class Config {
-        private String jdbcUrl;
-        private String authUrl;
-        private String dbUsername;
-        private String dbPassword;
-    }
 }
