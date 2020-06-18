@@ -9,3 +9,9 @@ select fn_delete_asset('261807df-c01a-4072-a92d-d15c9caef773');
 select fn_delete_asset('986119db-0bbc-4869-94a6-1633d2d746f6');
 select fn_delete_asset('a1ae16f2-09a5-4531-84bf-5287df9f8a50');
 select fn_delete_asset('ede5f434-d9fe-46d1-858f-c177bc25b2a8');
+
+select fn_delete_asset('ede5f434-d9fe-46d1-858f-c177bc25b2a8');
+
+select fn_delete_asset('6a53b697-5064-46ca-821b-4dfde49d53f7');
+select fn_delete_asset('8cbf665d-6e8d-4eb3-a383-face4ab316da');
+select fn_delete_asset('9a0cea3f-6023-4cc4-91e3-eed0c9d14fd0');

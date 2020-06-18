@@ -58,11 +58,40 @@ public class TestImport extends AbstractAssetControllerAPITest {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
         loadLookups();
 
-        //Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/2915_UPDATE_NEW Template.csv"});
-        //Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/5726_UPDATE.CSV"});
-        //Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/20358A_New Template_V2.csv"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/2915_UPDATE_NEW Template.csv"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/5726_UPDATE.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/20358A_New Template_V2.csv"});
+
         Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation2/Erf179_185_Update New Template.csv"});
+
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor ADD.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL and ASSET TYPE.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL and NAME.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL only.csv"});
     }
+
+    @Ignore("Fixup")
+    @Test
+    public void fixCodes3() throws Exception { //MUST IGNORE DUPLICATES ON THIS ONE
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        loadLookups();
+
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor ADD.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL and ASSET TYPE.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL and NAME.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation3/Room and Floor UPDATE FL only.csv"});
+    }
+
+    @Ignore("Fixup")
+    @Test
+    public void fixCodes4() throws Exception {
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        loadLookups();
+
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation4/1557_1560_ADD.CSV"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Documents/IMQS/DTPW/Path fixes/RE__Further_data_validation4/43703_43734_5761_UPDATE FL.CSV"});
+    }
+
 
     @Test
     public void testIt() throws Exception  {
