@@ -1,9 +1,6 @@
 package za.co.imqs.coreservice.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
 import com.opencsv.bean.validators.MustMatchRegexExpression;
@@ -43,7 +40,7 @@ public class CoreAssetDto {
 
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.Trim.class)
-    @JsonIgnore
+    //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String asset_id;
 
 

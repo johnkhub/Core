@@ -54,7 +54,7 @@ public class ServiceConfiguration {
         SCHEMA_MGMT_COMPARE(true),
 
         @Label("Enable to stop liquibase form managing the schema - see SchemaManagment.java")
-        SCHEMA_MGMT_SUPPRESS(false);
+        SCHEMA_MGMT_SUPPRESS(true);
 
         private final boolean enabled;
 

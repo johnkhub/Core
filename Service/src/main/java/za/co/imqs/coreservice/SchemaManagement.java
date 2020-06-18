@@ -23,7 +23,6 @@ import java.sql.Connection;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.*;
 
-// TODO refactor update to also run through here
 @Slf4j
 @Component
 public class SchemaManagement implements CliHandler{
@@ -55,8 +54,6 @@ public class SchemaManagement implements CliHandler{
     }
 
     public void upgrade() {
-        if (SCHEMA_MGMT_SUPPRESS.isActive())
-            return;
         for (String schema : schemas) {
             DatabaseUtil.updateDb(ds, schema, true);
         }
@@ -131,7 +128,7 @@ public class SchemaManagement implements CliHandler{
                 );
             }
             return false;
-        } else if (cmd.hasOption("none")) {
+        } else if (cmd.hasOption("manual-schemas")) {
             return true;
         }
 

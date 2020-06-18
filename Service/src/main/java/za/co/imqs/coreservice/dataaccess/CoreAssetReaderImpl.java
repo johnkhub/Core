@@ -90,7 +90,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
                                 "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
                                 "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
                                 "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
-                                "WHERE asset.%s = ?",
+                                "WHERE asset.%s = text2ltree(?)",
                         pathName
                     ),
                     MAPPER, value);
@@ -119,7 +119,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
                             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
                             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
                             "INNER JOIN asset_link ON asset.asset_id = asset_link.asset_id "+
-                            "WHERE asset_link.external_id_type = ? AND asset_link.external_id = ?",
+                            "WHERE asset_link.external_id_type = uuid(?) AND asset_link.external_id = ?",
                     MAPPER, externalType, externalId);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());

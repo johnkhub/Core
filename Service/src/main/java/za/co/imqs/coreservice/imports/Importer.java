@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.*;
 
+import javax.validation.constraints.Pattern;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.RunnableFuture;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Importer {
@@ -192,53 +194,46 @@ public class Importer {
         log.info("Importing Components...");
         importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT", new FileWriter("component_exceptions.csv"));
 
-/*
+
         log.info("Importing EMIS...");
         importType(assets, new ExternalLinks(),
                 (dto)-> {
-                    // WE SHOULD REALLY MOVE THIS INTO THE AFTER METHOD
+                    if (dto.getEmis() == null) {
+                        return false;
+                    }
 
+                    CoreAssetDto asset = null;
+                    try {
+                        asset = restTemplate.exchange(
+                                baseUrl + "/assets/func_loc_path/{path}",
+                                HttpMethod.GET,
+                                jsonEntity(null),
+                                CoreAssetDto.class,
+                                dto.getFunc_loc_path()
+                        ).getBody();
+                    } catch (Exception e) {
 
+                    }
 
-                    // Get the uuid & external id here
-                    // if we find the external id then we need we need to update else we do an add
-                    final UUID assetId = null;
-                    final String emis = null;
+                    if (asset != null) {
+                        final UUID assetId = UUID.fromString(asset.getAsset_id());
+                        restTemplate.exchange(
+                                baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                HttpMethod.DELETE,
+                                jsonEntity(null),
+                                Void.class,
+                                assetId, EMIS, dto.getEmis()
+                        );
 
-
-                    if (assetId != null) {
-                        if (dto.getEmis() == null) {
-                           // delete emis
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                    HttpMethod.DELETE,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    assetId, EMIS, dto.getEmis()
-                            );
-                        } else {
-                            if (emis != null) {
-                                // update
-                                restTemplate.exchange(
-                                        baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                        HttpMethod.PATCH,
-                                        jsonEntity(null),
-                                        Void.class,
-                                        assetId, EMIS, dto.getEmis()
-                                );
-                            } else {
-                                // add
-                                restTemplate.exchange(
-                                        baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                        HttpMethod.PUT,
-                                        jsonEntity(null),
-                                        Void.class,
-                                        assetId, EMIS, dto.getEmis()
-                                );
-                            }
-                        }
+                        restTemplate.exchange(
+                                baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                HttpMethod.PUT,
+                                jsonEntity(null),
+                                Void.class,
+                                assetId, EMIS, dto.getEmis()
+                        );
                     } else {
-                        log.warn("No asset found with code {} to link external data {} to.", dto.getCode(), dto.toString());
+                        log.warn("No asset found with func_loc_path {} to link external data {} to.", dto.getFunc_loc_path(), dto.toString());
                     }
 
 
@@ -248,11 +243,8 @@ public class Importer {
                 }, null, new FileWriter("emis_exceptions.csv")
         );
 
- */
-/*
         log.info("Importing Land Parcels...");
         importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true; }, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
- */
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
@@ -298,6 +290,7 @@ public class Importer {
 
         final String cmd = args[1];
         final Path file = Paths.get(args[2]);
+        log.info("Processing {}", file);
 
 
         if (cmd.equalsIgnoreCase("lookups")) {
@@ -307,9 +300,12 @@ public class Importer {
         }
 
         if (cmd.equalsIgnoreCase("assets")) {
-            //Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
-            //final String flags = args[3];
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.of(Flags.FORCE_CONTINUE));
+            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
+            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s)).collect(Collectors.toList());
+            EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
+            flags.addAll(x);
+
+            final Importer i = new Importer(config.getServiceUrl(), session, flags);
             i.importAssets(file);
         }
 

@@ -54,7 +54,7 @@ public class AbstractAssetControllerAPITest {
     protected static void assertNotFound(UUID uuid) {
         given().
                 header("Cookie", session).
-                get("/assets/testing/{uuid}", uuid).
+                get("/assets/{uuid}", uuid).
                 then().assertThat().
                 statusCode(HttpStatus.SC_NOT_FOUND);
     }

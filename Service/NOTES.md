@@ -17,6 +17,7 @@ Imports
  * There were asset entries in both envelope and facility for the same asset - how can we impose a db constraint avoid this?   
  * The DTPW view does not seem to show everything it should - maybe when there are holes in the path? Definitely an issue with Land Parcels
  * Especially the LPI import had lost of issue with whitespace around values and space/empty strings instead of blanks
+ * Need a way to DELETE entries and to SCRIPT it
  
  ### In progress
   * Need a mechanism to find garbage in the database
@@ -58,5 +59,16 @@ Adding an asset sub-type
 3. Create a Domain model class
 4. Modify AssetFactory
 5. Modify Importer
+
+Query API
+---------
+
+1. Must be able to specify operators and values against fields
+2. Must be able to specify and, or , not
+3. NULL or EMPTY?
+4. Must be able to automatically serialize to correct asset sub-class
+5. OFFSET / LIMIT
+6. GROUP BY 
+7. ORDER BY ASC / DESC
 
  

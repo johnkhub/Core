@@ -17,7 +17,6 @@ ALTER TABLE asset.a_tp_landparcel ADD CONSTRAINT asset_subclass CHECK (public.fn
 ALTER TABLE asset.a_tp_room ADD CONSTRAINT asset_subclass CHECK (public.fn_identify_multiple_subclasses(asset_id) = false);
 ALTER TABLE asset.a_tp_site ADD CONSTRAINT asset_subclass CHECK (public.fn_identify_multiple_subclasses(asset_id) = false);
 
-
 ALTER TABLE public.asset_classification
     ADD CONSTRAINT fk_asset FOREIGN KEY (asset_id)
         REFERENCES public.asset (asset_id) MATCH SIMPLE

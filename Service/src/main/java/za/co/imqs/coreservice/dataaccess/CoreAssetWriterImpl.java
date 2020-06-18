@@ -123,16 +123,18 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 }
                 if (tLocation.getValues().size() > 0) {
                     tLocation.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    count += jdbc.update(generateUpdate("location", tLocation).toString(), tLocation);
+                    count += jdbc.update(generateUpsert("location", tLocation).toString(), tLocation);
                 }
                 if (tAssetIdentification.getValues().size() > 0) {
                     tAssetIdentification.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    count += jdbc.update(generateUpdate("asset_identification", tAssetIdentification).toString(), tAssetIdentification);
+                    count += jdbc.update(generateUpsert("asset_identification", tAssetIdentification).toString(), tAssetIdentification);
                 }
                 if (tGeoms.getValues().size() > 0) {
                     tGeoms.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    //count += jdbc.update(generateUpdate("geoms", tGeoms).toString(), tGeoms);
-                    count += jdbc.update("UPDATE geoms SET geom = ST_GeomFromText(:geom, 4326) WHERE asset_id = :asset_id", tGeoms);
+                    final String sql = "INSERT INTO geoms (asset_id, geom) VALUES (:asset_id, ST_GeomFromText(:geom, 4326))"+
+                            " ON CONFLICT(asset_id) DO "+
+                            "UPDATE SET geom = EXCLUDED.geom";
+                    count += jdbc.update(sql, tGeoms);
                 }
                 if (tAssetClassification.getValues().size() > 0) {
                     tAssetClassification.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
@@ -333,7 +335,22 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         return update;
     }
 
-    // TODO: this could make use of the DEFAULT feature, to insert the defaukt value into the non-specified columns which will simplify the code significantly
+    private StringBuffer generateUpsert(String target, MapSqlParameterSource map) {
+        final StringBuffer insert = generateInsert(target, map);
+
+        insert.append("\n  ON CONFLICT(asset_id) DO \n");
+
+        insert.append("UPDATE SET ");
+        for (Map.Entry<String,Object> e : map.getValues().entrySet()) {
+            if (!e.getKey().equals("asset_id")) {
+                insert.append(e.getKey()).append("=").append("EXCLUDED.").append(e.getKey()).append(",");
+            }
+        }
+        insert.delete(insert.length()-1, insert.length());
+        return insert;
+    }
+
+    // TODO: this could make use of the DEFAULT feature, to insert the default value into the non-specified columns which will simplify the code significantly
     // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateInsert(String target, MapSqlParameterSource map) {
         final StringBuffer insert = new StringBuffer("INSERT INTO ").append(target).append(" (");

@@ -15,3 +15,11 @@ select fn_delete_asset('ede5f434-d9fe-46d1-858f-c177bc25b2a8');
 select fn_delete_asset('6a53b697-5064-46ca-821b-4dfde49d53f7');
 select fn_delete_asset('8cbf665d-6e8d-4eb3-a383-face4ab316da');
 select fn_delete_asset('9a0cea3f-6023-4cc4-91e3-eed0c9d14fd0');
+
+select fn_delete_asset('33ba3c05-201a-44c1-b818-ad61813b4a09');
+
+
+select fn_delete_asset('f78ad9ad-6bde-4f27-99ca-3f69efd98a74'); -- two dud entries probably created by testing
+select fn_delete_asset('7a49652b-7c0e-47ea-96a2-fdeda50c7cc6');
+
+select fn_delete_asset('77eb65b7-da1a-48b1-a0c6-c2da08adb6b2'); -- another dud test entry
