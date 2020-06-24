@@ -52,6 +52,7 @@ java
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
     --server.port=8669
+
     --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"
 ```
 
@@ -61,11 +62,24 @@ java
     -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
+    --server.port=8669
 
     --compare-schemas jdbc:postgresql://localhost:5432/core12feb_2 imqs 1mq5p@55w0rd
-
-    --server.port=8669
+    
     --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"
+```
+
+```
+java 
+    -Din.container=true
+    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -spring.profiles.active=production 
+    -jar asset-core-service.jar  
+    --server.port=8669
+
+    --sync-schema
+
+    --config=file:/home/frank/Development/Core/Service/src/test/resources/config.json
 ```
 
 ### Configuration file
@@ -76,7 +90,7 @@ java
 |configurationService|Host and port of the Configuration Service |
 |serveruser|For use with inter-service auth|
 |authService|Optional - allow for pointing calls to auth to another host and port|
-|sql-schedules|Schedules SQL execution accoring to cron schedules|
+|sql-schedules|Schedules SQL execution according to cron schedules|
 
 ##### Example 
 ```
@@ -127,8 +141,9 @@ Some aspects of schema management are exposed via commandline interface.
 
 `sync-schemas` -  This is used to take on a database that did not previously have liquibase. Use compare schemas (below) to generate a report on the differences between the databases.
 Then, generate scripts to update the database. I do this by hand. Liquibase should in principle also be able to do this, but I have not looked at this yet. Once the databases are the same 
-use this command to generate the SQL that will generate the required changelog data in the database to bootstrap liquibase.
+use this command to generate the SQL that will generate the required changelog data in the database to bootstrap liquibase. **NOTE:**  the changelog tables in the database must be empty.
+The output is sent to the service trace log. 
     
 `document-schemas` - Generates javadocs-like documentation for the database.
  
-`compare-schemas` - Compares an external database to the one managed by the service and generates a difference report. 
+`compare-schemas` - Compares an external database to the one managed by the service and generates a difference report - outputs to the service trace log. 

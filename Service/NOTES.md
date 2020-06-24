@@ -17,7 +17,6 @@ Imports
  * There were asset entries in both envelope and facility for the same asset - how can we impose a db constraint avoid this?   
  * The DTPW view does not seem to show everything it should - maybe when there are holes in the path? Definitely an issue with Land Parcels
  * Especially the LPI import had lost of issue with whitespace around values and space/empty strings instead of blanks
- * Need a way to DELETE entries and to SCRIPT it
  
  ### In progress
   * Need a mechanism to find garbage in the database
@@ -48,17 +47,10 @@ DTPW Data
 *broken data: paths
 
 
+Update the IMPORT.md file with te executible for imports once this is finalised
 
 DATA FIXES
 First have extra columns / parents nullable then apply secondary fix to make them non nullable after lookups have been fixed
-
-Adding an asset sub-type
----------------------------
-1. Create a DTO class
-2. Add the DTO to the named list of @JsonSubTypes in CoreAssetDto
-3. Create a Domain model class
-4. Modify AssetFactory
-5. Modify Importer
 
 Query API
 ---------
