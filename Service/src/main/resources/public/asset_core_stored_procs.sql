@@ -75,3 +75,28 @@ END ; $$
 ;
 //
 COMMENT ON FUNCTION public.fn_identify_multiple_subclasses IS 'Identifies if the same asset has multiple subclasses e.g. same uuid in say envelope and facility. This is an invalid state but at the moment there is nothing in the database constraints that stops you from doing this.';
+
+
+CREATE OR REPLACE FUNCTION public.fn_identify_no_subclasses(the_asset uuid) RETURNS boolean AS $$
+DECLARE
+    sub_classes  text[];
+    stmt text;
+    num int;
+    total int;
+BEGIN
+    num := 0;
+    total := 0;
+    sub_classes := 	ARRAY(SELECT code FROM assettype);
+    FOR clss IN 1..array_upper(sub_classes,1)
+        LOOP
+            stmt := format('SELECT count(asset.asset_id) FROM asset join asset.a_tp_%s s ON asset.asset_id = s.asset_id AND asset_type_code = ''%s'' WHERE asset.asset_id=''%s''::UUID', sub_classes[clss], sub_classes[clss], the_asset);
+            EXECUTE stmt into num;
+            total := total + num;
+        END LOOP;
+
+    --raise notice 'Number %', total;
+    RETURN total = 0;
+END ; $$
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER
+;

@@ -1795,5 +1795,26 @@
       ]
 
     }
+  },{
+    "changeSet": {
+      "id": "f49d6cc0-ce2e-48e2-8f5a-b71d3b2c1d31",
+      "author": "frankvr",
+      "comment" : "Missing FK between asset_classification and asset",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "asset_classification",
+            "constraintName": "asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset"
+          }
+        }]
+    }
   }
 ]}

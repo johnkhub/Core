@@ -40,5 +40,5 @@ END; $function$
 
 COMMENT ON FUNCTION public.fn_check_valid_func_loc_path IS 'Variation of fn_is_valid_func_loc_path, that is suitable fro CHECK constraint. It will only check if the path > 1 segment and only up to n-1 segments.';
 
-ALTER TABLE public.asset ADD CONSTRAINT asset_check CHECK ((public.fn_check_valid_func_loc_path(func_loc_path) = true));
+ALTER TABLE public.asset ADD CONSTRAINT asset_check_path CHECK ((public.fn_check_valid_func_loc_path(func_loc_path) = true));
 

@@ -597,7 +597,7 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": true
+                    "nullable": false
                   },
                   "name": "district_k",
                   "type": "VARCHAR(10)"
@@ -753,7 +753,7 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": true
+                    "nullable": false
                   },
                   "name": "ward_k",
                   "type": "VARCHAR(10)"
@@ -762,7 +762,7 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": true
+                    "nullable": false
                   },
                   "name": "town_k",
                   "type": "VARCHAR(10)"
@@ -844,7 +844,7 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": true
+                    "nullable": false
                   },
                   "name": "local_municipality_k",
                   "type": "VARCHAR(10)"
@@ -918,7 +918,7 @@
              {
                 "column": {
                   "constraints": {
-                    "nullable": true
+                    "nullable": false
                   },
                   "name": "local_municipality_k",
                   "type": "VARCHAR(10)"
