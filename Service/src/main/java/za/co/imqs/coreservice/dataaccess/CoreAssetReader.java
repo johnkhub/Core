@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import filter.FilterBuilder;
 import za.co.imqs.coreservice.model.CoreAsset;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface CoreAssetReader {
     CoreAsset getAssetByFuncLocPath(String path);
     CoreAsset getAssetByXXPath(String pathName, String value);
     CoreAsset getAssetByExternalId(String externalType, String externalId);
+    List<CoreAsset> getAssetByFilter(FilterBuilder filter);
 
     List<String> getExternalLinks(UUID uuid, UUID external_id_type);
 }

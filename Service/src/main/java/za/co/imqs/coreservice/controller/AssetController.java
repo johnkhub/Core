@@ -1,6 +1,12 @@
 package za.co.imqs.coreservice.controller;
 
+import filter.FilterBuilder;
+import filter.SqlWhereLexer;
+import filter.SqlWhereParser;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -202,6 +208,33 @@ public class AssetController {
     }
 
     @RequestMapping(
+            method = RequestMethod.GET, value = "/query"
+    )
+    public ResponseEntity getWithFilter(@RequestParam Map<String, String> paramMap) {
+        final UserContext user = ThreadLocalUser.get();
+        try {
+            LEXER.setInputStream(new ANTLRInputStream(paramMap.get("filter")));
+            LEXER.reset();
+            PARSER.setTokenStream(new CommonTokenStream(LEXER));
+            PARSER.reset();
+
+            final SqlWhereParser.ParseContext ctx = PARSER.parse();
+            if (ctx.exception != null)
+                throw ctx.exception;
+
+            final FilterBuilder filter = ctx.value;
+            filter.orderBy(paramMap.get("orderby"));
+            filter.groupBy(paramMap.get("groupby"));
+            filter.offset(Long.parseLong(paramMap.get("offset")));
+            filter.limit(Long.parseLong(paramMap.get("limit")));
+
+            return new ResponseEntity(assetReader.getAssetByFilter(filter), HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
             method = RequestMethod.GET, value = "/func_loc_path/{path}"
     )
     public ResponseEntity getByPath(@PathVariable String path) {
@@ -253,5 +286,11 @@ public class AssetController {
             return o.toString();
         }
         return null;
+    }
+
+    private static final SqlWhereLexer LEXER = new SqlWhereLexer(new ANTLRInputStream());
+    private static final SqlWhereParser PARSER = new SqlWhereParser(new CommonTokenStream(LEXER));
+    static {
+        PARSER.setErrorHandler(new BailErrorStrategy()); // TODO replace with something that has better error reporting
     }
 }

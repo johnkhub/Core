@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import filter.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -126,6 +127,33 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("Asset where external id of type %s = %s not found", externalType, externalId));
+        }
+    }
+
+    @Override
+    public List<CoreAsset> getAssetByFilter(FilterBuilder filter) {
+        final String sql = filter.build();
+        try {
+            return jdbc.query(
+                    "SELECT asset.*, " +
+                            "location.latitude, location.longitude ," +
+                            "ST_AsText(geoms.geom) AS geom, " +
+                            "asset_identification.barcode, " +
+                            "asset_identification.serial_number, " +
+                            "asset_classification.responsible_dept_code, " +
+                            "asset_classification.is_owned " +
+                            "FROM " +
+                            "   asset " +
+                            "LEFT JOIN location ON asset.asset_id = location.asset_id " +
+                            "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
+                            "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
+                            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+                            "WHERE " + sql,
+                    MAPPER);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Asset matching "+ sql + " not found.");
         }
     }
 
