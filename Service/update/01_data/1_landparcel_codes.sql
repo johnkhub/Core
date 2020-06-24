@@ -1,1 +1,0 @@
-UPDATE asset SET code = replace(code,'.','-') WHERE asset_type_code = 'LANDPARCEL';
