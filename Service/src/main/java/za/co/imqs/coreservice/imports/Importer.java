@@ -173,6 +173,7 @@ public class Importer {
     }
 
     public void importAssets(Path assets) throws Exception {
+
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { dto = remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
@@ -209,7 +210,7 @@ public class Importer {
                                 HttpMethod.GET,
                                 jsonEntity(null),
                                 CoreAssetDto.class,
-                                dto.getFunc_loc_path()
+                                dto.getFunc_loc_path().replace(".","+")
                         ).getBody();
                     } catch (Exception e) {
 

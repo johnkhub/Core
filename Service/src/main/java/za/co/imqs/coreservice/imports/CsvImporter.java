@@ -1,5 +1,8 @@
 package za.co.imqs.coreservice.imports;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.RFC4180ParserBuilder;
 import com.opencsv.bean.*;
 import za.co.imqs.coreservice.model.ORM;
 
@@ -17,10 +20,11 @@ public class CsvImporter<T> {
     }
 
     public Stream<T> stream(Reader reader, T object, BeanVerifier skipper, String type) throws Exception {
+        final CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(new RFC4180ParserBuilder().build()).build();
         final HeaderColumnNameMappingStrategy ms = new HeaderColumnNameMappingStrategy();
         ms.setType(object.getClass());
 
-        final CsvToBean cb = new CsvToBeanBuilder(reader)
+        final CsvToBean cb = new CsvToBeanBuilder(csvReader)
                 .withType(object.getClass())
                 .withMappingStrategy(ms)
                 .withFilter( type == null ? new NullFilter() : new Filter(type, ms)) // TODO This is less than ideal see comment in the filter itself (below)

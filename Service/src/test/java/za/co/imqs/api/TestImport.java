@@ -21,7 +21,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_suburb.csv", "SUBURB"});
 
         // Does not exist in upgrade scenario
-        //Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
+        Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_chief_directorate.csv", "CHIEF_DIR"});
@@ -131,6 +131,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         //delete from asset_link where external_id = '108309284' and asset_id = '7c07e4d4-d42d-48ef-b8d0-e0d953a25f3f';
     }
 
+    @Ignore
     @Test
     public void testIt() throws Exception  {
         loadLookups();
@@ -142,5 +143,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
        // generate a report here
     }
+
+    @Test
+    public void testFull() throws Exception{
+        loadLookups();
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+
+        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/prod_core_working_full.csv", "FORCE_INSERT"});
+    }
+
 
 }

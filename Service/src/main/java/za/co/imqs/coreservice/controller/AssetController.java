@@ -203,7 +203,7 @@ public class AssetController {
     public ResponseEntity getByPath(@PathVariable String path) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path)), HttpStatus.OK);
+            return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path.replace("+","."))), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
