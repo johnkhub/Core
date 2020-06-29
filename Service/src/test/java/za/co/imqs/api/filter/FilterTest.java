@@ -20,7 +20,7 @@ public class FilterTest {
         filter.expression(isNotNull("func_loc_path").not());
         log.info(filter.build());
     }
-
+/*
     @Test
     public void testBuilderAnd() {
         final FilterBuilder filter = new FilterBuilder();
@@ -43,7 +43,8 @@ public class FilterTest {
         filter.groupBy("func_loc_path").limit(50L);
         log.info(filter.build());
     }
-
+*/
+    /*
     @Test
     public void testBuilderFunc() {
         final FilterBuilder filter = new FilterBuilder();
@@ -51,6 +52,8 @@ public class FilterTest {
         log.info(filter.build());
     }
 
+
+     */
     private static final SqlWhereLexer LEXER = new SqlWhereLexer(new ANTLRInputStream());
     private static final SqlWhereParser PARSER = new SqlWhereParser(new CommonTokenStream(LEXER));
     static {
@@ -86,7 +89,15 @@ public class FilterTest {
 
         log.info(addWhere("NOT (appels.vrug > 'pere')").build());
 */
-        log.info(addWhere("(appels.vrug > 'pere') OR pere.vrug <> 'tamatie' AND NOT aaa.x ='piesang' ").build());
+        //log.info(addWhere("(appels.vrug > 'pere') OR pere.vrug <> 'tamatie' AND NOT aaa.x ='piesang' ").build());
+
+        //log.info(addWhere("name='Envelope 1' and asset_type_code = 'ENVELOPE' or asset_type_code = 'BUILDING' or asset_type_code = 'FLOOR' or asset_type_code = 'FACILITY'").build());
+        //log.info(addWhere("name='Envelope 1' and (asset_type_code = 'ENVELOPE' or asset_type_code = 'BUILDING' or asset_type_code = 'FLOOR' or asset_type_code = 'FACILITY')").build());
+
+        log.info(addWhere(
+                "name='Envelope 1' and " +
+                "(asset_type_code = 'ENVELOPE') or (asset_type_code = 'BUILDING') or (asset_type_code = 'FLOOR') or (asset_type_code = 'FACILITY') and " +
+                "func_loc_path='nat'").build());
     }
 
 

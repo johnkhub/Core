@@ -26,7 +26,6 @@ import static org.junit.Assert.fail;
  * Consider a test case for each field as well to test validation.
  */
 public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPITest {
-    private static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
 
     @Before
     public void clearAsset() throws Exception {

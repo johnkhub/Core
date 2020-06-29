@@ -95,19 +95,18 @@ public class AssetFactory {
         asset.setAsset_id(uuid);
         if (dto.getName() != null) asset.setName(dto.getName());
 
+        // TODO
         // We may not want to allow update to these fields without some special process as they all determine the identity
         // of the asset to some degree
         // The type_code is especially problematic as it would now reflect on the tables in the asset schema as well i.e. envelope, site etc.
-        /*
-        if (dto.getFunc_loc_path() != null) asset.setFunc_loc_path(dto.getFunc_loc_path());
-        if (dto.getCode() != null) asset.setCode(dto.getCode());
-        if (dto.getAsset_type_code() != null) asset.setAsset_type_code(dto.getAsset_type_code());
-        */
+
         //assertNotSet(dto.getFunc_loc_path(), "func_loc_path", "");
         //assertNotSet(dto.getAsset_type_code(), "asset_type_code", ""); type code must be set in message for unmarshalling to work, but we ignore it
         //assertNotSet(dto.getCode(), "code", dto);
+
         if (dto.getFunc_loc_path() != null) asset.setFunc_loc_path(dto.getFunc_loc_path());
         if (dto.getCode() != null) asset.setCode(dto.getCode());
+        if (dto.getAsset_type_code() != null) asset.setAsset_type_code(dto.getAsset_type_code());
 
         if (dto.getAdm_path() != null) asset.setAdm_path(asPath(dto.getAdm_path()));
         if (dto.getCreation_date() != null) asset.setCreation_date(asTimestamp(dto.getCreation_date()));
@@ -127,7 +126,7 @@ public class AssetFactory {
         if (dto.getAdm_path() != null) asset.setAdm_path(asPath(dto.getAdm_path()));
         if (dto.getCreation_date() != null) asset.setCreation_date(asTimestamp(dto.getCreation_date()));
 
-        if (dto.getGeom() != null) asset.setGeometry(asGeom(dto.getGeom()));
+        if (dto.getGeom() != null) asset.setGeom(asGeom(dto.getGeom()));
 
         if (dto.getAddress() != null) asset.setAddress(dto.getAddress());
         if (dto.getLatitude() != null) asset.setLatitude(asBigDecimal(dto.getLatitude()));

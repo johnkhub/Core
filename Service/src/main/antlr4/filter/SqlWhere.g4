@@ -7,6 +7,7 @@ grammar SqlWhere;
 
     import filter.FilterBuilder;
     import filter.FilterBuilder.Field;
+    import filter.FilterBuilder.Path;
     import filter.FilterBuilder.GroupOp;
     import filter.Expression;
     import filter.ExpressionFactory;
@@ -20,47 +21,34 @@ parse returns[FilterBuilder value]
 
 parse_inner [FilterBuilder query] returns [FilterBuilder value]
     @after                                                          { $value = query; }
-    :(LBRACKET
-                                                                    {
-                                                                        query.openScope();
-                                                                    }
-    )*
-    criteria=not_expression[query]                                  {
-                                                                        query.expression($criteria.value);
-                                                                    }
-    (RBRACKET                                                       {
-                                                                      query.closeScope();
-                                                                    }
-    )*
-    ( exp_op=expression_operator criteriaN=not_expression[query]    {
-                                                                        switch($exp_op.value) {
-                                                                            case AND: query.andOp($criteriaN.value); break;
-                                                                            case OR: query.orOp($criteriaN.value); break;
-                                                                        }
-                                                                    }
-    )*
-    (RBRACKET                                                       {
-                                                                        query.closeScope();
-                                                                    }
-    )*
+    :
+     x=LBRACKET?                                                    { if ($x != null) query.openScope(); }
+     criteria=not_expression[query]
+     ( exp_op=expression_operator[query] criteriaN=not_expression[query] )*
+     y=RBRACKET?                                                    { if ($y != null) query.closeScope(); }
 ;
 
-not_expression [FilterBuilder query] returns [Expression value]
-    :n=NOT? a=expression                                            {
-                                                                        Expression c = $a.value;
-                                                                        if ($n != null) c.not();
-                                                                        $value = $a.value;
+not_expression [FilterBuilder query]
+    :
+     x=LBRACKET?                                                    { if ($x != null) query.openScope(); }
+     n=NOT? a=expression[query]                                     { if ($n != null) $a.value.not(); }
+     y=RBRACKET?                                                    { if ($y != null) query.closeScope(); }
+;
+
+expression_operator [FilterBuilder query]
+    : AND                                                           { query.andOp(); }
+    | OR                                                            { query.orOp(); }
+;
+
+expression [FilterBuilder query] returns [Expression value]
+    :
+    x=LBRACKET?                                                     {
+                                                                        if ($x != null) query.openScope();
                                                                     }
-;
 
-expression_operator returns[GroupOp value]
-    : AND                                                           { $value = GroupOp.AND; }
-    | OR                                                            { $value = GroupOp.OR; }
-;
-
-expression returns[Expression value]
-    : a=field b=relational_operator c=element                       {
-                                                                        $value = ExpressionFactory.of($a.value, $b.value, $c.value, $c.type);
+    a=field b=relational_operator c=element                         { query.expression(ExpressionFactory.of($a.value, $b.value, $c.value, $c.type)); }
+   y=RBRACKET?                                                      {
+                                                                         if ($y != null) query.closeScope();
                                                                     }
 ;
 
@@ -72,12 +60,13 @@ element returns [Object value, Class type]
     | f=FLOAT_NUMBER                                                { $value = new BigDecimal($f.text); $type = BigDecimal.class; }
     | s=text                                                        { $value = $s.value; $type = String.class; }
     | fi=field                                                      { $value = $fi.value; $type = Field.class; }
+    | '@' LBRACKET p=text RBRACKET                                  { $value = $p.value; $type = Path.class; }
+
  ;
 
 field returns [String value]
-    : fid=FIELD_IDENTIFIER                                          {
-                                                                        $value = $fid.text;
-                                                                    }
+    : fid=FIELD_IDENTIFIER                                          { $value = $fid.text; }
+    | LOWER LBRACKET fid=FIELD_IDENTIFIER RBRACKET                  { $value = "LOWER(" + $fid.text + ")";}
 ;
 
 text returns [String value]
@@ -100,17 +89,16 @@ relational_operator returns [RelationalOperator value]
 EQ                  : '=';
 NEQ                 : '<' '>' | '!' '=';
 GRT                 : '>';
-GEQ                 : '>' '=' | '!' '<';
+GEQ                 : '>' '=';
 LST                 : '<';
-LEQ                 : '<' '=' | '!' '>';
+LEQ                 : '<' '=';
 
 AND                 : A N D;
 OR                  : O R;
-IS                  : I S;
 NOT                 : N O T;
 LIKE                : L I K E;
-NULL                : N U L L;
-IN                  : I N;
+
+// Builtins
 LOWER               : L O W E R;
 
 TRUE                : T R U E;
@@ -126,7 +114,7 @@ DSQUOTE             : SQUOTE SQUOTE;
 
 WHOLE_NUMBER        : [+-]?('0'..'9')+;
 FLOAT_NUMBER        : [+-]?('0'..'9')+ '.' ('0'..'9')+;
-FIELD_IDENTIFIER    : [a-zA-Z][a-zA-Z0-9]*;
+FIELD_IDENTIFIER    : [a-zA-Z_][a-zA-Z_0-9]*;
 DQUOTED_STRING      : DQUOTE (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* DQUOTE;
 SQUOTED_STRING      : SQUOTE (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* SQUOTE;
 

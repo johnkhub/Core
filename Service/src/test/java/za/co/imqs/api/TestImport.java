@@ -139,7 +139,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
-        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/data-1591959698280.csv", "FORCE_INSERT,FORCE_CONTINUE"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/data-1591959698280.csv", "FORCE_INSERT"});
 
        // generate a report here
     }

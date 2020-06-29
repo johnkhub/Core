@@ -26,7 +26,6 @@ public class CoreAsset {
     private String func_loc_path;
     private Timestamp creation_date;
     private Timestamp deactivated_at;
-    private Integer reference_count;
 
     private String address;
     private BigDecimal latitude;
@@ -35,7 +34,7 @@ public class CoreAsset {
     private String barcode;
     private String serial_number;
 
-    private String geometry;
+    private String geom;
 
     private String responsible_dept_code;
     private Boolean is_owned;

@@ -1,6 +1,5 @@
 package filter;
 
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
@@ -50,7 +49,8 @@ public class ExpressionFactory {
             case "Long": return longCriterion(field, op, (Long)value);
             case "String": return stringCriterion(field, op, (String)value);
             case "BigDecimal": return bigdecimalCriterion(field, op, (BigDecimal)value);
-            case "DateTime": return datetimeCriterion(field, op, (DateTime)value);
+           /* case "DateTime": return datetimeCriterion(field, op, (DateTime)value);*/
+            case "Path": return pathCriterion(field, op, (String)value);
             case "Boolean": return booleanCriterion(field, op, (Boolean)value);
         }
         throw new ValidationFailureException(String.format("Unknown type %s in parsed expression", type.getSimpleName()));
@@ -64,9 +64,11 @@ public class ExpressionFactory {
         return new LongExpression(field, op.op(), value);
     }
 
+    /*
     public static Expression datetimeCriterion(String field, RelationalOperator op, DateTime value) {
         return new DateTimeExpression(field, op.op(), value);
     }
+    */
 
     public static Expression bigdecimalCriterion(String field, RelationalOperator op, BigDecimal value) {
         return new BigDecimalExpression(field, op.op(), value);
@@ -74,6 +76,10 @@ public class ExpressionFactory {
 
     public static Expression booleanCriterion(String field, RelationalOperator op, Boolean value) {
         return new BooleanExpression(field, op.op(), value);
+    }
+
+    public static Expression pathCriterion(String field, RelationalOperator op, String value) {
+        return new PathExpression(field, op.op(), value);
     }
 
 
@@ -129,7 +135,7 @@ public class ExpressionFactory {
         return bigdecimalCriterion(field, RelationalOperator.NEQ, value);
     }
 
-
+    /*
     // DateTime
     public static Expression gr(String field, DateTime value) {
         return datetimeCriterion(field, RelationalOperator.GR, value);
@@ -154,7 +160,7 @@ public class ExpressionFactory {
     public static Expression neq(String field, DateTime value) {
         return datetimeCriterion(field, RelationalOperator.NEQ, value);
     }
-
+    */
 
 
     // String
@@ -212,7 +218,7 @@ public class ExpressionFactory {
 
         @Override
         public String toString() {
-            return (not ? " NOT " : "") + "(" + field + " " +  operator + " " + getValue() + ")";
+            return (not ? " NOT " : "") +  field + " " +  operator + " " + getValue();
         }
 
         public Expression not() {
@@ -223,6 +229,7 @@ public class ExpressionFactory {
         public abstract String getValue();
     }
 
+    /*
     private static class DateTimeExpression extends SimpleExpression<DateTime> {
 
         public DateTimeExpression(String field, String operator, DateTime value) {
@@ -234,6 +241,7 @@ public class ExpressionFactory {
             return "'" + value.toString(DATETIME_FORMATTER)+ "'";
         }
     }
+    */
 
     private static class LongExpression extends SimpleExpression<Long> {
 
@@ -262,7 +270,7 @@ public class ExpressionFactory {
     private static class BooleanExpression extends SimpleExpression<Boolean> {
 
         public BooleanExpression(String field, String operator, Boolean value) {
-            super(field, operator, value);
+            super("coalesce("+field+",false)", operator, value);
         }
 
         @Override
@@ -283,6 +291,31 @@ public class ExpressionFactory {
                 return "NULL";
 
             return "'" + value + "'";
+        }
+    }
+
+    private static class PathExpression extends SimpleExpression<String> {
+
+        public PathExpression(String field, String operator, String value) {
+            super(field, translateOperator(operator), value);
+        }
+
+        @Override
+        public String getValue() {
+            if (value == null)
+                return "NULL";
+
+            return "'" + value + "'";
+        }
+        private static String translateOperator(String operator) {
+            if (operator.equals(RelationalOperator.EQ.op())) return "=";
+            if (operator.equals(RelationalOperator.NEQ.op())) return "!=";
+            if (operator.equals(RelationalOperator.GR.op())) return "@>";
+            if (operator.equals(RelationalOperator.GEQ.op())) throw new IllegalArgumentException();
+            if (operator.equals(RelationalOperator.LE.op())) return "<@";
+            if (operator.equals(RelationalOperator.LEQ.op())) new IllegalArgumentException();
+
+            throw new IllegalArgumentException(operator + " is not a valid path operator");
         }
     }
 

@@ -1,33 +1,32 @@
 package filter;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 
 public class FilterBuilder {
     public enum GroupOp implements Node {
-        NOT, AND, OR
+        AND, OR
     }
 
     public interface Field {};
+    public interface Path {};
 
     private Long limit;
     private Long offset;
     private final List<String> orderBy = new ArrayList<>();
     private final List<String> groupBy = new ArrayList<>();
-    private final List<Scope> scopes = new LinkedList<>();
 
     private Scope scope = new Scope();
 
-    public FilterBuilder() {
-        scopes.add(scope);
-    }
 
     public FilterBuilder openScope() {
-        scope = new Scope();
+        scope.add(new OpenBracket());
         return this;
     }
 
     public FilterBuilder closeScope() {
-        scopes.add(scope);
+        scope.add(new CloseBracket());
         return this;
     }
 
@@ -38,18 +37,6 @@ public class FilterBuilder {
 
     public FilterBuilder orOp() {
         scope.add(GroupOp.OR);
-        return this;
-    }
-
-    public FilterBuilder andOp(Expression e) {
-        scope.add(GroupOp.AND);
-        scope.add(e);
-        return this;
-    }
-
-    public FilterBuilder orOp(Expression e) {
-        scope.add(GroupOp.OR);
-        scope.add(e);
         return this;
     }
 
@@ -89,19 +76,13 @@ public class FilterBuilder {
     }
 
     public String build() {
-        String gs = new String();
-
-        for (Scope g : scopes) {
-            gs += "("+g.get()+")";
-        }
-
         String filter = new String();
         filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
         filter = orderBy.isEmpty() ? filter : (filter + " ORDER BY " + String.join(",", orderBy));
         filter = limit == null ? filter : (filter + " LIMIT " + limit.toString());
-        filter = offset == null ? filter : (filter + " OFFSET " + limit.toString());
+        filter = offset == null ? filter : (filter + " OFFSET " + offset.toString());
 
-        return gs + filter;
+        return scope.get() + filter;
     }
 
     private class Scope {
@@ -114,9 +95,21 @@ public class FilterBuilder {
         public String get() {
             String group = "";
             for (Node c : nodes) {
-                group += c.toString() ;
+                group += c.toString() + " ";
             }
             return group;
+        }
+    }
+
+    private class OpenBracket implements Node {
+        public String toString() {
+            return "(";
+        }
+    }
+
+    private class CloseBracket implements Node {
+        public String toString() {
+            return ")";
         }
     }
 }

@@ -1,12 +1,12 @@
 package za.co.imqs.coreservice.controller;
 
 import filter.FilterBuilder;
+import filter.Modifiers;
 import filter.SqlWhereLexer;
 import filter.SqlWhereParser;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -18,16 +18,23 @@ import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
+import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 import za.co.imqs.coreservice.model.AssetFactory;
 import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
@@ -48,6 +55,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 @RequestMapping(ASSET_ROOT_PATH)
 public class AssetController {
+    private static final long MAX_RESULT_ROWS = 10000;
 
     private final CoreAssetWriter assetWriter;
     private final CoreAssetReader assetReader;
@@ -136,6 +144,10 @@ public class AssetController {
     }
 
 
+
+
+
+
     @RequestMapping(
             method = RequestMethod.PUT, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
@@ -157,7 +169,7 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method = RequestMethod.PATCH, value = "/link/{uuid}/to/{external_id_type}"
+            method = RequestMethod.PATCH, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
     public ResponseEntity updateExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
@@ -175,6 +187,7 @@ public class AssetController {
             return mapException(e);
         }
     }
+
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
@@ -195,13 +208,31 @@ public class AssetController {
         }
     }
 
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/link/types"
+    )
+    public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            // TODO implement
+            throw new UnsupportedOperationException();
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+
+
+
     @RequestMapping(
             method = RequestMethod.GET, value = "/{uuid}"
     )
-    public ResponseEntity get(@PathVariable String uuid) {
+    public ResponseEntity<?> get(@PathVariable String uuid) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(asDto(assetReader.getAsset(asUUID(uuid))), HttpStatus.OK);
+            return new ResponseEntity<>(asDto(assetReader.getAsset(asUUID(uuid))), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
@@ -213,22 +244,17 @@ public class AssetController {
     public ResponseEntity getWithFilter(@RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            LEXER.setInputStream(new ANTLRInputStream(paramMap.get("filter")));
-            LEXER.reset();
-            PARSER.setTokenStream(new CommonTokenStream(LEXER));
-            PARSER.reset();
+            final FilterBuilder filter = parse(paramMap.get("filter"));
+            filter.orderBy(paramMap.get(Modifiers.ORDER_BY));
+            filter.groupBy(paramMap.get(Modifiers.GROUP_BY));
+            filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
+            filter.limit(Math.min(Long.parseLong(paramMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
 
-            final SqlWhereParser.ParseContext ctx = PARSER.parse();
-            if (ctx.exception != null)
-                throw ctx.exception;
-
-            final FilterBuilder filter = ctx.value;
-            filter.orderBy(paramMap.get("orderby"));
-            filter.groupBy(paramMap.get("groupby"));
-            filter.offset(Long.parseLong(paramMap.get("offset")));
-            filter.limit(Long.parseLong(paramMap.get("limit")));
-
-            return new ResponseEntity(assetReader.getAssetByFilter(filter), HttpStatus.OK);
+            final List<CoreAssetDto> dtos = new LinkedList<>();
+            for (CoreAsset asset : assetReader.getAssetByFilter(filter)) {
+                dtos.add(asDto(asset));
+            }
+            return new ResponseEntity(dtos, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
@@ -240,7 +266,7 @@ public class AssetController {
     public ResponseEntity getByPath(@PathVariable String path) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path.replace("+","."))), HttpStatus.OK);
+            return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path.replace("+","."))), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
@@ -252,45 +278,80 @@ public class AssetController {
     public ResponseEntity getByExternalId(@PathVariable String external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity(asDto(assetReader.getAssetByExternalId(external_id_type, external_id)), HttpStatus.OK);
+            return new ResponseEntity(asDto(assetReader.getAssetByExternalId(external_id_type, external_id)), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
-    private CoreAssetDto asDto(CoreAsset asset) {
-        final CoreAssetDto dto = new CoreAssetDto();
 
-        dto.setCode(asset.getCode());
-        dto.setFunc_loc_path(asset.getFunc_loc_path());
-        dto.setAddress(asset.getAddress());
-        dto.setAsset_type_code(asset.getAsset_type_code());
-        dto.setGeom(asset.getGeometry());
-        dto.setLongitude(safe(asset.getLongitude()));
-        dto.setLatitude(safe(asset.getLatitude()));
-        dto.setName(asset.getName());
-        dto.setSerial_number(asset.getSerial_number());
-        dto.setAdm_path(asset.getAdm_path());
-        dto.setBarcode(asset.getBarcode());
-        dto.setCreation_date(safe(asset.getCreation_date()));
-        dto.setDeactivated_at(safe(asset.getDeactivated_at()));
-        dto.setAsset_id(safe(asset.getAsset_id()));
-        dto.setIs_owned(asset.getIs_owned() == null ? null : asset.getIs_owned());
-        dto.setResponsible_dept_code(asset.getResponsible_dept_code());
+    private static <T extends CoreAssetDto, S extends CoreAsset> T asDto(S model) {
+        try {
+            T targetDto = ORM.dtoFactory(model.getAsset_type_code());
+            final Map<String,Method> setters = new HashMap<>();
+            for (PropertyDescriptor p : Introspector.getBeanInfo(targetDto.getClass()).getPropertyDescriptors()) {
+                setters.put(p.getName(), p.getWriteMethod());
+            }
 
-        return dto;
+            for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(model.getClass()).getPropertyDescriptors()) {
+                final Method getter = propertyDescriptor.getReadMethod();
+                final Method setter = setters.get(propertyDescriptor.getName());
+
+                if (getter != null && setter != null) {
+                    Object o = getter.invoke(model);
+                    if (o != null) {
+                        if (o instanceof UUID || o instanceof Timestamp) {
+                            o = o.toString();
+                        }
+                        setter.invoke(targetDto, o);
+                    }
+                }
+            }
+
+            return targetDto;
+
+        }  catch(IntrospectionException|InvocationTargetException|IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static String safe(Object o) {
-        if (o != null) {
-            return o.toString();
+
+    private FilterBuilder parse(String text) {
+        synchronized (PARSER) {
+            try {
+                LEXER.setInputStream(new ANTLRInputStream(text));
+                LEXER.reset();
+                PARSER.setTokenStream(new CommonTokenStream(LEXER));
+                PARSER.reset();
+
+                final SqlWhereParser.ParseContext ctx = PARSER.parse();
+                if (ctx.exception != null)
+                    throw ctx.exception;
+
+                return ctx.value;
+            } catch (ParseCancellationException p) {
+                throw new ValidationFailureException(p.getMessage());
+            }
         }
-        return null;
     }
 
     private static final SqlWhereLexer LEXER = new SqlWhereLexer(new ANTLRInputStream());
     private static final SqlWhereParser PARSER = new SqlWhereParser(new CommonTokenStream(LEXER));
     static {
-        PARSER.setErrorHandler(new BailErrorStrategy()); // TODO replace with something that has better error reporting
+        PARSER.addErrorListener(new ThrowingErrorListener());
+        LEXER.addErrorListener(new ThrowingErrorListener());
+    }
+
+    private static class ThrowingErrorListener extends BaseErrorListener {
+
+        @Override
+        public void syntaxError(
+                Recognizer<?, ?> recognizer,
+                Object offendingSymbol,
+                int line, int charPositionInLine,
+                String msg, RecognitionException e
+        ) throws ParseCancellationException {
+            throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
+        }
     }
 }

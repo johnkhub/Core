@@ -210,6 +210,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteAssets(List<UUID> uuid) {
+        // TODO Implement!
         throw new UnsupportedOperationException("Deletion of asset not implemented");
     }
 
@@ -294,8 +295,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getBarcode() != null) {
             tAssetIdentification.addValue("barcode", asset.getBarcode(), Types.VARCHAR);
         }
-        if (asset.getGeometry() != null) {
-            tGeoms.addValue("geom", asset.getGeometry(), Types.VARCHAR);
+        if (asset.getGeom() != null) {
+            tGeoms.addValue("geom", asset.getGeom(), Types.VARCHAR);
         }
         if (asset.getLatitude() != null) {
             tLocation.addValue("latitude", asset.getLatitude(), Types.DECIMAL);

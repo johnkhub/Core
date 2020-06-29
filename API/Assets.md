@@ -35,6 +35,7 @@ The current implementation of this API:
 |408|Request timeout|The client should resubmit the request|
 |409|Conflict|The entity that you tried to add already exists|
 |412|Precondition failed|Indicates that the requested Operation would violate a business rule|
+|413|Payload too large|Indicates that the server truncated the resultset|
 
 
 ### Objects
@@ -43,11 +44,11 @@ The current implementation of this API:
 
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
-|`asset_type_code`|`string`|m|One of 'ENVELOPE', 'FACILITY', 'BUILDING', 'SITE','FLOOR', 'ROOM', COMPONENT, LANDPARCEL. Mandatory on create. May **not** be specified during update |
-|`code`|`string`|(m)|Mandatory on create. May **not** be specified during update|
+|`asset_type_code`|`string`|m|One of 'ENVELOPE', 'FACILITY', 'BUILDING', 'SITE','FLOOR', 'ROOM', COMPONENT, LANDPARCEL etc. Mandatory on create.|
+|`code`|`string`|(m)|Mandatory on create.|
 |`name`|`string`|(m)|Mandatory on create. Optional on update|
 |`adm_path`|`string`|o||
-|`func_loc_path`|`string`|(m)|Mandatory on create. May **not** be specified during update|
+|`func_loc_path`|`string`|(m)|Mandatory on create.|
 |`creation_date`|`string`|o||
 |`address`|`string`|o||
 |`geom`|`string`|o||
@@ -55,6 +56,10 @@ The current implementation of this API:
 |`longitude`|`number`|o||
 |`barcode`|`string`|o||
 |`serial_number`|`string`|o||
+|`responsible_dept_code`|`boolean`|o|**DTPW SPECIFIC**|
+|`is_owned`|`boolean`|o|**DTPW SPECIFIC**|
+
+> Depending on the type of Asset (as defined by `asset_type_code`) more fields specific to this type of Asset may be added to the entity.
 
 
 ### `PUT assets/{uuid}`
@@ -81,8 +86,6 @@ e.g.
 }
 ```
 
-> Depending on the type of Asset (as defined by `asset_type_id`) more fields specific to this type of Asset may be added to the request entity.
->
 Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
@@ -116,7 +119,7 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 412
 
-### `DELETE assets/{uuid}`
+### `DELETE assets/{uuid}` (NOT IMPLEMENTED)
 Deletes an Asset.  The Asset is *not deleted*, but is marked as inactive.
 
 Accepts: *Nothing*
@@ -127,7 +130,7 @@ Status codes: 200, 400, 403, 408, 409, 412
 
 
 
-### `GET asset/link/types`
+### `GET asset/link/types` (NOT IMPLEMENTED)
 Returns a list of defined external identifier types
 
 Accepts: *Nothing*
@@ -177,3 +180,106 @@ Returns:
 ```
 
 Status codes: 200, 400, 403, 404,  408
+
+
+
+
+
+
+> QUERY API: under construction
+
+### GET `asset/{uuid}` (DRAFT)
+
+Returns the Asset with the given asset_id.
+
+Accepts: *Nothing*
+
+Returns: `CoreAssetDto`
+
+Status codes: 200, 400, 403, 404, 408
+
+
+
+### GET `asset/func_loc_path/{path}` (DRAFT)
+
+Returns the Asset with the given Functional Location Path.
+
+Accepts: *Nothing*
+
+Returns: `CoreAssetDto`
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### GET `/linked_to/{external_id_type}/{external_id}` (DRAFT)
+
+Returns the Asset with the given External Identifier. Use `GET asset/link/types` to list the external identifier types that exist on your system.
+
+Accepts: *Nothing*
+
+Returns: `CoreAssetDto`
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### GET `/query?filter` (DRAFT)
+
+Accepts a complex filter request and returns the Assets that match.
+
+Accepts: *Nothing*
+
+Returns: `[CoreAssetDto]`
+
+Status codes: 200, 400, 403, 404, 408, 413
+
+#### Parameters
+
+|Parameter|Type|Description   |
+|---------|--------|----------|
+|filter   |`String`|See below |
+|groupby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
+|orderby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
+|offset   |`long` |Facilitates paging|
+|limit    |`long`  |Facilitates paging. Note that even if no limit is supplied the server may truncate the resultset if it is too large|
+
+> Orderby supports the `asc`|`desc` suffix
+
+#### Filter syntax
+
+Filters allow you to specify sets of relational expressions joined by AND or OR. Grouping may be achieved using round brackets (`'('` `')'`).
+
+The filter mechanism is simple by design and somewhat restrictive.  The goal here is to have a very thin abstraction of the underlying SQL database implementation. Mostly to guard against SQL
+injection attacks, but also to maintain portability betwen teh REST API and client applications.
+
+>**CAVEAT**
+> * The abstraction layer does as little as possible and this results in many of the errors in filters only manifesting themselves as SQL excution errors.
+> * The reporting of parsing errors in the initial implementation is staggeringly bad. Sorry.
+
+
+|Operator|Applies to|Description|
+|--------|----------|-----------|
+|= |String, Number, Boolean, DateTime, Path|Refer to LOWER built-in function below|
+|!=|String, Number, Boolean, DateTime, Path||
+|< |Number, DateTime, Path|For Path this gets the children of the supplied path|
+|<=|Number, DateTimeh||
+|> |Number, DateTime, Path|For Path this gets the ancestors of the supplied path|
+|>=|Number, DateTime||
+|LIKE|String|Mapped to SQL `LIKE`|
+
+* `String`, `Number` and `Boolean` are the Core Asset DTO fields .
+* `DateTime` is a Timestamp value transported as a `String` in the DTO.
+* `Path` is a `String` enclosed in `@()` e.g. `func_loc_path > @('1718.1718.B009_B1')`
+
+Relational expressions have the form `<fieldname> <operator> <literal value>`
+The expression may be prefixed by `NOT`.
+
+> CAVEAT 1: Boolean expressions must include the = true/false e.g. `... and is_owned` is invalid  whereas `... and is_owned=true` is valid.
+
+> CAVEAT 2: Boolean fields that are null in the database are treated `false` for the purposes of comparision and are returned as `false` to avoid complicating things for the calling party.
+
+#### Built-in functions
+
+* `LOWER`:  The lower function can be applied to a text field. This is to facilitate case  insensitive comparison. e.g. `... and LOWER(name) = 'groote schuur'`
+> Note that the function cannot be applied to a string literal and that the literal must be all lower case when supplied in the filter for this to work as intended.
+
+> **CAVEAT**: You can apply this function to any text field, however effective excution requires that the field be indexed on lowercase as well.  The `address` and `name` are the only columns that currently have such indexes. 

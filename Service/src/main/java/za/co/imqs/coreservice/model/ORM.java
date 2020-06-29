@@ -3,12 +3,15 @@ package za.co.imqs.coreservice.model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.CoreAssetDto;
 
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
@@ -33,6 +36,78 @@ public class ORM {
                 replaceAll("([a-z])([A-Z])", "$1_$2");
         return "asset.a_tp_"+name.toLowerCase();
     }
+
+
+    /**
+     Given the asset_type_code returns a new instance of class for that model e.g. AssetEnvelope
+     */
+    public static <T extends CoreAsset> T modelFactory(String type) {
+        final String x = type.charAt(0)+type.substring(1).toLowerCase();
+        final String name = "za.co.imqs.coreservice.model.Asset"+x;
+        try {
+            return (T) ORM.class.getClassLoader().loadClass(name).newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
+            throw new RuntimeException(
+                    String.format(
+                                "Unable to instantiate model class for type %s. Make sure that a class called %s exists and has a public no-args constructor.",
+                                type, name
+                            )
+            );
+        }
+    }
+
+    public static <T extends CoreAssetDto> T dtoFactory(String type) {
+        final String x = type.charAt(0)+type.substring(1).toLowerCase();
+        final String name = "za.co.imqs.coreservice.dto.Asset"+x+"Dto";
+        try {
+            return (T) ORM.class.getClassLoader().loadClass(name).newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
+            throw new RuntimeException(
+                    String.format(
+                            "Unable to instantiate DTO class for type %s. Make sure that a class called %s exists and has a public no-args constructor.",
+                            type, name
+                    )
+            );
+        }
+    }
+
+    public static <T extends CoreAsset> void populateFromResultSet(ResultSet rs, T model) {
+        try {
+            for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(model.getClass()).getPropertyDescriptors()) {
+                final Method getter = propertyDescriptor.getReadMethod();
+                final Method setter = propertyDescriptor.getWriteMethod();
+
+                if (getter != null && setter != null) {
+                    String field = getter.getName().substring(3).toLowerCase();
+                    final String type = getter.getReturnType().getName();
+
+                    Object o = null;
+                    if (type.equals("java.lang.String")) {
+                        o = rs.getString(field);
+                    } else if (type.equals("java.util.UUID")) {
+                        o = UUID.fromString(rs.getString(field));
+                    } else if (type.equals("java.sql.Timestamp")) {
+                        o = rs.getTimestamp(field);
+                    } else if (type.equals("java.math.BigDecimal")) {
+                        o = rs.getBigDecimal(field);
+                    } else if (type.equals("java.lang.Boolean")) {
+                        o = rs.getBoolean(field);
+                    } else if (type.equals("java.lang.Long")) {
+                        o = rs.getLong(field);
+                    } else {
+                        throw new IllegalArgumentException("Unknown type " + type + " for field " + field);
+                    }
+
+                    if (o != null) {
+                        setter.invoke(model, o);
+                    }
+                }
+            }
+        }  catch(IntrospectionException| SQLException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private static Set<String> getAssetSubclasses() {
         //
@@ -59,7 +134,7 @@ public class ORM {
                 final Object result = getter.invoke(model);
                 if (result != null) {
                     final String field = getter.getName().substring(3).toLowerCase();
-                    parameters.addValue(field, result, mapType(getter.getReturnType()));
+                    parameters.addValue(field, result, mapToSqlType(getter.getReturnType()));
                     msg.append(" -> ").append(field);
                 } else {
                     msg.append("SKIPPING null value");
@@ -88,7 +163,7 @@ public class ORM {
         }
     }
 
-    private static int mapType(Class cls) {
+    private static int mapToSqlType(Class cls) {
         switch (cls.getName()) {
             case "String" : return Types.VARCHAR;
             case "Timestamp" : return Types.TIMESTAMP;

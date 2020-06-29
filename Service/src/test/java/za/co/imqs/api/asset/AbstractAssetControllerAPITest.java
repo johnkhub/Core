@@ -33,6 +33,7 @@ public class AbstractAssetControllerAPITest {
     */
     
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
+    public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
     public static String session;
 
     @BeforeClass
@@ -59,7 +60,7 @@ public class AbstractAssetControllerAPITest {
                 statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
-    protected static void assertEquals(CoreAssetDto asset, AssetEnvelopeDto envelope) throws Exception  {
+    protected static void assertEquals(CoreAssetDto asset, CoreAssetDto envelope) throws Exception  {
         assertThat(asset, notNullValue());
         assertThat(asset.getAdm_path(), equalTo(envelope.getAdm_path()));
         assertThat(asset.getName(), equalTo(envelope.getName()));

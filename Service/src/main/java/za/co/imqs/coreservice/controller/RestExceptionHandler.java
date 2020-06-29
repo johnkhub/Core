@@ -19,11 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-
-    public RestExceptionHandler() {
-        log.info("Z are zere");
-    }
-
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("--->", ex);
