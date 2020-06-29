@@ -106,6 +106,10 @@ public class CoreAssetDto {
     @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
     private Boolean is_owned;
 
+    // This is so we have a field to write errors to in the exception files
+    @CsvBindByName(required = false)
+    @JsonIgnore
+    private String error;
 }
 
 //

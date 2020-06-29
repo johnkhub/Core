@@ -14,12 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.client.HttpResponseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.*;
@@ -114,24 +116,36 @@ public class Importer {
 
                             then.perform(dto);
 
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
+
                         } catch (Exception e) {
-                            if (!flags.contains(Flags.FORCE_CONTINUE)) {
-                                throw e;
-                            }
-                            //log.warn("Ignoring error on {}", dto, e);
-                            if (sbc != null) {
-                                try {
-                                    sbc.write((T) dto);
-                                } catch (Exception w) {
-                                    log.error("Unable to update exceptions file:", e);
-                                }
-                            }
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
                         }
                     }
             );
         }
         if (exceptionFile != null) {
             exceptionFile.close();
+        }
+    }
+
+    private <T> void processException(StatefulBeanToCsv<T> sbc, CoreAssetDto dto) {
+        log.error(dto.getError());
+
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
+            throw new RuntimeException(dto.getError());
+        }
+
+        if (sbc != null) {
+            try {
+                sbc.write((T) dto);
+
+            } catch (Exception w) {
+                log.error("Unable to update exceptions file:", w);
+            }
         }
     }
 
@@ -280,7 +294,7 @@ public class Importer {
         return new HttpEntity<>(object, headers);
     }
 
-    public static int main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
         Config config = null;
         try (InputStream is = new FileInputStream(args[0])) {
@@ -314,8 +328,6 @@ public class Importer {
             Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
             i.importLandParcel(file);
         }
-
-        return 0;
     }
 
     // TODO Find a way to handle this in LookupProvider since it knows this relationship
