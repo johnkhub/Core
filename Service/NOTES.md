@@ -64,3 +64,18 @@ Query API
 7. ORDER BY ASC / DESC
 
  
+ 
+ Problems
+ --------
+ 
+ functions for validating paths and subclasses don't "restore"
+ asset_link
+ PK = (asset_id, external_id)
+ IDX = (external_id_type, asset_id, external_id)
+ 
+ Change to
+ 
+ PK = (asset_id, external_id)
+ IDX = (external_id_type, external_id) UNIQUE
+ 
+ 
