@@ -14,7 +14,6 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.togglz.core.Feature;
 import org.togglz.core.annotation.Label;
 import za.co.imqs.configuration.client.ConfigClient;
-import za.co.imqs.framework.scheduler.RunnableTask;
 
 import javax.sql.DataSource;
 
@@ -100,10 +99,10 @@ public class ServiceConfiguration {
         private String cron;
     }
 
-    private class SqlTask implements Runnable {
-        private String name;
-        private String sql;
-        private DataSource ds;
+    private static class SqlTask implements Runnable {
+        private final String name;
+        private final String sql;
+        private final DataSource ds;
 
         public SqlTask(String name, String sql, DataSource ds) {
             this.ds = ds;

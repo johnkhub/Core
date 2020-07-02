@@ -30,7 +30,7 @@ END; $$
 CREATE OR REPLACE FUNCTION public.fn_is_valid_func_loc_path(path ltree) RETURNS boolean AS $$
 DECLARE
     asset uuid;
-    msg text;
+    --msg text;
 BEGIN
     FOR i IN 1..public.nlevel(path)
         LOOP

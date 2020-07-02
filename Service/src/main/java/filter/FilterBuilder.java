@@ -1,7 +1,5 @@
 package filter;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
 
 public class FilterBuilder {
@@ -9,15 +7,16 @@ public class FilterBuilder {
         AND, OR
     }
 
-    public interface Field {};
-    public interface Path {};
+    public interface Field {}
+
+    public interface Path {}
 
     private Long limit;
     private Long offset;
     private final List<String> orderBy = new ArrayList<>();
     private final List<String> groupBy = new ArrayList<>();
 
-    private Scope scope = new Scope();
+    private final Scope scope = new Scope();
 
 
     public FilterBuilder openScope() {
@@ -76,7 +75,7 @@ public class FilterBuilder {
     }
 
     public String build() {
-        String filter = new String();
+        String filter = "";
         filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
         filter = orderBy.isEmpty() ? filter : (filter + " ORDER BY " + String.join(",", orderBy));
         filter = limit == null ? filter : (filter + " LIMIT " + limit.toString());
@@ -85,7 +84,7 @@ public class FilterBuilder {
         return scope.get() + filter;
     }
 
-    private class Scope {
+    private static class Scope {
         private final List<Node> nodes = new LinkedList<>();
 
         public void add(Node n) {
@@ -93,21 +92,21 @@ public class FilterBuilder {
         }
 
         public String get() {
-            String group = "";
+            StringBuilder group = new StringBuilder();
             for (Node c : nodes) {
-                group += c.toString() + " ";
+                group.append(c.toString()).append(" ");
             }
-            return group;
+            return group.toString();
         }
     }
 
-    private class OpenBracket implements Node {
+    private static class OpenBracket implements Node {
         public String toString() {
             return "(";
         }
     }
 
-    private class CloseBracket implements Node {
+    private static class CloseBracket implements Node {
         public String toString() {
             return ")";
         }

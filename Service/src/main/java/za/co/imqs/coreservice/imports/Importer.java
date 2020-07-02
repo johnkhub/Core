@@ -14,25 +14,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.http.client.HttpResponseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.*;
 
-import javax.validation.constraints.Pattern;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.RunnableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -189,7 +185,7 @@ public class Importer {
     public void importAssets(Path assets) throws Exception {
 
         log.info("Importing Envelopes...");
-        importType(assets, new AssetEnvelopeDto(), (dto)-> { dto = remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
+        importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
         log.info("Importing Facilities...");
         importType(assets, new AssetFacilityDto(), (dto)->{ remap(dto); return true;},"FACILITY", new FileWriter("facility_exceptions.csv"));
@@ -296,7 +292,7 @@ public class Importer {
 
     public static void main(String[] args) throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
-        Config config = null;
+        Config config;
         try (InputStream is = new FileInputStream(args[0])) {
             config = mapper.readerFor(Config.class).readValue(is);
         }

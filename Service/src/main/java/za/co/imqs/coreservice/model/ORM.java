@@ -81,21 +81,28 @@ public class ORM {
                     String field = getter.getName().substring(3).toLowerCase();
                     final String type = getter.getReturnType().getName();
 
-                    Object o = null;
-                    if (type.equals("java.lang.String")) {
-                        o = rs.getString(field);
-                    } else if (type.equals("java.util.UUID")) {
-                        o = UUID.fromString(rs.getString(field));
-                    } else if (type.equals("java.sql.Timestamp")) {
-                        o = rs.getTimestamp(field);
-                    } else if (type.equals("java.math.BigDecimal")) {
-                        o = rs.getBigDecimal(field);
-                    } else if (type.equals("java.lang.Boolean")) {
-                        o = rs.getBoolean(field);
-                    } else if (type.equals("java.lang.Long")) {
-                        o = rs.getLong(field);
-                    } else {
-                        throw new IllegalArgumentException("Unknown type " + type + " for field " + field);
+                    Object o;
+                    switch (type) {
+                        case "java.lang.String":
+                            o = rs.getString(field);
+                            break;
+                        case "java.util.UUID":
+                            o = UUID.fromString(rs.getString(field));
+                            break;
+                        case "java.sql.Timestamp":
+                            o = rs.getTimestamp(field);
+                            break;
+                        case "java.math.BigDecimal":
+                            o = rs.getBigDecimal(field);
+                            break;
+                        case "java.lang.Boolean":
+                            o = rs.getBoolean(field);
+                            break;
+                        case "java.lang.Long":
+                            o = rs.getLong(field);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unknown type " + type + " for field " + field);
                     }
 
                     if (o != null) {

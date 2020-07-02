@@ -211,9 +211,9 @@ public class LookupProviderImpl implements LookupProvider {
     // Double quotes each segment of the fully qualified name
     private static String fixQuoting(String value) {
         final String[] segments = value.split("\\.");
-        String rv = "";
+        StringBuilder rv = new StringBuilder();
         for (String  s : segments) {
-            rv = rv + "\"" + s + "\""+".";
+            rv.append("\"").append(s).append("\"").append(".");
         }
         return rv.substring(0,rv.length()-1);
     }
@@ -239,7 +239,7 @@ public class LookupProviderImpl implements LookupProvider {
     }
 
 
-    private class Mapper<T extends Kv> {
+    private static class Mapper<T extends Kv> {
         private final Collection<T> elements;
 
         public Mapper(Collection<T> elements) {

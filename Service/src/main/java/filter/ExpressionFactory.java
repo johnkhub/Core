@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class ExpressionFactory {
 
-    public static String IS = "IS";
-    public static String IS_NOT = "IS NOT";
+    public static final String IS = "IS";
+    public static final String IS_NOT = "IS NOT";
 
     public enum RelationalOperator {
         EQ("="),
@@ -313,15 +313,15 @@ public class ExpressionFactory {
             if (operator.equals(RelationalOperator.GR.op())) return "@>";
             if (operator.equals(RelationalOperator.GEQ.op())) throw new IllegalArgumentException();
             if (operator.equals(RelationalOperator.LE.op())) return "<@";
-            if (operator.equals(RelationalOperator.LEQ.op())) new IllegalArgumentException();
+            if (operator.equals(RelationalOperator.LEQ.op())) throw new IllegalArgumentException();
 
             throw new IllegalArgumentException(operator + " is not a valid path operator");
         }
     }
 
     private static class FunctionCall {
-        private String name;
-        private List<Object> parameters;
+        private final String name;
+        private final List<Object> parameters;
 
         public FunctionCall(String name, List<Object> parameters) {
             this.name = name;
@@ -353,7 +353,7 @@ public class ExpressionFactory {
         }
     }
 
-    private static Map<String,List<Class>> FUNC_PARAM_DEF = new HashMap<>();
+    private static final Map<String,List<Class>> FUNC_PARAM_DEF = new HashMap<>();
     static {
         FUNC_PARAM_DEF.put("lower", Arrays.asList(String.class));
         FUNC_PARAM_DEF.put("upper", Arrays.asList(String.class));

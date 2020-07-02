@@ -13,14 +13,14 @@ public class ExceptionRemapper {
     public static ResponseEntity<String> mapException(Exception exception) {
 
         if (exception instanceof AlreadyExistsException) {
-            log.error("CONFLICT --> ", exception.getMessage());
+            log.error("CONFLICT --> {}", exception.getMessage());
             return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
         } else if (exception instanceof NotFoundException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND);
         } else if (exception instanceof NotPermittedException) {
             return new ResponseEntity(exception.getMessage(), HttpStatus.FORBIDDEN);
         } else if (exception instanceof ValidationFailureException) {
-            log.error("BAD REQUEST --> ", exception.getMessage());
+            log.error("BAD REQUEST --> {}", exception.getMessage());
             return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
         } else if (exception instanceof BusinessRuleViolationException) {
             log.error("RULE VIOLATION --> ", exception);

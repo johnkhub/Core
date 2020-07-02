@@ -124,7 +124,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
         }
     }
 
-    private static RowMapper<CoreAsset> MAPPER =
+    private static final RowMapper<CoreAsset> MAPPER =
         (ResultSet rs, int i) -> {
             //final CoreAsset asset = ORM.modelFactory(rs.getString("asset_type_code"));
             final CoreAsset asset = new CoreAsset();

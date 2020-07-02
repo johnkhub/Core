@@ -7,19 +7,17 @@ import com.opencsv.bean.*;
 import za.co.imqs.coreservice.model.ORM;
 
 import java.io.Reader;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class CsvImporter<T> {
 
-    public Stream<T> stream(Reader reader, T object) throws Exception {
+    public Stream<T> stream(Reader reader, T object) {
         return stream(reader, object, null, null);
     }
 
-    public Stream<T> stream(Reader reader, T object, BeanVerifier skipper, String type) throws Exception {
+    public Stream<T> stream(Reader reader, T object, BeanVerifier skipper, String type)  {
         final CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(new RFC4180ParserBuilder().build()).build();
         final HeaderColumnNameMappingStrategy ms = new HeaderColumnNameMappingStrategy();
         ms.setType(object.getClass());

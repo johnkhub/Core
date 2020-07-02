@@ -1,6 +1,5 @@
 package za.co.imqs.coreservice.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.processor.PreAssignmentProcessor;

@@ -250,7 +250,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?);", externalId, uuid, externalIdType);
+            jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?;", externalId, uuid, externalIdType);
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
