@@ -141,7 +141,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 }
                 if (tAssetClassification.getValues().size() > 0) {
                     tAssetClassification.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    count += jdbc.update(generateUpdate("asset_classification", tAssetClassification).toString(), tAssetClassification);
+                    count += jdbc.update(generateUpsert("asset_classification", tAssetClassification).toString(), tAssetClassification);
                 }
 
                 final MapSqlParameterSource tAssetExt = mapExtension(a.getAsset_id(), a);
