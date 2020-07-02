@@ -3,6 +3,7 @@ package za.co.imqs.coreservice.dataaccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -28,6 +29,7 @@ import static za.co.imqs.coreservice.model.CoreAsset.CREATE;
 import static za.co.imqs.coreservice.model.CoreAsset.UPDATE;
 import static za.co.imqs.coreservice.model.ORM.getTableName;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
  * (c) 2020 IMQS Software
@@ -36,6 +38,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_P
  * Date: 2020/02/05
  */
 @Slf4j
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class CoreAssetWriterImpl implements CoreAssetWriter {
     private static final Set<String> EXCLUDED_GETTERS = Collections.unmodifiableSet(ORM.getReadMethods(CoreAsset.class));

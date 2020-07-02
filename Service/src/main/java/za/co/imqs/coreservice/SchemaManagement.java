@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import za.co.imqs.libimqs.dbutils.DatabaseUtil;
 
@@ -22,9 +23,12 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.*;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 @Slf4j
 @Component
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 public class SchemaManagement implements CliHandler{
 
     private final OptionGroup grp = new OptionGroup();

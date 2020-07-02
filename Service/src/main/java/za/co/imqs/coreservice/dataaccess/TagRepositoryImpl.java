@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.dataaccess;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
@@ -19,6 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
+
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class TagRepositoryImpl implements TagRepository {
     private final JdbcTemplate jdbc;

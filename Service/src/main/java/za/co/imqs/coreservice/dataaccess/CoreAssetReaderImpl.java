@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -28,7 +29,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  *
  * THIS IMPLEMENTATION IS NOT PRODUCTION READY AND IS INTENDED FOR TESTING
  */
-@Profile(PROFILE_TEST)
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class CoreAssetReaderImpl implements CoreAssetReader {
     private final JdbcTemplate jdbc;

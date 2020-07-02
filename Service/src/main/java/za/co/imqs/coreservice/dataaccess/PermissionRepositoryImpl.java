@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.dataaccess;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,12 +16,16 @@ import java.sql.*;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
+
 /**
  * (c) 2020 IMQS Software
  * <p>
  * User: frankvr
  * Date: 2020/02/17
  */
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class PermissionRepositoryImpl implements PermissionRepository {
 

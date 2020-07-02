@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import java.util.UUID;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ACCESS_ROOT_PATH;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
  * (c) 2020 IMQS Software
@@ -27,6 +30,7 @@ import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
  * User: frankvr
  * Date: 2020/02/05
  */
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @RestController
 @Slf4j
 @RequestMapping(ACCESS_ROOT_PATH)

@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.dataaccess;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,6 +27,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
+import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
  * (c) 2020 IMQS Software
@@ -34,6 +36,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_P
  * Date: 2020/02/28
  */
 @Slf4j
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class LookupProviderImpl implements LookupProvider {
     private static final RowMapper<KvDef> KV_TYPE_MAPPER = (ResultSet rs, int num) -> {
