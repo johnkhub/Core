@@ -316,7 +316,7 @@ public class Importer {
 
         if (cmd.equalsIgnoreCase("assets")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s)).collect(Collectors.toList());
+            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
             EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
             flags.addAll(x);
 

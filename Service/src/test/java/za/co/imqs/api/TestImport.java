@@ -20,7 +20,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_town.csv", "TOWN"});
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_suburb.csv", "SUBURB"});
 
-        // Does not exist in upgrade scenario
+
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
@@ -139,7 +139,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
-        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/data-1591959698280.csv", "FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/data-1591959698280.csv", "FORCE_INSERT,FORCE_CONTINUE"});
 
        // generate a report here
     }
@@ -149,7 +149,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
         loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
 
-        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/prod_core_working_full.csv", "FORCE_CONTINUE"});
+        /*
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Responsible departments UPDATE.CSV"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Is_Owned UPDATE.CSV"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Mowbray en Zeekoeivlei_Envelope UPDATE.CSV"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/ENVELOPES_Updates.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/FACILITIES_Updates.csv"});
+        */
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/core_export_3jul.csv", "FORCE_INSERT, FORCE_CONTINUE"});
     }
 
 
