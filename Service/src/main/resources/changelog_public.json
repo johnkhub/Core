@@ -1816,5 +1816,22 @@
           }
         }]
     }
+  },
+  {
+    "changeSet": {
+      "id": "bd9a1f10-4fa0-49d0-81bc-d18d26757736",
+      "author": "frankvr (add missing pk)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addPrimaryKey": {
+            "columnNames": "asset_id",
+            "constraintName": "asset_identification_pkey",
+            "tableName": "asset_identification"
+          }
+        }
+      ]
+
+    }
   }
 ]}
