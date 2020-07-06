@@ -253,9 +253,6 @@ public class Importer {
                     return false; // we don't want to add assets
                 }, null, new FileWriter("emis_exceptions.csv")
         );
-
-        log.info("Importing Land Parcels...");
-        importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true; }, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {

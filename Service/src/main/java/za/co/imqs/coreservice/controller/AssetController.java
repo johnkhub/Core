@@ -31,6 +31,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -298,10 +299,17 @@ public class AssetController {
                 if (getter != null && setter != null) {
                     Object o = getter.invoke(model);
                     if (o != null) {
-                        if (o instanceof UUID || o instanceof Timestamp) {
+                        if (o instanceof UUID || o instanceof Timestamp || o instanceof BigDecimal) {
                             o = o.toString();
                         }
-                        setter.invoke(targetDto, o);
+
+                        try {
+                            setter.invoke(targetDto, o);
+                        } catch (Exception c) {
+                            final String msg = "Invoking " +setter + " with " + o.getClass().getCanonicalName();
+                            log.error(msg);
+                            throw new RuntimeException(c.getMessage()+"."+ msg);
+                        }
                     }
                 }
             }

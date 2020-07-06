@@ -149,14 +149,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
         loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
 
-        /*
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Responsible departments UPDATE.CSV"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Is_Owned UPDATE.CSV"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Mowbray en Zeekoeivlei_Envelope UPDATE.CSV"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/ENVELOPES_Updates.csv"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/FACILITIES_Updates.csv"});
-        */
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/core_export_3jul.csv", "FORCE_INSERT, FORCE_CONTINUE"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/core3jul.csv", "FORCE_INSERT"});
     }
 
 
