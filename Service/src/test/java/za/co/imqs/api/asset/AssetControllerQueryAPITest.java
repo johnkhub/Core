@@ -406,10 +406,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         CoreAssetDto[] dtos = given().
                 header("Cookie", session).
                 queryParam
-                        ("filter", "" +
-                                "name='Envelope 1' and " +
-                                "((asset_type_code = 'ENVELOPE') or (asset_type_code = 'BUILDING')) and " +
-                                "func_loc_path @> @('e1.f1')"
+                        ("filter", "func_loc_path > @('e1.f1.b1')"
                         ).
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -422,6 +419,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         Assert.assertEquals(2, dtos.length);
         assertEquals(dtos[0], envelope);
         assertEquals(dtos[1], facility);
+        assertEquals(dtos[2], building);
     }
 
     @Test
