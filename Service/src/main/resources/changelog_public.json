@@ -1182,9 +1182,37 @@
             "tableName": "asset_link"
           }
         }]
-      
     }
   },
+
+  {
+    "changeSet": {
+      "id": "c840fc6d-15e6-40a6-9e06-5e5338fae94a",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "external_id_type"
+                }
+              },
+              {
+                "column": {
+                  "name": "external_id"
+                }
+              }]
+          ,
+            "indexName": "asset_link_external_id_type_external_id_idx",
+            "tableName": "asset_link",
+            "unique" : true
+          }
+        }]
+    }
+  },
+
   
   {
     "changeSet": {
