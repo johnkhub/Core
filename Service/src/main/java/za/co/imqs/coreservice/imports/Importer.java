@@ -159,26 +159,51 @@ public class Importer {
         return valueToKey;
     }
 
-    public void importLandParcel(Path path) throws Exception {
-        log.info("Import Land Parcels");
-        final CsvImporter<ImportedLandParcel> assetImporter = new CsvImporter<>();
+    public void importLandParcelMappings(Path path, Writer exceptionFile) throws Exception {
+        log.info("Map Assets to Landparcels");
+        final CsvImporter<AssetToLandparcel> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<AssetToLandparcel> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
         try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, new ImportedLandParcel()).forEach(
+            assetImporter.stream(reader, new AssetToLandparcel()).forEach(
                     (dto) -> {
-                        final AssetLandparcelDto parcelDto = new AssetLandparcelDto();
-                        parcelDto.setAsset_id(UUID.randomUUID().toString());
-                        
-                        parcelDto.setName("Parcel " + dto.getLpi() );
-                        parcelDto.setFunc_loc_path(dto.getAssetId()+"."+dto.getLpi());
-                        parcelDto.setCode(dto.getLpi());
+                        try {
+                            restTemplate.put(
+                                    baseUrl+"/assets/landparcel/{landparcel_id}/asset/{asset_id}",
+                                    null,
+                                    dto.getLandparcel_asset_id(), dto.getAsset_id()
+                            );
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
 
-                        parcelDto.setAsset_type_code("LANDPARCEL");
-                        parcelDto.setLpi(dto.getLpi());
-                        parcelDto.setDescription(dto.getDescription());
-
-                        restTemplate.exchange(baseUrl+"/assets/{uuid}", HttpMethod.PUT, jsonEntity(parcelDto), Void.class, parcelDto.getAsset_id());
+                        } catch (Exception e) {
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
+                        }
                     }
             );
+        }
+
+        if (exceptionFile != null) {
+            exceptionFile.close();
+        }
+    }
+
+    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
+        log.error(dto.getError());
+
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
+            throw new RuntimeException(dto.getError());
+        }
+
+        if (sbc != null) {
+            try {
+                sbc.write(dto);
+
+            } catch (Exception w) {
+                log.error("Unable to update exceptions file:", w);
+            }
         }
     }
 
@@ -205,6 +230,8 @@ public class Importer {
         log.info("Importing Components...");
         importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT", new FileWriter("component_exceptions.csv"));
 
+        log.info("Importing Landparcels...");
+        importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true;}, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
 
         log.info("Importing EMIS...");
         importType(assets, new ExternalLinks(),
@@ -257,12 +284,6 @@ public class Importer {
 
     private static <T extends CoreAssetDto> T remap(T dto) {
         dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
-        /*
-        if (dto.getAsset_id() != null && !FORCE_INSERT) {
-            dto.setFunc_loc_path(null);
-            dto.setCode(null);
-        }
-         */
         return dto;
     }
 
@@ -317,9 +338,14 @@ public class Importer {
             i.importAssets(file);
         }
 
-        if (cmd.equalsIgnoreCase("landparcels")) {
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
-            i.importLandParcel(file);
+        if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
+            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
+            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
+            EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
+            flags.addAll(x);
+
+            Importer i = new Importer(config.getServiceUrl(), session, flags);
+            i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"));
         }
     }
 
@@ -359,20 +385,16 @@ public class Importer {
     }
 
     @Data
-    public static class ImportedLandParcel {
+    public static class AssetToLandparcel  {
         @CsvBindByName(required = true)
-        private String assetId;
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String asset_id;
 
         @CsvBindByName(required = true)
-        private String client_asset_id;
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String landparcel_asset_id;
 
         @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String description;
-
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String lpi;
+        private String error;
     }
-
 }

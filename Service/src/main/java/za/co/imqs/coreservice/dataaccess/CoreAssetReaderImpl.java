@@ -124,6 +124,17 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
         }
     }
 
+    @Override
+    public List<UUID> getAssetsLinkedToLandParcel(UUID landparcel) {
+        try {
+            return jdbc.queryForList("SELECT asset_id FROM asset.asset_landparcel WHERE landparcel_asset_id=?", UUID.class, landparcel);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("No assets linked to landparcel %s", landparcel.toString()));
+        }
+    }
+
     private static final RowMapper<CoreAsset> MAPPER =
         (ResultSet rs, int i) -> {
             //final CoreAsset asset = ORM.modelFactory(rs.getString("asset_type_code"));

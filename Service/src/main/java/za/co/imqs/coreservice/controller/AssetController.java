@@ -208,6 +208,7 @@ public class AssetController {
     }
 
 
+
     @RequestMapping(
             method = RequestMethod.GET, value = "/link/types"
     )
@@ -283,6 +284,57 @@ public class AssetController {
         }
     }
 
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/landparcel/{uuid}/assets"
+    )
+    public ResponseEntity<?> getAssetsLinkedToLandparcel(@PathVariable String uuid) {
+        final UserContext user = ThreadLocalUser.get();
+        try {
+            return new ResponseEntity<>(assetReader.getAssetsLinkedToLandParcel(asUUID(uuid)), null, HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PUT, value = "/landparcel/{landparcel_id}/asset/{asset_id}"
+    )
+    public ResponseEntity<?> linkedAssetToLandparcel(@PathVariable UUID landparcel_id, @PathVariable UUID asset_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
+                    () -> {
+                        assetWriter.linkAssetToLandParcel(asset_id, landparcel_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.DELETE, value = "/landparcel/{landparcel_id}/asset/{asset_id}"
+    )
+    public ResponseEntity<?> unlinkAssetFromLandparcel(@PathVariable UUID landparcel_id, @PathVariable UUID asset_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
+                    () -> {
+                        assetWriter.unlinkAssetFromLandParcel(asset_id, landparcel_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
 
     private static <T extends CoreAssetDto, S extends CoreAsset> T asDto(S model) {
         try {

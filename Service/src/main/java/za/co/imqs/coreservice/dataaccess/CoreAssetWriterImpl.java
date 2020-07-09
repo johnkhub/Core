@@ -95,10 +95,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 final String tableName = getTableName(a);
                 if (!tAssetExt.getValues().isEmpty() && !tableName.equals("asset.a_tp_core")) {
                     jdbc.update(generateInsert(tableName, tAssetExt).toString(), tAssetExt);
-
-                    if (a instanceof AssetLandparcel) {
-                        linkLandParcelToAsset((AssetLandparcel)a);
-                    }
                 }
             } catch(Exception e) {
                 throw exceptionMapperAsset(e, a);
@@ -148,10 +144,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 final String tableName = getTableName(a);
                 if (tAssetExt.getValues().size() > 1 && !tableName.equals("asset.a_tp_core")) {
                     count += jdbc.update(generateUpdate(getTableName(a), tAssetExt).toString(), tAssetExt);
-
-                    if (a instanceof AssetLandparcel) {
-                        linkLandParcelToAsset((AssetLandparcel)a);
-                    }
                 }
 
                 if (count == 0)
@@ -263,6 +255,27 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
+        }
+    }
+
+    @Override
+    public void linkAssetToLandParcel(UUID asset, UUID to) {
+        try {
+            jdbc.getJdbcTemplate().update(
+                    "INSERT INTO asset.asset_landparcel (asset_id,landparcel_asset_id) VALUES (?,?) " +
+                            "ON CONFLICT  (asset_id,landparcel_asset_id) DO NOTHING;",
+                    asset, to);
+        } catch (Exception e) {
+            throw exceptionMapperLandparcelLink(e);
+        }
+    }
+
+    @Override
+    public void unlinkAssetFromLandParcel(UUID asset, UUID from) {
+        try {
+            jdbc.getJdbcTemplate().update("DELETE FROM asset.asset_landparcel WHERE asset_id = ? AND landparcel_asset_id = ?", asset, from);
+        } catch (Exception e) {
+            throw exceptionMapperLandparcelLink(e);
         }
     }
 
@@ -394,12 +407,23 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
+    private RuntimeException exceptionMapperLandparcelLink(Exception e) {
+        if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
     private <T extends CoreAsset> MapSqlParameterSource mapExtension(UUID assetId, T asset) throws Exception {
         final MapSqlParameterSource parameters = ORM.mapToSql(asset, EXCLUDED_GETTERS);
         parameters.addValue("asset_id", assetId, Types.OTHER);
         return parameters;
     }
 
+    /*
     private void linkLandParcelToAsset(AssetLandparcel parcel) {
         String rootNode = null;
         try {
@@ -422,4 +446,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
         }
     }
+    */
+
 }

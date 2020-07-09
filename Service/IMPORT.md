@@ -1,6 +1,11 @@
 Import
 ======
 
+> **CAVEAT:** THERE IS NO WAY TO DELETE DATA VIA AN IMPORT. 
+> * There is no way to remove an Asset
+> * There is no way to remove a specific value for a specific asset
+> * By extension it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number 
+
 Data format
 -----------
 
@@ -8,8 +13,11 @@ Data format
 * The first column in the file must be the asset type
 * The ordering of other column does not matter
  
-Process
--------
+ 
+ Importing Assets
+ ----------------
+ 
+### Process ###
  
 * For each file, the import system will make one pass through the system for each asset type
 * Extra passes over and above these are made for extra data such as external identifiers
@@ -17,7 +25,7 @@ Process
 
 > This approach is of course much slower than a single pass, but it makes the implementation so much easier as
 > this makes it easier to ensure that say Envelopes, are imported before asset types that are children of the Envelope
->It also makes it easier to use the same DTOs within the service and the Importers 
+> It also makes it easier to use the same DTOs within the service and the Importers 
 
 * Importers **shall** use the REST endpoints implemented by the service to implement imports.  This ensures that:
     * Business rules are applied consistently
@@ -25,6 +33,15 @@ Process
     * Is arguably less word to implement
     * Arguably test coverage is better by exercising the same code paths 
     
+
+Link Assets to Landparcels
+--------------------------
+
+To link Assets to Landparcels, we use a simple csv file containing two columns 
+`asset_id` the UUID of the asset to link to the landparcel and `landparcel_asset_id` the Asset UUID of the Landparcel.  
+
+> Note: All of the Assets and Landparcels must already exist in the system.
+
  Configuration
  -------------
 
@@ -33,7 +50,8 @@ Process
 |type|parameter|description|
 |----|---------|-----------|
 |lookups|type|The type of lookup (as defined in the `public.kv_type` table)|
-|assets|flags|`FORCE_INSERT`,`FORCE_CONTINUE`|
+|assets|flags|`FORCE_INSERT`,`FORCE_CONTINUE` (see below)|
+|asset_to_landparcel|none||
 
 
 |flag|description|

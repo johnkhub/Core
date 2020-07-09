@@ -21,6 +21,9 @@ public interface CoreAssetWriter {
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId);
     public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId);
 
+    public void linkAssetToLandParcel(UUID asset, UUID to);
+    public void unlinkAssetFromLandParcel(UUID asset, UUID from);
+
     //
     // Extra methods for *Testing*
     // These will refuse to execute in production

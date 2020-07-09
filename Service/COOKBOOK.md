@@ -207,3 +207,10 @@ UNION ALL SELECT 'TotalRows', ct, NULL, NULL FROM cteTableInfo
 UNION ALL SELECT 'LiveTuples', pg_stat_get_live_tuples(TableName), NULL, NULL FROM cteTableInfo
 UNION ALL SELECT 'DeadTuples', pg_stat_get_dead_tuples(TableName), NULL, NULL FROM cteTableInfo;
 ```
+
+Bad lat/lon
+
+```
+select * from location where latitude < -35.0 or latitude > -30.0;
+select * from location where longitude < 17.0 or longitude > 24.0;
+```

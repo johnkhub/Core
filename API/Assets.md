@@ -130,7 +130,7 @@ Status codes: 200, 400, 403, 408, 409, 412
 
 
 
-### `GET asset/link/types` (NOT IMPLEMENTED)
+### `GET assets/link/types` (NOT IMPLEMENTED)
 Returns a list of defined external identifier types
 
 Accepts: *Nothing*
@@ -148,7 +148,7 @@ Returns:
 
 Status codes: 200
 
-### `PUT  asset/link/{uuid}/to/{external_id_type}/{external_id}`
+### `PUT  assets/link/{uuid}/to/{external_id_type}/{external_id}`
 
 Links an external identifier of the specified type to the specified Asset. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -158,7 +158,7 @@ Returns: *Nothing*
 
 Status codes: 200, 400, 403, 408, 412
 
-### `DELETE asset/link/{uuid}/to/{external_id_type}/{external_id}`
+### `DELETE assets/link/{uuid}/to/{external_id_type}/{external_id}`
 
 Removes the specified external identifier of the specified type linked to the specified Asset. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -168,7 +168,7 @@ Returns: *Nothing*
 
 Status codes: 200, 400, 403, 408, 412
 
-### GET `asset/link/{uuid}/to/{external_id_type}` (NOT IMPLEMENTED)
+### GET `assets/link/{uuid}/to/{external_id_type}` (NOT IMPLEMENTED)
 
 Returns the link to the specified asset of the given external type. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -188,7 +188,7 @@ Status codes: 200, 400, 403, 404,  408
 
 > QUERY API: under construction
 
-### GET `asset/{uuid}` (DRAFT)
+### GET `assets/{uuid}` (DRAFT)
 
 Returns the Asset with the given asset_id.
 
@@ -200,7 +200,7 @@ Status codes: 200, 400, 403, 404, 408
 
 
 
-### GET `asset/func_loc_path/{path}` (DRAFT)
+### GET `assets/func_loc_path/{path}` (DRAFT)
 
 Returns the Asset with the given Functional Location Path.
 
@@ -211,7 +211,7 @@ Returns: `CoreAssetDto`
 Status codes: 200, 400, 403, 404, 408
 
 
-### GET `/linked_to/{external_id_type}/{external_id}` (DRAFT)
+### GET `assets/linked_to/{external_id_type}/{external_id}` (DRAFT)
 
 Returns the Asset with the given External Identifier. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -222,7 +222,7 @@ Returns: `CoreAssetDto`
 Status codes: 200, 400, 403, 404, 408
 
 
-### GET `/query?filter` (DRAFT)
+### GET `assets/query?filter` (DRAFT)
 
 Accepts a complex filter request and returns the Assets that match.
 
@@ -283,3 +283,55 @@ The expression may be prefixed by `NOT`.
 > Note that the function cannot be applied to a string literal and that the literal must be all lower case when supplied in the filter for this to work as intended.
 
 > **CAVEAT**: You can apply this function to any text field, however effective excution requires that the field be indexed on lowercase as well.  The `address` and `name` are the only columns that currently have such indexes. 
+
+#### Available fields ####
+
+|All                        |Envelope           |Facility           |Site|Building|Floor|Room|Landparcel|
+|---------------------------|-------------------|-------------------|----|--------|-----|----|----------|
+|asset_id	                  |region_code        |facility_type_code	|    |        |     |    | LPI      |
+|asset_type_code            |district_code      |    	              |    |        |     |    |          |
+|code                       |municipality_code  |    	              |    |        |     |    |          |
+|name                       |town_code          |    	              |    |        |     |    |          |
+|func_loc_path              |suburb_code        |    	              |    |        |     |    |          |
+|address                    |ward               |    	              |    |        |     |    |          |
+|latitude                   |                   |    	              |    |        |     |    |          |
+|longitude                  |                   |    	              |    |        |     |    |          |
+|geom	                      |                   |    	              |    |        |     |    |          |
+|creation_date              |                   |                   |    |        |     |    |          | 
+|deactivated_at             |                   |                   |    |        |     |    |          | 
+|barcode                    |                   |                   |    |        |     |    |          | 
+|serial_number              |                   |                   |    |        |     |    |          | 
+|responsible_dept_code (*)  |                   |    	              |    |        |     |    |          |
+|is_owned (*)               |                   |    	              |    |        |     |    |          |
+|EMIS (*)	                  |                   |                   |    |        |     |    |          |
+
+> (*) are **DTPW specific**
+
+> **NOTE:** These fields/filter criteria are not available
+> * Tags (work in progress)
+> * Branch, Chief Directorate (planned)
+> * The link between Landparcels and Assets
+> * Any form of spatial criteria (*not planned*)
+
+
+
+### GET `assets/landparcel/{uuid}/assets` (DRAFT)
+
+Returns the Asset identifiers linked to the Landparcel with the given id.
+
+Accepts: *Nothing*
+
+Returns: `[String]`
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### PUT `assets/landparcel/{landparcel_id}/asset/{asset_id}` (DRAFT)
+
+Links the specified asset id to the specified Landparcel id.
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 404, 408

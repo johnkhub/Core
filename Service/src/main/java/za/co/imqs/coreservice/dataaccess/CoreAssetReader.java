@@ -20,4 +20,6 @@ public interface CoreAssetReader {
     List<CoreAsset> getAssetByFilter(FilterBuilder filter);
 
     List<String> getExternalLinks(UUID uuid, UUID external_id_type);
+
+    List<UUID> getAssetsLinkedToLandParcel(UUID landparcel);
 }

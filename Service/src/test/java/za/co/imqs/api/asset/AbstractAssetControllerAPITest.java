@@ -1,6 +1,7 @@
 package za.co.imqs.api.asset;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -145,6 +146,22 @@ public class AbstractAssetControllerAPITest {
         public CoreAssetBuilder serial(String serial) {
             asset.setSerial_number(serial);
             return this;
+        }
+    }
+
+    public static <T extends CoreAssetDto> void putAsset(UUID assetId, T asset) {
+        given().
+                header("Cookie", session).contentType(ContentType.JSON).body(asset).
+                put("/assets/{uuid}", assetId).
+                then().assertThat().statusCode(HttpStatus.SC_CREATED);
+    }
+
+    public static <T extends CoreAssetDto> void deleteAssets(UUID ...assets) {
+        for (UUID u : assets) {
+            given().
+                    header("Cookie", session).
+                    delete("/assets/testing/{uuid}", u).
+                    then().assertThat().statusCode(HttpStatus.SC_OK);
         }
     }
 

@@ -60,6 +60,16 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
+    public void linkAssetToLandParcel(UUID asset, UUID to) {
+
+    }
+
+    @Override
+    public void unlinkAssetFromLandParcel(UUID asset, UUID from) {
+
+    }
+
+    @Override
     public void obliterateAssets(List<UUID> uuids) {
 
     }

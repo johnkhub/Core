@@ -149,8 +149,15 @@ public class TestImport extends AbstractAssetControllerAPITest {
         loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
 
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/core3jul.csv", "FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
     }
 
+    @Test
+    public void testLandparcelLink() throws Exception{
+        //loadLookups();
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
+        Importer.main(new String[]{config, "asset_to_landparcel","/home/frank/Development/Core/Service/src/test/resources/api/dummyLink.csv","FORCE_CONTINUE"});
+    }
 
 }

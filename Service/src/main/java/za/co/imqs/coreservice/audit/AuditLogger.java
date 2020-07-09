@@ -19,6 +19,11 @@ public interface AuditLogger {
         UPDATE_ASSET_LINK,
         QUERY_ASSET_LINK,
 
+        ADD_LANDPARCEL_ASSET_LINK,
+        DELETE_LANDPARCEL_ASSET_LINK,
+        UPDATE_LANDPARCEL_ASSET_LINK,
+        QUERY_LANDPARCEL_ASSET_LINK,
+
         ADD_KV_TYPE,
 
         ADD_KV_VALUE,
