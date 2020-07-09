@@ -6,7 +6,7 @@ DECLARE
     sub_classes  text[];
     stmt text;
 BEGIN
-    sub_classes := 	ARRAY(SELECT code FROM assettype);
+    sub_classes := 	ARRAY(SELECT code FROM public.assettype);
     FOR clss IN 1..array_upper(sub_classes,1)
         LOOP
             stmt := format('DELETE FROM asset.a_tp_%s WHERE asset_id=''%s''::UUID', sub_classes[clss], the_asset);
@@ -32,9 +32,9 @@ DECLARE
     asset uuid;
     msg text;
 BEGIN
-    FOR i IN 1..nlevel(path)
+    FOR i IN 1..public.nlevel(path)
         LOOP
-            asset := (SELECT asset_id from asset WHERE code = REPLACE(subpath(path,0,i)::text, '.', '-'));
+            asset := (SELECT asset_id from public.asset WHERE code = REPLACE(public.subpath(path,0,i)::text, '.', '-'));
             --select replace(subpath(path,0,i)::text, '.','-') into msg;
             --raise notice 'hallo %', msg;
 
@@ -59,8 +59,8 @@ DECLARE
 BEGIN
     num := 0;
     total := 0;
-    sub_classes := 	ARRAY(SELECT code FROM assettype);
-    FOR clss IN 1..array_upper(sub_classes,1)
+    sub_classes := 	ARRAY(SELECT code FROM public.assettype);
+    FOR clss IN 1..coalesce(array_upper(sub_classes,1),0)
         LOOP
             stmt := format('SELECT count(asset_id) FROM asset.a_tp_%s WHERE asset_id=''%s''::UUID', sub_classes[clss], the_asset);
             EXECUTE stmt into num;
@@ -86,7 +86,7 @@ DECLARE
 BEGIN
     num := 0;
     total := 0;
-    sub_classes := 	ARRAY(SELECT code FROM assettype);
+    sub_classes := 	ARRAY(SELECT code FROM public.assettype);
     FOR clss IN 1..array_upper(sub_classes,1)
         LOOP
             stmt := format('SELECT count(asset.asset_id) FROM asset join asset.a_tp_%s s ON asset.asset_id = s.asset_id AND asset_type_code = ''%s'' WHERE asset.asset_id=''%s''::UUID', sub_classes[clss], sub_classes[clss], the_asset);

@@ -23,14 +23,14 @@ DECLARE
     asset uuid;
 BEGIN
     -- If n=1 this is the root of the path and obviously won't exist
-    IF nlevel(path) = 1 THEN
+    IF public.nlevel(path) = 1 THEN
         RETURN true;
     END IF;
 
     -- Only check up to n-1 as n is the node we are trying to insert
-    FOR i IN 1..nlevel(path)-1
+    FOR i IN 1..public.nlevel(path)-1
         LOOP
-            asset := (SELECT asset_id from asset WHERE code = REPLACE(subpath(path,0,i)::text, '.', '-'));
+            asset := (SELECT asset_id from public.asset WHERE code = REPLACE(public.subpath(path,0,i)::text, '.', '-'));
             IF (asset IS null) THEN RETURN false;
             END IF;
         END LOOP;
