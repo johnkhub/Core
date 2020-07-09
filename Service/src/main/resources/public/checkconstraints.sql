@@ -88,7 +88,7 @@ BEGIN
     );
 
     IF idx = 0 THEN
-        RETURN true;
+        RETURN false;
     END IF;
 
     num := 0;
