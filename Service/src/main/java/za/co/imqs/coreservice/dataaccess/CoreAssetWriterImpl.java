@@ -449,5 +449,4 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
     */
-
 }

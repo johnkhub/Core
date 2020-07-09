@@ -10,7 +10,6 @@ public class FilterBuilder {
     }
 
     public interface Field {}
-
     public interface Path {}
 
     private Long limit;
@@ -21,6 +20,12 @@ public class FilterBuilder {
     private final Scope scope = new Scope();
     private int bracketCount = 0;
 
+    private final Set<String> fieldReferences = new HashSet<>();
+
+
+    public FilterBuilder() {
+        fieldReferences.add("asset_id");
+    }
 
     public FilterBuilder openScope() {
         scope.add(new OpenBracket());
@@ -47,6 +52,18 @@ public class FilterBuilder {
     public FilterBuilder expression(Expression e) {
         scope.add(e);
         return this;
+    }
+
+    public FilterBuilder field(String field) {
+        fieldReferences.add(field);
+        return this;
+    }
+
+    // Having the list of fields that are reference in the filter makes it possible
+    // to join any additional tables that are required to apply the filter, without
+    // exposing the internal complexities of the schema to the outside.
+    public Set<String> getFields() {
+        return fieldReferences;
     }
 
     public FilterBuilder orderBy(String ...fields) {
@@ -117,4 +134,5 @@ public class FilterBuilder {
             return ")";
         }
     }
+
 }

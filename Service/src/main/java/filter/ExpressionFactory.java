@@ -52,6 +52,7 @@ public class ExpressionFactory {
            /* case "DateTime": return datetimeCriterion(field, op, (DateTime)value);*/
             case "Path": return pathCriterion(field, op, (String)value);
             case "Boolean": return booleanCriterion(field, op, (Boolean)value);
+            case "Set": return tagsCriterion((List<String>) value);
         }
         throw new ValidationFailureException(String.format("Unknown type %s in parsed expression", type.getSimpleName()));
     }
@@ -80,6 +81,10 @@ public class ExpressionFactory {
 
     public static Expression pathCriterion(String field, RelationalOperator op, String value) {
         return new PathExpression(field, op.op(), value);
+    }
+
+    public static Expression tagsCriterion(List<String> value) {
+        return new TagsExpression(value);
     }
 
 
@@ -177,6 +182,7 @@ public class ExpressionFactory {
         return stringCriterion(field, RelationalOperator.NEQ, value);
     }
 
+    /*
     public static Expression eq(FunctionCall field, String value) {
         return stringCriterion(field.get(), RelationalOperator.EQ, value);
     }
@@ -184,7 +190,7 @@ public class ExpressionFactory {
     public static Expression neq(FunctionCall field, String value) {
         return stringCriterion(field.get(), RelationalOperator.NEQ, value);
     }
-
+     */
 
     //
     public static Expression eq(String field, Boolean value) {
@@ -195,6 +201,7 @@ public class ExpressionFactory {
         return booleanCriterion(field, RelationalOperator.NEQ, value);
     }
 
+    /*
     public static FunctionCall func(String name, Object ...fields) {
         return func(name, Arrays.asList(fields));
     }
@@ -202,13 +209,14 @@ public class ExpressionFactory {
     public static FunctionCall func(String name, List<Object> fields) {
         return new FunctionCall(name, fields);
     }
+     */
 
 
     private static abstract class SimpleExpression<T> implements Expression {
         protected final T value;
-        private final String operator;
-        private final String field;
-        private boolean not;
+        protected final String operator;
+        protected final String field;
+        protected boolean not;
 
         public SimpleExpression(String field, String operator, T value) {
             this.field = field;
@@ -319,6 +327,19 @@ public class ExpressionFactory {
         }
     }
 
+    private static class TagsExpression extends SimpleExpression<List<String>> {
+
+        public TagsExpression(List<String> value) {
+            super("public.has_tags", "", value);
+        }
+
+        @Override
+        public String getValue() {
+            return "(asset_id, ARRAY[" + String.join(",", value) + "])";
+        }
+    }
+
+    /*
     private static class FunctionCall {
         private final String name;
         private final List<Object> parameters;
@@ -359,4 +380,5 @@ public class ExpressionFactory {
         FUNC_PARAM_DEF.put("upper", Arrays.asList(String.class));
         FUNC_PARAM_DEF.put("len", Arrays.asList(String.class));
     }
+     */
 }

@@ -4,6 +4,7 @@ grammar SqlWhere;
     import org.joda.time.DateTime;
     import org.joda.time.format.DateTimeFormatter;
     import java.math.BigDecimal;
+    import java.util.Set;
 
     import filter.FilterBuilder;
     import filter.FilterBuilder.Field;
@@ -45,28 +46,30 @@ expression [FilterBuilder query] returns [Expression value]
     x=LBRACKET?                                                     {
                                                                         if ($x != null) query.openScope();
                                                                     }
-
-    a=field b=relational_operator c=element                         { query.expression(ExpressionFactory.of($a.value, $b.value, $c.value, $c.type)); }
-   y=RBRACKET?                                                      {
+    (
+        TAGS c=element[query]                                       { query.expression(ExpressionFactory.of(null, null, $c.value, $c.type)); }
+        |a=field[query] b=relational_operator c=element[query]      { query.expression(ExpressionFactory.of($a.value, $b.value, $c.value, $c.type)); }
+    )
+    y=RBRACKET?                                                     {
                                                                          if ($y != null) query.closeScope();
                                                                     }
 ;
 
-element returns [Object value, Class type]
+element [FilterBuilder query] returns [Object value, Class type]
     : NULL                                                          { $value = null;  $type = null; }
     | TRUE                                                          { $value = Boolean.TRUE; $type = Boolean.class; }
     | FALSE                                                         { $value = Boolean.FALSE; $type = Boolean.class;}
     | i=WHOLE_NUMBER                                                { $value = Long.parseLong($i.text); $type = Long.class; }
     | f=FLOAT_NUMBER                                                { $value = new BigDecimal($f.text); $type = BigDecimal.class; }
     | s=text                                                        { $value = $s.value; $type = String.class; }
-    | fi=field                                                      { $value = $fi.value; $type = Field.class; }
+    | fi=field[query]                                               { $value = $fi.value; $type = Field.class; }
     | '@' LBRACKET p=text RBRACKET                                  { $value = $p.value; $type = Path.class; }
-
+    | t=set                                                         { $value = $t.value; $type = Set.class; }
  ;
 
-field returns [String value]
-    : fid=FIELD_IDENTIFIER                                          { $value = $fid.text; }
-    | LOWER LBRACKET fid=FIELD_IDENTIFIER RBRACKET                  { $value = "LOWER(" + $fid.text + ")";}
+field [FilterBuilder query] returns [String value]
+    : fid=FIELD_IDENTIFIER                                          { $value = $fid.text; query.field($fid.text); }
+    | LOWER LBRACKET fid=FIELD_IDENTIFIER RBRACKET                  { $value = "LOWER(" + $fid.text + ")"; query.field($fid.text);}
 ;
 
 text returns [String value]
@@ -75,6 +78,19 @@ text returns [String value]
                                                                         String val = $s.text;
                                                                         $value = val == null || val.isEmpty() ? "" : val.substring(1, val.length()-1);
                                                                     }
+;
+
+set returns [List<String> value]
+    @init                                                           {
+                                                                        List<String> set = new ArrayList<>(5);
+                                                                        $value = set;
+                                                                    }
+    : LSQRBRACKET
+        s=text                                                      { $value.add($s.text);}
+        (
+            COMMA s=text                                            { $value.add($s.text);}
+        )*
+      RSQRBRACKET
 ;
 
 relational_operator returns [RelationalOperator value]
@@ -96,17 +112,23 @@ LEQ                 : '<' '=';
 AND                 : A N D;
 OR                  : O R;
 NOT                 : N O T;
-LIKE                : L I K E;
 
 // Builtins
 LOWER               : L O W E R;
 
+// Pseudo columns
+TAGS                : T A G S;
+
+NULL                : N U L L;
 TRUE                : T R U E;
 FALSE               : F A L S E;
 
 COMMA               : ',';
 LBRACKET            : '(';
 RBRACKET            : ')';
+LSQRBRACKET         : '[';
+RSQRBRACKET         : ']';
+
 SQUOTE              : '\'';
 DQUOTE              : '"';
 DDQUOTE             : DQUOTE DQUOTE;

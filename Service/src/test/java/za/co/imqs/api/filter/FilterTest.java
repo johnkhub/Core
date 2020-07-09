@@ -98,6 +98,13 @@ public class FilterTest {
                 "name='Envelope 1' and " +
                 "(asset_type_code = 'ENVELOPE') or (asset_type_code = 'BUILDING') or (asset_type_code = 'FLOOR') or (asset_type_code = 'FACILITY') and " +
                 "func_loc_path='nat'").build());
+
+        FilterBuilder bob = addWhere(
+                "name='Envelope 1' and " +
+                        "(asset_type_code = 'FACILITY') and " +
+                        "TAGS['AT_RISK','BLUE']");
+        log.info(bob.build());
+        log.info(String.join(",",bob.getFields()));
     }
 
 

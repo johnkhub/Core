@@ -282,6 +282,25 @@ The expression may be prefixed by `NOT`.
 * `LOWER`:  The lower function can be applied to a text field. This is to facilitate case  insensitive comparison. e.g. `... and LOWER(name) = 'groote schuur'`
 > Note that the function cannot be applied to a string literal and that the literal must be all lower case when supplied in the filter for this to work as intended.
 
+#### Tags ####
+
+The `TAGS` pseudo function provides a means to filter for Assets having a specifci combination of Tags.
+
+e.g.
+```
+ ...and TAGS['AT_RISK','BLUE']...
+```
+
+or
+
+```
+ ...and NOT TAGS['AT_RISK','BLUE']...
+```
+
+The matching of the set of Tags is exact.  If you want to test for any one of a combination of Tags, use multiple `TAGS` expressions joined by `or` e.g.
+```
+...and (TAGS['AT_RISK'] or TAGS['BLUE'])...
+```
 > **CAVEAT**: You can apply this function to any text field, however effective excution requires that the field be indexed on lowercase as well.  The `address` and `name` are the only columns that currently have such indexes. 
 
 #### Available fields ####
@@ -308,7 +327,6 @@ The expression may be prefixed by `NOT`.
 > (*) are **DTPW specific**
 
 > **NOTE:** These fields/filter criteria are not available
-> * Tags (work in progress)
 > * Branch, Chief Directorate (planned)
 > * The link between Landparcels and Assets
 > * Any form of spatial criteria (*not planned*)
