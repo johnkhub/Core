@@ -56,7 +56,29 @@ DECLARE
     stmt text;
     num int;
     total int;
+    idx int;
 BEGIN
+    -- During a restore, data is inserted before indexes are created. Since the constraint checks against
+    -- data in the system checking this constraint is catastrophically slow and ultimately useless as it
+    -- as we are restoring a database that is already valid.
+    idx := (
+        SELECT
+            count(t.relname) as table_name
+        FROM
+            pg_class t,  pg_class i,  pg_index ix,  pg_attribute a
+        WHERE
+                t.oid = ix.indrelid
+          AND i.oid = ix.indexrelid
+          AND a.attrelid = t.oid
+          AND a.attnum = ANY(ix.indkey)
+          AND t.relkind = 'r'
+          AND t.relname = 'asset'
+    );
+
+    IF idx = 0 THEN
+        RETURN true;
+    END IF;
+
     num := 0;
     total := 0;
     sub_classes := 	ARRAY(SELECT code FROM public.assettype);
