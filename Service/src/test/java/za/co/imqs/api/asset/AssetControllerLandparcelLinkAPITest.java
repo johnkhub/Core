@@ -53,6 +53,11 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         deleteAssets(FACILITY1, FACILITY2, LANDPARCEL, ENVELOPE);
     }
 
+    @After
+    public void after() throws Exception{
+        clearAsset();
+    }
+
     @Test
     public void createLinkSuccess() throws Exception  {
         //Assert.assertEquals(2, getLinkTotalLinked());

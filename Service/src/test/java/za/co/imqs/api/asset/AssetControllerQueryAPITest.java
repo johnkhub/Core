@@ -3,11 +3,9 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.joda.time.DateTime;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.AssetBuildingDto;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.AssetFacilityDto;
@@ -22,7 +20,6 @@ import java.util.UUID;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
  * (c) 2020 IMQS Software

@@ -145,6 +145,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    @Ignore
     public void testFull() throws Exception{
         loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
@@ -153,6 +154,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    @Ignore
     public void testLandparcelLink() throws Exception{
         //loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
