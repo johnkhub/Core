@@ -259,6 +259,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void linkAssetToLandParcel(UUID asset, UUID to) {
         try {
             jdbc.getJdbcTemplate().update(
@@ -271,6 +272,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void unlinkAssetFromLandParcel(UUID asset, UUID from) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset.asset_landparcel WHERE asset_id = ? AND landparcel_asset_id = ?", asset, from);
