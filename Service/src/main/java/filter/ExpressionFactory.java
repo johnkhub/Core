@@ -330,12 +330,12 @@ public class ExpressionFactory {
     private static class TagsExpression extends SimpleExpression<List<String>> {
 
         public TagsExpression(List<String> value) {
-            super("public.has_tags", "", value);
+            super("public.fn_has_tags", "", value);
         }
 
         @Override
         public String getValue() {
-            return "(asset_id, ARRAY[" + String.join(",", value) + "])";
+            return "(asset.asset_id, ARRAY[" + String.join(",", value) + "])";
         }
     }
 

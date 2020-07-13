@@ -56,7 +56,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             "asset_identification.barcode, " +
             "asset_identification.serial_number, " +
             "asset_classification.responsible_dept_code, " +
-            "asset_classification.is_owned " +
+            "asset_classification.is_owned, " +
             "dtpw.ref_client_department.responsible_dept_classif " +
             "FROM " +
             "   asset " +
@@ -64,7 +64,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
-            "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k";
+            "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k ";
 
     private final JdbcTemplate jdbc;
 
@@ -135,7 +135,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Asset matching "+ sql + " not found.");
         } catch (BadSqlGrammarException b) {
-            throw new ValidationFailureException("Bad query syntax.", b);
+            throw new ValidationFailureException("Bad query syntax." + b.getMessage(), b);
         }
     }
 
