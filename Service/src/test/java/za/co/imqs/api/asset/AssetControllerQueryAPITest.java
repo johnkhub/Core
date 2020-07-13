@@ -3,6 +3,7 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -441,6 +442,17 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         assertEquals(dtos[0], facility);
         assertEquals(dtos[1], building);
     }
+
+    @Test
+    public void queryByTags() {
+        fail("Not implemented");
+    }
+
+    @Test
+    public void queryViaDeptTree() {
+        fail("Not implemented");
+    }
+
 
     private AssetEnvelopeDto populate() {
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).

@@ -34,6 +34,8 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
 public class CoreAssetReaderImpl implements CoreAssetReader {
+    // TODO: We probably need to base our repo layer on a view that is client specific?
+
     private static final String SELECT_ASSET = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
             "ST_AsText(geoms.geom) AS geom, " +
@@ -48,6 +50,21 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id ";
 
+    private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
+            "location.latitude, location.longitude, location.address," +
+            "ST_AsText(geoms.geom) AS geom, " +
+            "asset_identification.barcode, " +
+            "asset_identification.serial_number, " +
+            "asset_classification.responsible_dept_code, " +
+            "asset_classification.is_owned " +
+            "dtpw.ref_client_department.responsible_dept_classif " +
+            "FROM " +
+            "   asset " +
+            "LEFT JOIN location ON asset.asset_id = location.asset_id " +
+            "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
+            "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
+            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+            "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k";
 
     private final JdbcTemplate jdbc;
 
@@ -106,8 +123,13 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
     @Override
     public List<CoreAsset> getAssetByFilter(FilterBuilder filter) {
         final String sql = filter.build();
+
+
+        // TODO we obviously can't continue having logic based on explicit user specific field names
         try {
-            return jdbc.query(SELECT_ASSET + "WHERE " + sql, MAPPER);
+            return jdbc.query(
+                    (filter.getFields().contains("responsible_dept_classif") ? SELECT_ASSET_INCL_DEPT_TREE : SELECT_ASSET) + "WHERE " + sql
+                    , MAPPER);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
