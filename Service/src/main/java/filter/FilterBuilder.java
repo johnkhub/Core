@@ -1,5 +1,7 @@
 package filter;
 
+import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+
 import java.util.*;
 
 public class FilterBuilder {
@@ -17,15 +19,18 @@ public class FilterBuilder {
     private final List<String> groupBy = new ArrayList<>();
 
     private final Scope scope = new Scope();
+    private int bracketCount = 0;
 
 
     public FilterBuilder openScope() {
         scope.add(new OpenBracket());
+        bracketCount++;
         return this;
     }
 
     public FilterBuilder closeScope() {
         scope.add(new CloseBracket());
+        bracketCount--;
         return this;
     }
 
@@ -75,6 +80,7 @@ public class FilterBuilder {
     }
 
     public String build() {
+        if (bracketCount != 0) throw new ValidationFailureException("Unmatched bracket(s) in filter.");
         String filter = "";
         filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
         filter = orderBy.isEmpty() ? filter : (filter + " ORDER BY " + String.join(",", orderBy));

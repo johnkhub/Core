@@ -2,6 +2,7 @@ package za.co.imqs.api.asset.tag;
 
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,8 +19,28 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
+    @Before
+    public void clear() {
+        deleteAssets(THE_ASSET);
+    }
+
+    @After
+    public void after() {
+        deleteAssets(THE_ASSET);
+    }
+
     @Test
     public void addOne() {
+        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                code("e1").
+                name("Envelope 1").
+                type("ENVELOPE").
+                funcloc("at")
+                .get();
+
+
+        putAsset(THE_ASSET, envelope);
+
         given().
                 header("Cookie", session).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
@@ -30,6 +51,16 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Test
     public void addThree() {
+        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                code("e1").
+                name("Envelope 1").
+                type("ENVELOPE").
+                funcloc("at")
+                .get();
+
+
+        putAsset(THE_ASSET, envelope);
+
         given().
                 header("Cookie", session).
                 put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3").
@@ -41,7 +72,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Test
     public void addDuplicate() {
-       addOne();
+        addOne();
         given().
                 header("Cookie", session).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").

@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
+import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 
@@ -110,6 +112,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Asset matching "+ sql + " not found.");
+        } catch (BadSqlGrammarException b) {
+            throw new ValidationFailureException("Bad query syntax.", b);
         }
     }
 
