@@ -1,30 +1,35 @@
-CREATE OR REPLACE FUNCTION public.fn_add_tags(a uuid, t text[]) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION public.fn_add_tags( a uuid, t text[]) RETURNS void AS $$
 DECLARE
     invalid text[];
 BEGIN
     -- identify the values in t that are not in the table of defined tags
     invalid := 	ARRAY(SELECT u FROM unnest(ARRAY[t]) u LEFT JOIN tags ON u = tags.k WHERE tags.k IS NULL);
     IF (array_length(invalid,1) > 0) THEN
-       RAISE EXCEPTION 'Tag(s) % are not defined', invalid;
+        RAISE EXCEPTION 'Tag(s) % are not defined', invalid;
     END IF;
 
     INSERT INTO asset_tags (asset_id,tags) VALUES (a,t)
     ON CONFLICT (asset_id)
-    DO
-    UPDATE SET tags = EXCLUDED.tags ||   -- append the values not already present
-		ARRAY(
-			-- This expands the arrays into rows and joins them to determine which ones are new
-			SELECT to_add FROM
-				unnest(t) to_add
-			LEFT JOIN
-				unnest(asset_tags.tags) existing
-			ON existing = to_add WHERE existing IS NULL
-		),
-	asset_id = EXCLUDED.asset_id;
+        DO
+            UPDATE SET tags = asset_tags.tags ||   -- append the values not already present
+                              ARRAY(
+                                  -- This expands the arrays into rows and joins them to determine which ones are new
+                                      SELECT to_add FROM
+                                          (SELECT unnest(tags) tag FROM asset_tags WHERE asset_id = a) existing
+                                              RIGHT JOIN
+                                          unnest(t) to_add
+                                          ON existing.tag = to_add
+                                      WHERE existing IS NULL
+                                  ),
+                       asset_id = EXCLUDED.asset_id;
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER
 ;
+
+
+COMMENT ON FUNCTION public.fn_add_tags(uuid, text[]) IS 'Adds the specified tags to the asset with the specified UUID';
+
 
 COMMENT ON FUNCTION public.fn_add_tags IS 'Adds the specified tags to the asset with the specified UUID';
 
