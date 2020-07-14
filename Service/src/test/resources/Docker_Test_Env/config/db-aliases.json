@@ -1,0 +1,208 @@
+{
+	"ImqsServerMain": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "main",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerGeneric": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "generic",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerTelco": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "telco",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerMirror": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "{{PREFIX}}mirror",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerElectricity": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "electricity",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerTemp": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "temp",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerMaintm": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "maintm",
+		"username": "postgres",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerWorkforce": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "workforce",
+		"username": "postgres",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerPcs": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "pcs",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerMeterManagement": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "meter_management",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerMM": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "mm",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerDevCon": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "devcon",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerArk": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "ark",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd"
+	},
+	"ImqsServerRoad": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "road",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerReports": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "reports",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerAssets": {
+		"driver": "sqlserver",
+		"host": "[mssql-db|localhost]",
+		"port": "1433",
+		"alias": "",
+		"name": "BCM",
+		"username": "sa",
+		"password": "1mq5p@55w0rd"
+	},
+	"ImqsServerArchive": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "archive",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd"
+	},
+	"ImqsServerDocs": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "docs",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerWIP": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "{{PREFIX}}wip",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd"
+	},
+	"ImqsServerLeasing": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "leasing",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	},
+	"ImqsServerBuildings": {
+		"driver": "postgres",
+		"host": "[db|localhost]",
+		"port": "5432",
+		"alias": "",
+		"name": "buildings",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd",
+		"modtrack": "install"
+	}
+}

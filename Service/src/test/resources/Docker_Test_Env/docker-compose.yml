@@ -1,0 +1,81 @@
+version: "2"
+services:
+  db:
+    image: "imqs/postgres:qa-10.5"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: 1mq5p@55w0rd
+      AUTH_POSTGRES_PASSWORD: auth
+    command: "-c listen_addresses=*"
+  auth:
+    image: "imqs/auth:master"
+    ports:
+      - "127.0.0.1:2003:80"
+    volumes:
+      - ./logs:/var/log/imqs
+      - ./secrets:/var/imqs/secrets
+    environment:
+      POSTGRES_PASSWORD: 1mq5p@55w0rd
+      IMQS_INIT_USER: dev
+      IMQS_INIT_PASS: dev
+    command: run
+    depends_on:
+      - config
+      - db
+  config:
+    image: "imqs/config:master"
+    ports:
+      - "127.0.0.1:2010:80"
+    volumes:
+      - ./config:/etc/imqs/conf
+      - ./logs:/var/log/imqs
+      - ./secrets:/var/imqs/secrets
+    command: run
+  router:
+    image: "imqs/router:master"
+    ports:
+      - "80:80"
+      - "127.0.0.1:2013:2013"
+      - "127.0.0.1:2019:2019"
+    volumes:
+      - ./logs:/var/log/imqs
+    depends_on:
+      - config
+  #datamodel-queries:
+  #  image: imqs/datamodel-queries:legend-fvr-ta8-1631
+  #  ports:
+  #    - "127.0.0.1:8600:80"
+  #    - "127.0.0.1:12000:12000"
+  #  volumes:
+  #    - ./logs:/var/log/imqs
+  #  depends_on:
+  #    - config
+  #    - db
+
+  #classified-template:
+  #  image: imqs/classified-template:legend-fvr-ta8-1631
+  #  ports:
+  #    - "127.0.0.1:8668:80"
+  #  volumes:
+  #    - ./logs:/var/log/imqs
+  #  depends_on:
+  #    - config
+  #    - db
+  #    - datamodel-queries
+
+  asset-core-service:
+    image: imqs/asset-core-service:tags
+    ports:
+      - "127.0.0.1:8669:80"
+    volumes:
+      - ./logs:/var/log/imqs
+    depends_on:
+      - config
+      - db
+      - router
+      - auth
+    environment:
+      # valid values are "test" and "production"
+      # "test" exposes additional endpoints to aid integration testing
+      - spring_profiles_active=test

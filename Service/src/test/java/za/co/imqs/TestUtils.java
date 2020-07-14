@@ -24,6 +24,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
@@ -130,6 +132,10 @@ public class TestUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String waitForSession(String username, String password) {
+        return poll(()-> getAuthSession(username, password),TimeUnit.SECONDS, 15);
     }
 
     public static class PermissionRepositoryImplTest {
@@ -286,8 +292,31 @@ public class TestUtils {
         if (isWindows(os)) {
             return  System.getProperty("user.dir");
         } else if (isUnix(os)) {
-            return "/home" + System.getProperty("user.dir");
+            return System.getProperty("user.dir");
         }
         throw new IllegalStateException("Unsupported OS " + System.getProperty("os.name"));
+    }
+
+    public static interface Action<T> {
+        T attempt();
+    }
+
+    public static <T> T poll(Action<T> action, TimeUnit unit, long numUnits) {
+        long time = unit.toMillis(numUnits);
+        try {
+
+            do {
+                try {
+                    return action.attempt();
+                } catch (Exception e) {
+                    if (time <= 0) throw new RuntimeException("Timeout");
+                    time -= 1000;
+                    Thread.sleep(1000);
+                }
+            } while (true);
+        } catch (InterruptedException i) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
     }
 }

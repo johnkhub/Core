@@ -3,14 +3,20 @@ package za.co.imqs.api.lookup;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.jayway.restassured.RestAssured.given;
 import static junit.framework.TestCase.assertEquals;
@@ -30,13 +36,21 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.KvDef.def;
  */
 @Slf4j
 public class LookupControllerKvAPITest {
+    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
      private static String session;
+
+    @ClassRule
+    public static DockerComposeContainer compose = new DockerComposeContainer(new File(COMPOSE_FILE)).
+            withServices("auth", "router", "db", "asset-core-service")
+            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
 
     @BeforeClass
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = TestUtils.getAuthSession(USERNAME, PASSWORD);
+        session = waitForSession(USERNAME, PASSWORD);
+
+        poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 10);
     }
 
     @Test
