@@ -3,9 +3,11 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.AssetBuildingDto;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.AssetFacilityDto;
@@ -20,6 +22,7 @@ import java.util.UUID;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
  * (c) 2020 IMQS Software
@@ -44,9 +47,16 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
     private static final String CONFIG = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
 
     @Before
-    public void clearAsset() {
+    public void clearAsset() throws Exception{
+        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
         deleteAssets(THE_BUILDING, THE_FACILITY, THE_ASSET, THE_ASSET2);
     }
+
+    @After
+    public void after() throws Exception {
+        deleteAssets(THE_BUILDING, THE_FACILITY, THE_ASSET, THE_ASSET2);
+    }
+
 
     @Test
     public void getByFuncLocPath() throws Exception {
@@ -63,9 +73,6 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
-
-
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         final AssetFacilityDto facility = new AssetFacilityDto();
         facility.setFacility_type_code("LAND");
@@ -451,5 +458,4 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
         return envelope;
     }
-
 }

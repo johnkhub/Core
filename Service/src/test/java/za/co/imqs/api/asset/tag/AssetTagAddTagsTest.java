@@ -20,8 +20,9 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Before
-    public void clear() {
+    public void clear() throws Exception {
         deleteAssets(THE_ASSET);
+        Populate.populate(session, THE_ASSET);
     }
 
     @After
@@ -31,16 +32,6 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Test
     public void addOne() {
-        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
-                code("e1").
-                name("Envelope 1").
-                type("ENVELOPE").
-                funcloc("at")
-                .get();
-
-
-        putAsset(THE_ASSET, envelope);
-
         given().
                 header("Cookie", session).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
@@ -51,16 +42,6 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Test
     public void addThree() {
-        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
-                code("e1").
-                name("Envelope 1").
-                type("ENVELOPE").
-                funcloc("at")
-                .get();
-
-
-        putAsset(THE_ASSET, envelope);
-
         given().
                 header("Cookie", session).
                 put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3").
@@ -98,11 +79,5 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
     @Test
     public void addHavingInvalidSpecialCharacters() {
         fail("Not implemented");
-    }
-
-
-    @Before
-    public void preconditions() throws Exception {
-        Populate.populate(session, THE_ASSET);
     }
 }

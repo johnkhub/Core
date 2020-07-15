@@ -2,6 +2,7 @@ package za.co.imqs.api.asset;
 
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,11 +30,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
 
     @Before
     public void clearAsset() throws Exception {
-        given().
-                header("Cookie", session).
-                delete("/assets/testing/{uuid}", THE_ASSET).
-                then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+        deleteAssets(THE_ASSET);
         createAsset();
 
         given().
@@ -41,6 +38,11 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
                 delete("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
+    }
+
+    @After
+    public void after() throws Exception {
+        clearAsset();
     }
 
     @Test
@@ -99,15 +101,10 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
                 .get();
 
 
-        given().
-                header("Cookie", session).
-                contentType(ContentType.JSON).body(envelope).
-                put("/assets/{uuid}", THE_ASSET).
-                then().assertThat().
-                statusCode(HttpStatus.SC_CREATED);
+       putAsset(THE_ASSET, envelope);
 
         // read and verify contents
-        assertEquals(getAsset(THE_ASSET),envelope);
+        assertEquals(getAsset(THE_ASSET), envelope);
         return envelope;
     }
 

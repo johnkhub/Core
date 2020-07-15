@@ -25,11 +25,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
 
     @Before
     public void clearAsset() {
-        given().
-                header("Cookie", session).
-                delete("/assets/testing/{uuid}", THE_ASSET).
-                then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+       deleteAssets(THE_ASSET);
     }
 
     @Test

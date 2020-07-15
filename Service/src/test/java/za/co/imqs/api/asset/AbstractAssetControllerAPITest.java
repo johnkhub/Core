@@ -2,7 +2,9 @@ package za.co.imqs.api.asset;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -25,14 +27,8 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  * User: frankvr
  * Date: 2020/03/10
  */
+@Slf4j
 public class AbstractAssetControllerAPITest {
-    private static final String COMPOSE_FILE = "~/Development/Docker Bootstrap/docker-compose.yml";
-    /*
-    @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(
-            new File(COMPOSE_FILE)).withServices("auth", "router", "db", "core");
-    */
-    
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
     public static String session;
@@ -42,6 +38,11 @@ public class AbstractAssetControllerAPITest {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
         session = getAuthSession(USERNAME, PASSWORD);
+    }
+
+    @After
+    public void after() throws Exception  {
+        deleteAssets(THE_ASSET);
     }
 
     protected static CoreAssetDto getAsset(UUID uuid) {

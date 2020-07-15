@@ -2,10 +2,7 @@ package za.co.imqs.api.asset;
 
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.AssetFacilityDto;
@@ -37,7 +34,13 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
     private static final UUID FACILITY2 = UUID.fromString("2739c56a-12b8-4e0a-98e4-7f3c5c88526a");
 
     @Before
-    public void clearAsset() throws Exception {
+    public void init() throws Exception {
+        clear();
+        populate();
+    }
+
+    @After
+    public void clear() throws Exception{
         given().
                 header("Cookie", session).
                 delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).
@@ -48,7 +51,6 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
                 then().assertThat().statusCode(HttpStatus.SC_OK);
 
         deleteAssets(FACILITY1, FACILITY2, LANDPARCEL, ENVELOPE);
-        populate();
     }
 
     @Test
@@ -115,7 +117,7 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         given().
                 header("Cookie", session).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, UUID.randomUUID()).
-                then().assertThat().statusCode(HttpStatus.SC_CREATED);
+                then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
 
         final Set<UUID> linked = getLinkedTo(LANDPARCEL);
         Assert.assertEquals(2, linked.size());
