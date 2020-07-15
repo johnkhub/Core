@@ -307,6 +307,7 @@ public class TestUtils {
 
             do {
                 try {
+                    log.info("Wait for Core...");
                     return action.attempt();
                 } catch (Exception e) {
                     if (time <= 0) throw new RuntimeException("Timeout");

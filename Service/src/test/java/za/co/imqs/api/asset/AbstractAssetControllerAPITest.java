@@ -34,12 +34,13 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 public class AbstractAssetControllerAPITest {
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
 
-
+/*
     @ClassRule
     public static DockerComposeContainer compose = new DockerComposeContainer(new File(COMPOSE_FILE)).
             withServices("auth", "router", "db", "asset-core-service")
-            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
-
+            ;
+            //.withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+*/
 
 
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
@@ -52,7 +53,7 @@ public class AbstractAssetControllerAPITest {
         RestAssured.port = CORE_PORT;
         session = waitForSession(USERNAME, PASSWORD);
 
-        poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK),TimeUnit.SECONDS, 10);
+        poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK),TimeUnit.SECONDS, 25);
     }
 
     @After

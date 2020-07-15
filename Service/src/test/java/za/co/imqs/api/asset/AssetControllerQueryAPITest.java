@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.AssetBuildingDto;
 import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.AssetFacilityDto;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
  * (c) 2020 IMQS Software
@@ -444,13 +446,102 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
     }
 
     @Test
-    public void queryByTags() {
-        fail("Not implemented");
+    public void queryByTags() throws Exception {
+        // Add tags
+        final List<LookupProvider.Kv> kv = new LinkedList<>();
+        kv.add(pair("TAG1","TagO OneO"));
+        kv.add(pair("TAG2","TagO TwoO"));
+        kv.add(pair("TAG3","TagO ThreeO"));
+
+        given().
+                header("Cookie", session).
+                contentType(ContentType.JSON).body(kv).
+                put("/lookups/kv/{target}", "TAGS").
+                then().statusCode(200);
+
+        final AssetEnvelopeDto envelope = populate();
+
+        given().
+                header("Cookie", session).
+                put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK);
+        given().
+                header("Cookie", session).
+                put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG2").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK);
+
+
+        final AssetFacilityDto facility = new AssetFacilityDto();
+        facility.setFacility_type_code("LAND");
+        new CoreAssetBuilder(facility).code("e1-f1").name("Facility 1").type("FACILITY").funcloc("e1.f1").serial("1235").get();
+        putAsset(THE_FACILITY, facility);
+
+        given().
+                header("Cookie", session).
+                put("/assets/{uuid}/tag/{tag}", THE_FACILITY, "TAG1").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK);
+
+        CoreAssetDto[] dtos = given().
+                header("Cookie", session).
+                queryParam("filter","TAGS['TAG1']").
+                queryParam("offset", 0).
+                queryParam("limit", 10).
+                queryParam("orderby", "func_loc_path").
+                queryParam("groupby", "func_loc_path").
+                get("/assets/query").
+                then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
+
+        Assert.assertEquals(2, dtos.length);
+        assertEquals(dtos[0], envelope);
+        assertEquals(dtos[1], facility);
+
+        dtos = given().
+                header("Cookie", session).
+                queryParam("filter","TAGS['TAG1','TAG2']").
+                queryParam("offset", 0).
+                queryParam("limit", 10).
+                queryParam("orderby", "func_loc_path").
+                queryParam("groupby", "func_loc_path").
+                get("/assets/query").
+                then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
+
+        Assert.assertEquals(1, dtos.length);
+        assertEquals(dtos[0], envelope);
     }
 
     @Test
-    public void queryViaDeptTree() {
-        fail("Not implemented");
+    public void queryViaDeptTree() throws Exception {
+        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
+        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_chief_directorate.csv", "CHIEF_DIR"});
+        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
+
+        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                code("e1").
+                name("Envelope 1").
+                type("ENVELOPE").
+                funcloc("at").
+                serial("1234").
+                get();
+        envelope.setIs_owned(true);
+        envelope.setResponsible_dept_code("DEADP");
+        putAsset(THE_ASSET, envelope);
+
+        CoreAssetDto[] dtos = given().
+                header("Cookie", session).
+                queryParam("filter", "name='Envelope 1' and (responsible_dept_classif = @('B_PPW.CD_GI.DEADP'))").
+                queryParam("offset", 0).
+                queryParam("limit", 10).
+                queryParam("orderby", "func_loc_path").
+                queryParam("groupby", "func_loc_path").
+                get("/assets/query").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
+
+        assertTrue(dtos.length == 1);
+        assertEquals(dtos[0], envelope);
     }
 
 
