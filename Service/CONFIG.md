@@ -5,9 +5,11 @@ Build
 -----
 
 The service is intended to be deployed in Docker. As such the mvn `containerize` profile should be selected.
-It will run as part of teh `package` life-cycle phase.
+It will run as part of the `package` life-cycle phase.
 
 The result is a single jar file.
+
+> [build.sh](build.sh) is a shell script that will build the docker image and push to DockerHub. The image will be tagged with the *current* branch.
 
 Upon startup, the service will create an empty database if one does not exist.
 
@@ -25,7 +27,7 @@ Run
 ### Commandline parameters
 
 
-|Name                     |M/O(Default)     |Type     |Description |
+|Name                     |M/O (Default)     |Type     |Description |
 |-------------------------|-----------------|---------|------------|
 |in.container             |O (false)        |Java     |Is the service running inside a container or not             |
 |logback.configurationFile|M                |Java     |Typically a link to a file hosted by the configuration Server|
@@ -33,16 +35,17 @@ Run
 |server.port              |M                |Argument |HTTP port                                                    |
 |sync-schemas             |O                |Argument |See Schema Management section                                |
 |document-schemas         |O                |Argument |See Schema Management section                                |
-|compare-schemas          |O                |Argument |See Schema Management section. Requires extra parameters for connection to the other database (see example)                                |
+|compare-schemas          |O                |Argument |See Schema Management section. Requires extra parameters for connection to the other database (see example)|
+|manual-schemas           |O                |Argument |See Schema Management section                                |
 |config                   |M                |Argument |Configuration URI - Typically a link to a file hosted by the configuration Server| 
 
 >The config parameter **MUST** be the final argument     
  
 > Note that the profile may also be set as an environment variable `spring_profiles_active`
-> The resolution or is 
+> The resolution order is 
 > 1. Environment variable
 > 2. Java property
-> (3) hardcoded default (`production`) 
+> 3. Hardcoded default (`production`) 
 
 Example commandline
 ```
@@ -78,6 +81,19 @@ java
     --server.port=8669
 
     --sync-schema
+
+    --config=file:/home/frank/Development/Core/Service/src/test/resources/config.json
+```
+
+```
+java 
+    -Din.container=true
+    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -spring.profiles.active=production 
+    -jar asset-core-service.jar  
+    --server.port=8669
+
+    --manual-schemas
 
     --config=file:/home/frank/Development/Core/Service/src/test/resources/config.json
 ```
@@ -147,3 +163,5 @@ The output is sent to the service trace log.
 `document-schemas` - Generates javadocs-like documentation for the database.
  
 `compare-schemas` - Compares an external database to the one managed by the service and generates a difference report - outputs to the service trace log. 
+
+`manual-schemas` - This option disables the internal management of the database schemas. This allows you to modify the schema by and and still get the service to start up. It should be used wit caution as reverting back to internal management will require developer involment to execute the `compare-schemas` and `sync-schemas` operations.

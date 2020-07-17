@@ -50,8 +50,8 @@ This makes use of Postgres extensions
 * [`postgis`](https://postgis.net/install)
 
 
-Building, Configuration
------------------------
+Building, Configuration and Running
+-----------------------------------
 
 The steps and options related to building the service and setting configuration options can be found in [Config](Service/CONFIG.md)
 
