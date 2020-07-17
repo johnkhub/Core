@@ -19,7 +19,9 @@ At this point you can either import data or you can elect to restore a database
 
 Importing data
 --------------
-Refer to the testimport integration test for how to do this (proper documentation to come)
+
+Imports happen via commandline utility that processes data and calls the REST endpoints of the Core Service.
+Refer to [IMPORT.md](IMPORT.md).
 
 
 Restoring a database
@@ -92,13 +94,21 @@ Audit
 Diagnostics & Debugging
 ========================
 
-* [Cookbook]Service/COOKBOOK.md) contains sql query examples that helps identitify problems and validate data.
+* [Cookbook](Service/COOKBOOK.md) contains sql query examples that helps identitify problems and validate data.
+
+
+
+For Developers
+==============
+
+[NOTES.md](NOTES.md) contains notes for developers - mostly a TODO list
+[HOWTO.md](HOWTO.md) contains some explanatory notes for developers.
 
 Code Review Guidelines
-======================
+----------------------
 
-Database
---------
+### Database ###
+
 
 * Naming conventions
 * Foreign keys
@@ -108,8 +118,8 @@ Database
 * Default values
 * Indexing
 
-Code
------
+### Code ###
+
 * Transactions
 * Error reporting
 * Authorisation/Authentication

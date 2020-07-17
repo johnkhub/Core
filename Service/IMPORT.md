@@ -11,7 +11,7 @@ Data format
 
 * Data can be split over as many files as you like as long as the format is correct
 * The first column in the file must be the asset type
-* The ordering of other column does not matter
+* The ordering of other columns do not matter
  
  
  Importing Assets
@@ -42,10 +42,18 @@ To link Assets to Landparcels, we use a simple csv file containing two columns
 
 > Note: All of the Assets and Landparcels must already exist in the system.
 
- Configuration
+ Commandline
  -------------
 
-`importer <config file> <type> [<type specific parameters>]`
+`<import command> <config file> <type> [<type specific parameters>]`
+
+Where `<import command>` would look like 
+```
+java 
+  -Dlogback.configurationFile="logback-asset-core-service.groovy" 
+  -classpath asset-core-service-jar-with-dependencies.jar za.co.imqs.coreservice.imports.Importer
+  "import_config.json" $1 $2 $3 $4
+```
 
 |type|parameter|description|
 |----|---------|-----------|
@@ -59,7 +67,7 @@ To link Assets to Landparcels, we use a simple csv file containing two columns
 |`FORCE_INSERT`|Mostly relevant to developers. Will force the insert of a row even if it contains an asset_id. This is useful to import an export from another system while retaining the asset_id values.|
 |`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file|
 
-### File
+### Configuration File
 The file contains the URLs to the Core and Auth services, as well as the username and password 
 required to log onto the system
 
@@ -68,8 +76,8 @@ E.g.
 {
   "authUrl" : "http://localhost/auth2/login",
   "serviceUrl": "http://localhost:8669",
-  "dbUsername" : "dev",
-  "dbPassword": "dev"
+  "loginUsername" : "dev",
+  "loginPassword": "dev"
 }
 ```
  

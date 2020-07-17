@@ -315,7 +315,7 @@ public class Importer {
             config = mapper.readerFor(Config.class).readValue(is);
         }
 
-        final String session = getAuthSession(config.getAuthUrl(), config.getDbUsername(), config.getDbPassword()) ;
+        final String session = getAuthSession(config.getAuthUrl(), config.getLoginUsername(), config.getLoginPassword()) ;
 
         final String cmd = args[1];
         final Path file = Paths.get(args[2]);

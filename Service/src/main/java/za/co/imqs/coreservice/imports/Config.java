@@ -6,8 +6,8 @@ import lombok.Data;
 public class Config {
     private String authUrl;
     private String serviceUrl;
-    private String dbUsername;
-    private String dbPassword;
+    private String loginUsername;
+    private String loginPassword;
 
     public Config() {}
 }
