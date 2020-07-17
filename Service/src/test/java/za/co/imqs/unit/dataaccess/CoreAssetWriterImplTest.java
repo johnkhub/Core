@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReaderImpl;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
@@ -19,7 +21,9 @@ import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
@@ -81,7 +85,7 @@ public class CoreAssetWriterImplTest {
         underTest.setDeactivated_at(expected.getDeactivated_at());
 
         final CoreAssetReader reader = new CoreAssetReaderImpl(jdbc.getDataSource());
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(), BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(), BOING, TASK_SCHEDULER);
         writer.createAssets(Collections.singletonList(underTest));
         assertEquals(expected, reader.getAsset(expected.getAsset_id()));
     }
@@ -113,7 +117,7 @@ public class CoreAssetWriterImplTest {
         underTest.setTown_code("ATLANTIS");
 
         final CoreAssetReader reader = new CoreAssetReaderImpl(jdbc.getDataSource());
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(), BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(), BOING, TASK_SCHEDULER);
         writer.createAssets(Collections.singletonList(underTest));
         assertEquals(expected, reader.getAsset(expected.getAsset_id()));
     }
@@ -145,7 +149,7 @@ public class CoreAssetWriterImplTest {
         underTest.setAsset_id(expected.getAsset_id());
         underTest.setIs_owned(false);
 
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         writer.updateAssets(Collections.singletonList(underTest));
         assertEquals(expected, reader.getAsset(expected.getAsset_id()));
     }
@@ -153,7 +157,7 @@ public class CoreAssetWriterImplTest {
     @Test
     public void updateNonExisting() {
         expect.expect(NotFoundException.class);
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         writer.updateAssets(Collections.singletonList(getObject()));
     }
 
@@ -162,7 +166,7 @@ public class CoreAssetWriterImplTest {
         expect.expect(UnsupportedOperationException.class);
 
         addNewAllFields();
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         writer.deleteAssets(Collections.singletonList(getObject().getAsset_id()));
     }
 
@@ -171,7 +175,7 @@ public class CoreAssetWriterImplTest {
         expect.expect(UnsupportedOperationException.class);
 
         //expect.expect(NotFoundException.class);
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         writer.deleteAssets(Collections.singletonList(getObject().getAsset_id()));
     }
 
@@ -179,7 +183,7 @@ public class CoreAssetWriterImplTest {
     @Test
     public void addInvalid() {
         expect.expect(ValidationFailureException.class);
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final CoreAsset asset = getObject();
         asset.setAsset_id(null);
         writer.createAssets(Collections.singletonList(asset));
@@ -188,7 +192,7 @@ public class CoreAssetWriterImplTest {
     @Test
     public void updateInvalid() {
         expect.expect(ValidationFailureException.class);
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final CoreAsset asset = getObject();
         asset.setAsset_id(null);
         writer.updateAssets(Collections.singletonList(asset));
@@ -196,7 +200,7 @@ public class CoreAssetWriterImplTest {
 
     @Test
     public void addExternalLink() {
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final CoreAsset asset = getObject();
         writer.createAssets(Collections.singletonList(asset));
         final String link = UUID.randomUUID().toString();
@@ -206,7 +210,7 @@ public class CoreAssetWriterImplTest {
 
     @Test
     public void deleteExternalLink() {
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final CoreAsset asset = getObject();
         writer.createAssets(Collections.singletonList(asset));
         final String link = UUID.randomUUID().toString();
@@ -221,7 +225,7 @@ public class CoreAssetWriterImplTest {
     public void addExternalLinkToUnknownType() {
         expect.expect(ValidationFailureException.class);
 
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final CoreAsset asset = getObject();
         writer.createAssets(Collections.singletonList(asset));
         writer.addExternalLink(asset.getAsset_id(),  UUID.randomUUID(), UUID.randomUUID().toString());
@@ -231,7 +235,7 @@ public class CoreAssetWriterImplTest {
     public void addExternalLinkToNonExistantAsset() {
         expect.expect(ValidationFailureException.class);
 
-        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING);
+        final CoreAssetWriter writer = new CoreAssetWriterImpl(jdbc.getDataSource(),BOING, TASK_SCHEDULER);
         final String link = UUID.randomUUID().toString();
         final UUID fakeAsset = UUID.randomUUID();
         writer.addExternalLink(fakeAsset, V6_EXT_ID, link);
@@ -239,7 +243,7 @@ public class CoreAssetWriterImplTest {
     }
 
     private void clearAsset(UUID uuid) {
-       new CoreAssetWriterImpl(jdbc.getDataSource(), BOING).obliterateAssets(uuid);
+       new CoreAssetWriterImpl(jdbc.getDataSource(), BOING, TASK_SCHEDULER).obliterateAssets(uuid);
     }
 
 
@@ -269,4 +273,36 @@ public class CoreAssetWriterImplTest {
         expected.setIs_owned(false);
         return expected;
     }
+
+    private final TaskScheduler TASK_SCHEDULER = new TaskScheduler() {
+        @Override
+        public ScheduledFuture<?> schedule(Runnable runnable, Trigger trigger) {
+            return null;
+        }
+
+        @Override
+        public ScheduledFuture<?> schedule(Runnable runnable, Date date) {
+            return null;
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, Date date, long l) {
+            return null;
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long l) {
+            return null;
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, Date date, long l) {
+            return null;
+        }
+
+        @Override
+        public ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, long l) {
+            return null;
+        }
+    };
 }

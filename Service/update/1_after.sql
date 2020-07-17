@@ -24,4 +24,8 @@ FROM dtpw.asset_core_dtpw_view;
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'This is an exact copy of the select in dtpw.dtpw_core_report_view but it converts the geometry to well-known text.';
 
 
+INSERT INTO public.modtrack_meta (recid, version, identity) VALUES (1,1, 'f6bdbb73-bc0a-4181-806d-dede7b02fb0f');
+INSERT INTO public.modtrack_tables (recid, tablename, createcount, stamp) VALUES (1,'asset', 1, 1);
+
+
 

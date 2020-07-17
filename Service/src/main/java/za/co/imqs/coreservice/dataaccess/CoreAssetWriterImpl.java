@@ -10,6 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
@@ -24,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static za.co.imqs.coreservice.model.CoreAsset.CREATE;
 import static za.co.imqs.coreservice.model.CoreAsset.UPDATE;
@@ -45,14 +47,21 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final Environment env;
+    private final TaskScheduler scheduler;
+
+    private AtomicBoolean assetDirty = new AtomicBoolean(false);
 
     @Autowired
     public CoreAssetWriterImpl(
             @Qualifier("core_ds") DataSource ds,
-            Environment env
+            Environment env,
+            TaskScheduler scheduler
     ) {
         this.jdbc = new NamedParameterJdbcTemplate(ds);
         this.env = env;
+        this.scheduler = scheduler;
+
+        scheduler.scheduleAtFixedRate(new ExecuteModTrackUpdate(), 3000);
     }
 
     // TODO: Retry
@@ -338,6 +347,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getIs_owned() != null) {
             tAssetClassification.addValue("is_owned", asset.getIs_owned(), Types.BOOLEAN);
         }
+
+        updateModTrack();
     }
 
     // TODO: this could make use of update T set F = coalesce(F, new value), which will simplify the code significantly
@@ -441,7 +452,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         } catch (IncorrectResultSizeDataAccessException e) {
             final String msg = String.format(
                     "No Envelope with code %s exists to link Land Parcel %s to. To link a Land Parcel to an Envelope, the Envelop must have " +
-                            "already been craeted or imported.",
+                            "already been created or imported.",
                     rootNode, parcel.toString());
             log.warn(msg);
             //throw new NotFoundException(msg);
@@ -449,4 +460,22 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
     */
+
+    private void updateModTrack() {
+        assetDirty.set(true);
+    }
+
+    private class ExecuteModTrackUpdate implements Runnable {
+        @Override
+        public void run() {
+            boolean go = assetDirty.compareAndSet(true, false);
+            try {
+                if (go) {
+                    jdbc.getJdbcTemplate().update("UPDATE modtrack_tables SET stamp = stamp+1 WHERE tablename = 'asset'");
+                }
+            } catch (Exception e) {
+                log.error("Failed to update mod_track table. To recover. execute UPDATE modtrack_tables SET stamp = stamp+1 WHERE tablename = 'asset' manually.", e);
+            }
+        }
+    }
 }

@@ -19,3 +19,6 @@ CREATE UNIQUE INDEX modtrack_tables_tablename_idx ON public.modtrack_tables USIN
 CREATE TABLE public.migration_version (
     "version" int4 NULL
 );
+
+INSERT INTO public.modtrack_meta (recid, version, identity) VALUES (1,1, 'f6bdbb73-bc0a-4181-806d-dede7b02fb0f');
+INSERT INTO public.modtrack_tables (recid, tablename, createcount, stamp) VALUES (1,'asset', 1, 1);
