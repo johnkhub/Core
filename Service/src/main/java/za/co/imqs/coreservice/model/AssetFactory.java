@@ -2,7 +2,7 @@ package za.co.imqs.coreservice.model;
 
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.*;
+import za.co.imqs.coreservice.dto.asset.*;
 
 import java.util.UUID;
 

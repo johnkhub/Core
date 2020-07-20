@@ -1,4 +1,4 @@
-package za.co.imqs.coreservice.dto;
+package za.co.imqs.coreservice.dto.asset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opencsv.bean.CsvBindByName;
@@ -18,7 +18,7 @@ import za.co.imqs.coreservice.imports.Rules;
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper=true, includeFieldNames=true)
-public class AssetFloorDto extends CoreAssetDto  {
+public class AssetSiteDto extends CoreAssetDto  {
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
     private String description;

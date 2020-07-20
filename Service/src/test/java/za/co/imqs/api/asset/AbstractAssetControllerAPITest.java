@@ -7,11 +7,11 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
+import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 
 import java.io.File;
 import java.util.UUID;
@@ -32,6 +32,8 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  */
 @Slf4j
 public class AbstractAssetControllerAPITest {
+    protected static final boolean TEST_PERMISSIONS = false;
+
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
 
 /*
@@ -40,12 +42,14 @@ public class AbstractAssetControllerAPITest {
             withServices("auth", "router", "db", "asset-core-service")
             ;
             //.withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+
 */
-
-
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
     public static String session;
+
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
 
     @BeforeClass
     public static void configure() {

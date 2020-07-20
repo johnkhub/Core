@@ -4,7 +4,7 @@ import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
 import java.util.LinkedList;
 import java.util.List;

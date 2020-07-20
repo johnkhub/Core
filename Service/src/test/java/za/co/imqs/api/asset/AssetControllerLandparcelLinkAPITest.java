@@ -4,16 +4,13 @@ import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.*;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
-import za.co.imqs.coreservice.dto.AssetFacilityDto;
-import za.co.imqs.coreservice.dto.AssetLandparcelDto;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
-import za.co.imqs.coreservice.model.AssetLandparcel;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
+import za.co.imqs.coreservice.dto.asset.AssetFacilityDto;
+import za.co.imqs.coreservice.dto.asset.AssetLandparcelDto;
 
 import java.util.*;
 
 import static com.jayway.restassured.RestAssured.given;
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.fail;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
@@ -128,11 +125,13 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
 
     @Test
     public void createLinkForbidden() throws Exception  {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 
     @Test
     public void removeLinkForbidden() throws Exception  {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 

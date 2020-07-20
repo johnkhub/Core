@@ -1,19 +1,15 @@
 package za.co.imqs.api.asset;
 
-import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
-
-import java.util.UUID;
+import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
 import static com.jayway.restassured.RestAssured.given;
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 /**
@@ -83,11 +79,13 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
 
     @Test
     public void addAssetCreateLinkBusinesseException() throws Exception  {
+        expected.expect(BusinessRuleViolationException.class);
         fail("Not implemented");
     }
 
     @Test
     public void addAssetCreateLinkForbidden() throws Exception  {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 

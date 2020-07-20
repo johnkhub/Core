@@ -48,6 +48,7 @@ The current implementation of this API:
 |`activated_at`|``|o||
 |`deactivated_at`|``|o||
 |`allow_delete`|``|o||
+|`geom`|``|o||
 
 
 ### `GET /lookups/kv/{code}`
@@ -67,6 +68,17 @@ Accepts: *Nothing*
 Returns: `String`
 
 Status codes: 200, 400, 403, 408
+
+
+### `GET /lookups/kv/{code}/{k}`
+Returns the lookup row from the kv table with the specified code, using the specified key (`k`).
+
+Accepts: *Nothing*
+
+Returns: `Lookup value`
+
+Status codes: 200, 400, 403, 408
+
 
 
 ### `PUT lookups/kv` (NOT IMPLEMENTED)

@@ -1,5 +1,7 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +20,8 @@ import za.co.imqs.configuration.client.ConfigClient;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dto.lookup.Geometry;
+import za.co.imqs.coreservice.imports.Rules;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 import za.co.imqs.libimqs.utils.ConfigClientExt;
@@ -137,10 +141,40 @@ public class LookupProviderImpl implements LookupProvider {
     }
 
     @Override
-    public String getKv(String target, String key) {
+    public String getKvValue(String target, String key) {
         final String fqn = resolveTarget(target);
         try {
             return cFact.get("kv").queryForObject("SELECT v FROM " + fqn +" WHERE k = ?", String.class,  key);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }  catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public <T extends Kv> T getKv(String target, String key) {
+        final String fqn = resolveTarget(target);
+        try {
+            List<T> list = cFact.get("kv").query(
+                    "SELECT k,v,creation_date, activated_at, deactivated_at, allow_delete, geom FROM " + fqn +" WHERE k = ?",
+                    (rs,i) -> {
+                        final T kv = ORM.lookupModelFactory(target);
+                        if (kv instanceof Geometry) {
+                            ((Geometry)kv).setGeom(rs.getString("geom"));
+                        }
+                        kv.setAllow_delete(rs.getBoolean("allow_delete"));
+                        kv.setDeactivated_at("deactivated_at");
+                        kv.setV(rs.getString("v"));
+                        kv.setK(rs.getString("k"));
+                        kv.setCreation_date("creation_date");
+                        kv.setActivated_at("activated_at");
+                        return kv;
+                    }
+                    ,key
+            );
+
+            return list.get(0);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         }  catch (EmptyResultDataAccessException e) {
@@ -218,7 +252,7 @@ public class LookupProviderImpl implements LookupProvider {
         return rv.substring(0,rv.length()-1);
     }
 
-    // TODO In the genaral use case of this code you would be able to connect to a whole bunch of databases
+    // TODO In the general use case of this code you would be able to connect to a whole bunch of databases
     private class ConnectionFactory {
         // TODO We need to implement a bi-directional map here so we can also look up the viewName based on the ds so we don't instantiate multiple connection pools for the same db
         private final Map<String, JdbcTemplate> dataSources = new HashMap<>();
@@ -266,14 +300,19 @@ public class LookupProviderImpl implements LookupProvider {
 
             statement.append(") VALUES (");
             for (String n : src.getParameterNames()) {
-                statement.append(":").append(n).append(",");
+                if (n.equals("geom")) { // TODO this is seriously hacky figure out a better way
+                    statement.append("ST_GeomFromText(:geom, 4326)").append(",");
+                } else {
+                    statement.append(":").append(n).append(",");
+                }
             }
             statement.delete(statement.length()-1,statement.length());
             statement.append(") ON CONFLICT (k) DO UPDATE SET ");
 
             for (String n : src.getParameterNames()) {
-                if (!n.equals("k"))
+                if (!n.equals("k")) {
                     statement.append(n).append("=").append("EXCLUDED.").append(n).append(",");
+                }
             }
             statement.delete(statement.length()-1,statement.length());
 
@@ -281,11 +320,7 @@ public class LookupProviderImpl implements LookupProvider {
         }
 
         private <T extends Kv> MapSqlParameterSource mapKv(T kv) throws Exception {
-            return mapKv(kv, new HashSet<>(Arrays.asList("getClass", "getType")));
-        }
-
-        private <T extends Kv> MapSqlParameterSource mapKv(T kv, HashSet<String> exclude) throws Exception {
-           return ORM.mapToSql(kv, exclude);
+            return ORM.mapToSql(kv, new HashSet<>(Arrays.asList("getClass", "getType")), Collections.singleton("getGeom"));
         }
     }
 }

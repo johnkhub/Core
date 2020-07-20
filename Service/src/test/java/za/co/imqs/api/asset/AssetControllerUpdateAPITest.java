@@ -4,7 +4,8 @@ import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
+import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
 import java.util.UUID;
 
@@ -98,9 +99,12 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
         assertEquals(getAsset(THE_ASSET), envelope);
     }
 
-    /*
+
     @Test
     public void assetUpdateBusinesseException() throws Exception  {
+        expected.expect(BusinessRuleViolationException.class);
+        fail("Not implemented");
+        /*
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").
                 name("Envelope 1").
@@ -132,10 +136,12 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
         THIS DOES FAIL BUT AS A VALIDATION FAILURE
 
         assertEquals(getAsset(THE_ASSET), envelope);
+        */
     }
-    */
+
     @Test
     public void assetUpdateForbidden()  throws Exception  {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 

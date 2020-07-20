@@ -1,12 +1,9 @@
 package za.co.imqs.api.asset.tag;
 
-import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
 
 import java.util.LinkedList;
 import java.util.List;

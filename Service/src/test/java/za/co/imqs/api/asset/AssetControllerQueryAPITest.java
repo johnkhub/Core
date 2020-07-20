@@ -8,13 +8,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dto.AssetBuildingDto;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
-import za.co.imqs.coreservice.dto.AssetFacilityDto;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
+import za.co.imqs.coreservice.dto.asset.AssetBuildingDto;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
+import za.co.imqs.coreservice.dto.asset.AssetFacilityDto;
+import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 import za.co.imqs.coreservice.imports.Importer;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,7 @@
 package za.co.imqs.api.asset;
 
 import org.junit.Test;
+import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 
 import static org.junit.Assert.fail;
 
@@ -26,14 +27,15 @@ public class AssetControllerDeleteAPITest extends AbstractAssetControllerAPITest
         fail("Not implemented");
     }
 
-
     @Test
     public void assetDeleteBusinesseException() {
+        expected.expect(BusinessRuleViolationException.class);
         fail("Not implemented");
     }
 
     @Test
     public void assetDeleteForbidden() {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 

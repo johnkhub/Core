@@ -65,7 +65,7 @@ services:
   #    - datamodel-queries
 
   asset-core-service:
-    image: imqs/asset-core-service:tags
+    image: imqs/asset-core-service:loactions_stuff
     ports:
       - "127.0.0.1:8669:80"
     volumes:

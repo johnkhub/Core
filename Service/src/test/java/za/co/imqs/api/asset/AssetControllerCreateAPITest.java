@@ -3,8 +3,12 @@ package za.co.imqs.api.asset;
 import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
+import org.junit.rules.ExpectedException;
+import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
+import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
 import java.util.UUID;
 
@@ -20,6 +24,8 @@ import static org.junit.Assert.fail;
  *
  */
 public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest {
+
+
     @Before
     public void clearAsset() {
        deleteAssets(THE_ASSET);
@@ -98,23 +104,13 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
 
     @Test
     public void assetCreateBusinesseException() throws Exception {
+       expected.expect(BusinessRuleViolationException.class);
        fail("Not implemented");
     }
 
     @Test
     public void assetCreateForbidden() {
-        /*
-        final AssetEnvelopeDto envelope = new AssetEnvelopeDto();
-
-        given().
-                header("Cookie", getSession()).
-                contentType(ContentType.JSON).body(envelope).
-        put("/assets/{uuid}", THE_ASSET).
-                then().assertThat().
-                statusCode(HttpStatus.SC_FORBIDDEN);
-
-         */
-        //assertNotFound(THE_ASSET);
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
         fail("Not implemented");
     }
 }

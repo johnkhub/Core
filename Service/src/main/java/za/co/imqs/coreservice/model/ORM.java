@@ -3,7 +3,8 @@ package za.co.imqs.coreservice.model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -41,11 +42,11 @@ public class ORM {
     /**
      Given the asset_type_code returns a new instance of class for that model e.g. AssetEnvelope
      */
-    public static <T extends CoreAsset> T modelFactory(String type) {
+    public static <T> T modelFactory(String prefix, String type) {
         final String x = type.charAt(0)+type.substring(1).toLowerCase();
-        final String name = "za.co.imqs.coreservice.model.Asset"+x;
+        final String name = prefix+x;
         try {
-            return (T) ORM.class.getClassLoader().loadClass(name).newInstance();
+            return (T) Class.forName(name).newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
             throw new RuntimeException(
                     String.format(
@@ -56,9 +57,19 @@ public class ORM {
         }
     }
 
+    public static <T extends CoreAsset> T assetModelFactory(String type) {
+        return modelFactory("za.co.imqs.coreservice.model.Asset", type);
+    }
+
+    public static <T extends LookupProvider.Kv> T lookupModelFactory(String type) {
+        T model =  modelFactory("za.co.imqs.coreservice.dto.lookup.Kv", type);
+        model.setType(type);
+        return model;
+    }
+
     public static <T extends CoreAssetDto> T dtoFactory(String type) {
         final String x = type.charAt(0)+type.substring(1).toLowerCase();
-        final String name = "za.co.imqs.coreservice.dto.Asset"+x+"Dto";
+        final String name = "za.co.imqs.coreservice.dto.asset.Asset"+x+"Dto";
         try {
             return (T) ORM.class.getClassLoader().loadClass(name).newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
@@ -131,6 +142,10 @@ public class ORM {
     }
 
     public static <T> MapSqlParameterSource mapToSql(T model, Set<String> exclude) throws Exception {
+        return mapToSql(model, exclude, Collections.emptySet());
+    }
+
+    public static <T> MapSqlParameterSource mapToSql(T model, Set<String> exclude, Set<String> includeNull) throws Exception {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
 
         for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(model.getClass()).getPropertyDescriptors()) {
@@ -139,7 +154,7 @@ public class ORM {
             if (getter != null && !exclude.contains(getter.getName())) {
                 final StringBuilder msg = new StringBuilder("ORM Mapping ").append(getter.getName()).append(":").append(getter.getReturnType()).append(" ");
                 final Object result = getter.invoke(model);
-                if (result != null) {
+                if (result != null || includeNull.contains(getter.getName())) {
                     final String field = getter.getName().substring(3).toLowerCase();
                     parameters.addValue(field, result, mapToSqlType(getter.getReturnType()));
                     msg.append(" -> ").append(field);

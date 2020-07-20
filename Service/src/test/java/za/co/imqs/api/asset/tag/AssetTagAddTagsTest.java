@@ -1,21 +1,14 @@
 package za.co.imqs.api.asset.tag;
 
-import com.jayway.restassured.http.ContentType;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
-import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dto.AssetEnvelopeDto;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static junit.framework.TestCase.fail;
-import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
@@ -68,6 +61,8 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Test
     public void addForbidden() {
+        org.junit.Assume.assumeTrue(TEST_PERMISSIONS);
+        Assert.fail("Not implemented");
         fail("Not implemented");
     }
 

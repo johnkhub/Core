@@ -3,11 +3,10 @@ package za.co.imqs.coreservice.dataaccess;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import za.co.imqs.coreservice.imports.Rules;
+import za.co.imqs.coreservice.dto.lookup.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +66,7 @@ public interface LookupProvider {
             @JsonSubTypes.Type(value = KvSuburb.class, name = "SUBURB"),
             @JsonSubTypes.Type(value = KvTown.class, name = "TOWN"),
             @JsonSubTypes.Type(value = KvMunicipality.class, name = "MUNIC"),
+            @JsonSubTypes.Type(value = KvRegion.class, name = "REGION"),
 
             @JsonSubTypes.Type(value = ClientDeptKv.class, name = "CLIENT_DEP"),
             @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR")
@@ -79,11 +79,6 @@ public interface LookupProvider {
         private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private Boolean allow_delete;// TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
 
-
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
-
         private String type = "KV";
 
         public static Kv pair(String k, String v) {
@@ -93,71 +88,6 @@ public interface LookupProvider {
 
             return kv;
         }
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class KvSuburb extends Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String town_k;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String ward_k;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class KvWard extends Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String local_municipality_k;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class KvTown extends Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String local_municipality_k;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class KvMunicipality extends Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String district_k;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class KvDistrict extends Kv {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String geom;
     }
 
 
@@ -186,7 +116,9 @@ public interface LookupProvider {
     public List<Map<String,Object>> getWithOperators(String viewName, Map<String,Field> parameters);
 
 
-    public String getKv(String target, String key);
+    public String getKvValue(String target, String key);
+
+    public <T extends Kv> T getKv(String target, String key);
 
     public List<Kv> getEntireKvTable(String target);
 

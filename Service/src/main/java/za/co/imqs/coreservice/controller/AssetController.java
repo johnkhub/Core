@@ -19,7 +19,7 @@ import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.CoreAssetDto;
+import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 import za.co.imqs.coreservice.model.AssetFactory;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
