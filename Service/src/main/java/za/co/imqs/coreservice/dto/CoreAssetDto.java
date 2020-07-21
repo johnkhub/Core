@@ -61,7 +61,7 @@ public class CoreAssetDto {
     private String adm_path;
 
     @CsvBindByName(required = true)
-    @PreAssignmentProcessor(processor = Rules.Trim.class)
+    @PreAssignmentProcessor(processor = Rules.Replace.class, paramString = "-,.")
     @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_PATH)
     private String func_loc_path;
 

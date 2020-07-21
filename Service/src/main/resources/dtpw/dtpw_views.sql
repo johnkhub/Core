@@ -107,7 +107,7 @@ SELECT
     asset_core_dtpw_view.asset_id,
     asset_core_dtpw_view.asset_type_code,
     asset_core_dtpw_view.name,
-    asset_core_dtpw_view.func_loc_path,
+    replace(ltree2text(asset_core_dtpw_view.func_loc_path),'.', '-') AS func_loc_path,
     asset_core_dtpw_view.active,
     asset_core_dtpw_view.latitude,
     asset_core_dtpw_view.longitude,
