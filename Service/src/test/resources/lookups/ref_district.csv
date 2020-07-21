@@ -1,7 +1,7 @@
-k,v,deactivated_at,allow_delete,geom
-CAPETOWN,City Of Cape Town Metropolitan Municipality,,FALSE,
-CAPEWINELA,Cape Winelands District Municipality,,FALSE,
-CENTRALKAR,Central Karoo District Municipality,,FALSE,
-EDEN,Eden District Municipality,,FALSE,
-OVERBERG,Overberg District Municipality,,FALSE,
-WESTCOAST,West Coast District Municipality,,FALSE,
+"k","v"
+"CAPETOWN","City Of Cape Town Metropolitan Municipality"
+"CAPEWINELA","Cape Winelands District Municipality"
+"CENTRALKAR","Central Karoo District Municipality"
+"EDEN","Garden Route District Municipality"
+"OVERBERG","Overberg District Municipality"
+"WESTCOAST","West Coast District Municipality"
