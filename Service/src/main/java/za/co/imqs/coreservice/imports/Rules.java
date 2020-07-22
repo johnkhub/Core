@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.imports;
 
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.processor.StringProcessor;
+import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.StringValidator;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public interface Rules {
     public static final String VALID_K = "^[\\w]*$";
     public static final String VALID_CODE = "^[\\w]*$";
     public static final String VALID_PATH = "^(\\w+([.]\\w+)*)$";
+    public static final String VALID_FREE_TEXT = "^[\\p{IsAlphabetic}|\\p{IsPunctuation}|\\p{IsWhite_Space}|\\p{IsDigit}]*$";
 
     //
     // Validators
@@ -95,6 +97,12 @@ public interface Rules {
         }
     }
 
+    public static class OptionallyMatchRegex extends MustMatchRegexExpression implements StringValidator {
+        @Override
+        public boolean isValid(String value) {
+            return StringUtils.isEmpty(value) ? true : super.isValid(value);
+        }
+    }
 
     @Slf4j
     public static class MustBeCoordinate implements StringValidator {
