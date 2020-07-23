@@ -164,50 +164,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
-/*
-    @Override
-    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
-    public void importAssets(List<CoreAsset> assets, AssetImportMode mode, boolean testRun) {
-        switch(mode) {
-            case INSERT:
-                // TODO check that none of them have uuids
-                createAssets(assets);
-                break;
-            case UPSERT:
-                final List<CoreAsset> inserts = new LinkedList<>();
-                final List<CoreAsset> updates = new LinkedList<>();
-
-                for (CoreAsset asset : assets ) {
-                    if (asset.getAsset_id() == null) {
-                        inserts.add(asset);
-                    } else {
-                        updates.add(asset);
-                    }
-                }
-
-                createAssets(inserts);
-                updateAssets(updates);
-                break;
-            case REPLACE:
-                deleteAssets(assets.stream().map((a) -> a.getAsset_id()).filter((a) -> a != null).collect(Collectors.toList()));
-                createAssets(assets);
-                break;
-        }
-
-        if (testRun) throw new ExplicitRollbackException("Rolling back import batch");
-    }
-
-    private boolean getExisting(CoreAsset candidate) {
-        try {
-            //noinspection ConstantConditions
-            candidate.setAsset_id(UUID.fromString(jdbc.getJdbcTemplate().queryForObject("SELECT asset_id FROM asset WHERE code = ?", String.class, candidate.getCode())));
-            return true;
-        } catch (IncorrectResultSizeDataAccessException ignore) {
-        }
-        return false;
-    }
-*/
-
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteAssets(List<UUID> uuids) {
@@ -336,6 +292,26 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getAddress() != null) {
             tLocation.addValue("address", asset.getAddress(), Types.VARCHAR);
         }
+
+        if (asset.getDistrict_code() != null) {
+            tLocation.addValue("district_code", asset.getDistrict_code(), Types.VARCHAR);
+        }
+        if (asset.getMunicipality_code() != null) {
+            tLocation.addValue("municipality_code", asset.getMunicipality_code(), Types.VARCHAR);
+        }
+        if (asset.getRegion_code() != null) {
+            tLocation.addValue("region_code", asset.getRegion_code(), Types.VARCHAR);
+        }
+        if (asset.getSuburb_code() != null) {
+            tLocation.addValue("suburb_code", asset.getSuburb_code(), Types.VARCHAR);
+        }
+        if (asset.getTown_code() != null) {
+            tLocation.addValue("town_code", asset.getTown_code(), Types.VARCHAR);
+        }
+        if (asset.getWard_code() != null) {
+            tLocation.addValue("ward_code", asset.getWard_code(), Types.VARCHAR);
+        }
+
         if (asset.getName() != null) {
             tAsset.addValue("name", asset.getName(), Types.VARCHAR);
         }
@@ -352,7 +328,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getIs_owned() != null) {
             tAssetClassification.addValue("is_owned", asset.getIs_owned(), Types.BOOLEAN);
         }
-
+        if (asset.getDescription() != null) {
+            tAsset.addValue("description", asset.getDescription(), Types.VARCHAR);
+        }
         updateModTrack();
     }
 

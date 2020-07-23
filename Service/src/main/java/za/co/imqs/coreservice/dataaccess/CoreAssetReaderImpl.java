@@ -39,6 +39,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
 
     private static final String SELECT_ASSET = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
+            "location.region_code, location.district_code, location.municipality_code," +
+            "location.town_code, location.suburb_code, location.ward_code," +
             "ST_AsText(geoms.geom) AS geom, " +
             "asset_identification.barcode, " +
             "asset_identification.serial_number, " +
@@ -53,6 +55,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
 
     private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
+            "location.region_code, location.district_code, location.municipality_code," +
+            "location.town_code, location.suburb_code, location.ward_code," +
             "ST_AsText(geoms.geom) AS geom, " +
             "asset_identification.barcode, " +
             "asset_identification.serial_number, " +
