@@ -38,7 +38,7 @@ public class AuditLoggingProxy {
             throw new RuntimeException(e);
         } finally {
             if (AUDIT_GLOBAL.isActive()) {
-                audit.log(entry); // WE PROBABLY NEED A FALLBACK HERE THAT WILL WRITE TO LOCAL FILESYSTEM?
+                audit.log(entry);
             }
         }
     }

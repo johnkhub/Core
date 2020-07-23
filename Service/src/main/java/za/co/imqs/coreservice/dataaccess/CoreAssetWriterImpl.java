@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
+import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.model.AssetLandparcel;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 
@@ -106,7 +106,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     jdbc.update(generateInsert(tableName, tAssetExt).toString(), tAssetExt);
                 }
             } catch(Exception e) {
-                throw exceptionMapperAsset(e, a);
+                throw exceptionMapperAsset(e, a.getAsset_id());
             }
         }
     }
@@ -159,7 +159,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     throw new NotFoundException("Asset " + a.getAsset_id() + " does not exist");
 
             } catch (Exception e) {
-                throw exceptionMapperAsset(e, a);
+                throw exceptionMapperAsset(e, a.getAsset_id());
             }
         }
     }
@@ -210,9 +210,14 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
-    public void deleteAssets(List<UUID> uuid) {
-        // TODO Implement!
-        throw new UnsupportedOperationException("Deletion of asset not implemented");
+    public void deleteAssets(List<UUID> uuids) {
+        for (UUID uuid : uuids) {
+            try {
+                jdbc.getJdbcTemplate().update("UPDATE public.asset SET deactivated_at = now() WHERE asset_id = ?", uuid);
+            } catch (Exception e) {
+                throw exceptionMapperAsset(e, uuid);
+            }
+        }
     }
 
     @Override
@@ -396,11 +401,13 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         return insert;
     }
 
-    private RuntimeException exceptionMapperAsset(Exception e, CoreAsset asset) {
+    private RuntimeException exceptionMapperAsset(Exception e, UUID asset_id) {
         if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Asset " + asset.getAsset_id() + " already exists! (" + e.getMessage() + ")");
+            return new AlreadyExistsException("Asset " + asset_id + " already exists! (" + e.getMessage() + ")");
         } else if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
         } else if (e instanceof RuntimeException) {
             return (RuntimeException)e;
         } else {
@@ -413,6 +420,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             return new AlreadyExistsException("Asset Link " + asset + ":" + link + " already exists! (" + e.getMessage() + ")");
         } else if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
         } else if (e instanceof RuntimeException) {
             return (RuntimeException)e;
         } else {
@@ -423,6 +432,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     private RuntimeException exceptionMapperLandparcelLink(Exception e) {
         if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
         } else if (e instanceof RuntimeException) {
             return (RuntimeException)e;
         } else {
