@@ -11,6 +11,13 @@ ALTER TABLE kv_type ADD CONSTRAINT kv_type_code_check CHECK ((((code)::text <> '
 ALTER TABLE kv_type ADD CONSTRAINT kv_type_name_check CHECK (((name)::text <> ''::text));
 ALTER TABLE kv_type ADD CONSTRAINT kv_type_table_check CHECK (table_exists(("table")::text));
 
+ALTER TABLE public.ref_district ADD CONSTRAINT ref_district_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_municipality ADD CONSTRAINT ref_municipality_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_region ADD CONSTRAINT ref_region_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_suburb ADD CONSTRAINT ref_suburb_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_town ADD CONSTRAINT ref_town_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_ward ADD CONSTRAINT ref_ward_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+
 
 CREATE OR REPLACE FUNCTION public.fn_check_valid_func_loc_path(path ltree)
     RETURNS boolean

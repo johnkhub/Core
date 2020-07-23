@@ -2,10 +2,11 @@ DROP VIEW IF EXISTS dtpw.asset_core_dtpw_view CASCADE;
 
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_view
 AS SELECT
-       '1_2' AS obj_version,
+       '1_3' AS obj_version,
        core.asset_id,
        core.asset_type_code,
        core.name,
+       core.description,
        core.func_loc_path,
        core.active,
        core.latitude,
@@ -14,13 +15,13 @@ AS SELECT
        core.geom,
        core.barcode,
        core.serial_number,
-       a_tp_e.municipality_code,
+       core.municipality_code,
        rm.v AS municipality_value,
-       a_tp_e.town_code,
+       core.town_code,
        rt.v AS town_value,
-       a_tp_e.suburb_code,
+       core.suburb_code,
        rs.v AS suburb_value,
-       a_tp_e.district_code,
+       core.district_code,
        rd.v  AS district_value,
        a_tp_f.facility_type_code,
        classification.responsible_dept_code,
@@ -28,13 +29,12 @@ AS SELECT
        asset_link.external_id AS "EMIS"
    FROM asset_core_view core
             LEFT JOIN asset e ON subpath(core.func_loc_path, 0, 1) = e.func_loc_path
-            LEFT JOIN asset.a_tp_envelope a_tp_e ON e.asset_id = a_tp_e.asset_id
             LEFT JOIN asset f ON subpath(core.func_loc_path, 0, 2) = f.func_loc_path
             LEFT JOIN asset.a_tp_facility a_tp_f ON f.asset_id = a_tp_f.asset_id
-            LEFT JOIN asset.ref_district rd ON rd.k = a_tp_e.district_code
-            LEFT JOIN asset.ref_municipality rm ON rm.k = a_tp_e.municipality_code
-            LEFT JOIN asset.ref_town rt ON rt.k = a_tp_e.town_code
-            LEFT JOIN asset.ref_suburb rs ON rs.k = a_tp_e.suburb_code
+            LEFT JOIN public.ref_district rd ON rd.k = core.district_code
+            LEFT JOIN public.ref_municipality rm ON rm.k = core.municipality_code
+            LEFT JOIN public.ref_town rt ON rt.k = core.town_code
+            LEFT JOIN public.ref_suburb rs ON rs.k = core.suburb_code
             LEFT JOIN asset_classification classification ON core.asset_id = classification.asset_id
             LEFT JOIN asset_link ON core.asset_id = asset_link.asset_id
        AND asset_link.external_id_type = (( SELECT external_id_type.type_id
@@ -54,10 +54,11 @@ COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dt
 
 CREATE MATERIALIZED VIEW dtpw.dtpw_core_report_view
 AS
-SELECT '1_2'::text AS obj_version,
+SELECT '1_3'::text AS obj_version,
        asset_core_dtpw_view.asset_id,
        asset_core_dtpw_view.asset_type_code,
        asset_core_dtpw_view.name,
+       asset_core_dtpw.description,
        asset_core_dtpw_view.func_loc_path::text AS func_loc_path,
        asset_core_dtpw_view.active,
        asset_core_dtpw_view.latitude,
@@ -107,6 +108,7 @@ SELECT
     asset_core_dtpw_view.asset_id,
     asset_core_dtpw_view.asset_type_code,
     asset_core_dtpw_view.name,
+    asset_core_dtpw_view.description,
     replace(ltree2text(asset_core_dtpw_view.func_loc_path),'.', '-') AS func_loc_path,
     asset_core_dtpw_view.active,
     asset_core_dtpw_view.latitude,
@@ -138,6 +140,7 @@ SELECT dtpw_core_report_view.obj_version,
        dtpw_core_report_view.asset_id,
        dtpw_core_report_view.asset_type_code,
        dtpw_core_report_view.name,
+       dtpw_core_report_view.description,
        dtpw_core_report_view.func_loc_path,
        dtpw_core_report_view.active,
        dtpw_core_report_view.latitude,

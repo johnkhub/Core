@@ -1,71 +1,5 @@
 -- noinspection SyntaxErrorForFile
 
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
--- noinspection SyntaxErrorForFile
-
 --
 -- This is the user we use fro imports. It has more access than a normal_writer, but is still not allowed
 -- to make destructive changes
@@ -142,13 +76,13 @@ GRANT SELECT,INSERT,UPDATE ON TABLE asset.a_tp_site TO importer;
 //
 GRANT SELECT,INSERT,UPDATE ON TABLE asset.asset_landparcel TO importer;
 //
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_district TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_district TO importer;
 GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_facility_type TO importer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_municipality TO importer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_region TO importer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_suburb TO importer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_town TO importer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_ward TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_municipality TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_region TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_suburb TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_town TO importer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_ward TO importer;
 //
 GRANT SELECT ON  asset.landparcel_view TO importer;
 //
@@ -165,21 +99,21 @@ GRANT SELECT ON  asset.landparcel_view TO importer;
  GRANT DELETE ON TABLE asset.a_tp_floor TO importer;
  GRANT DELETE ON TABLE asset.a_tp_room TO importer;
  GRANT DELETE ON TABLE asset.a_tp_site TO importer;
- GRANT DELETE ON TABLE asset.ref_suburb TO importer;
- GRANT DELETE ON TABLE asset.ref_district TO importer;
- GRANT DELETE ON TABLE asset.ref_town TO importer;
- GRANT DELETE ON TABLE asset.ref_municipality TO importer;
+ GRANT DELETE ON TABLE public.ref_suburb TO importer;
+ GRANT DELETE ON TABLE public.ref_district TO importer;
+ GRANT DELETE ON TABLE public.ref_town TO importer;
+ GRANT DELETE ON TABLE public.ref_municipality TO importer;
 //
 
 GRANT DELETE ON TABLE "asset"."asset_landparcel" TO importer;
 GRANT DELETE ON TABLE asset.a_tp_landparcel TO importer;
-GRANT DELETE ON TABLE asset.ref_district TO importer;
+GRANT DELETE ON TABLE public.ref_district TO importer;
 GRANT DELETE ON TABLE asset.ref_facility_type TO importer;
-GRANT DELETE ON TABLE asset.ref_municipality TO importer;
-GRANT DELETE ON TABLE asset.ref_region TO importer;
-GRANT DELETE ON TABLE asset.ref_suburb TO importer;
-GRANT DELETE ON TABLE asset.ref_town TO importer;
-GRANT DELETE ON TABLE asset.ref_ward TO importer;
+GRANT DELETE ON TABLE public.ref_municipality TO importer;
+GRANT DELETE ON TABLE public.ref_region TO importer;
+GRANT DELETE ON TABLE public.ref_suburb TO importer;
+GRANT DELETE ON TABLE public.ref_town TO importer;
+GRANT DELETE ON TABLE public.ref_ward TO importer;
 
 -- *********************
 //
