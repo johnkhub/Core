@@ -21,7 +21,7 @@ Importing data
 --------------
 
 Imports happen via commandline utility that processes data and calls the REST endpoints of the Core Service.
-Refer to [IMPORT.md](IMPORT.md).
+Refer to [IMPORT.md](Service/IMPORT.md).
 
 
 Restoring a database

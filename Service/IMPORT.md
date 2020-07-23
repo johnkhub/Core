@@ -4,14 +4,14 @@ Import
 > **CAVEAT:** THERE IS NO WAY TO DELETE DATA VIA AN IMPORT. 
 > * There is no way to remove an Asset
 > * There is no way to remove a specific value for a specific asset
-> * By extension it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number 
+> * By extension, it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number 
 
 Data format
 -----------
 
 * Data can be split over as many files as you like as long as the format is correct
 * The first column in the file must be the asset type
-* The ordering of other columns do not matter
+* The ordering of other columns does not matter
  
  
  Importing Assets
@@ -54,6 +54,7 @@ java
   -classpath asset-core-service-jar-with-dependencies.jar za.co.imqs.coreservice.imports.Importer
   "import_config.json" $1 $2 $3 $4
 ```
+The above is also packaged in a `.bat` and `.sh` file: `import.bat` and `import.sh`
 
 |type|parameter|description|
 |----|---------|-----------|
@@ -66,6 +67,17 @@ java
 |----|------------|
 |`FORCE_INSERT`|Mostly relevant to developers. Will force the insert of a row even if it contains an asset_id. This is useful to import an export from another system while retaining the asset_id values.|
 |`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file. **NOTE:** Incorrectly formatted CSV files will fail on first error.|
+
+### Examples ###
+ Import assets writing failures to exception files.
+ 
+ `import "import_config.json" assets 43703_43734_5761_UPDATE FL.CSV FORCE_CONTINUE`
+ 
+ Import lookup district lookups
+ 
+ `import "import_config.json" lookups "ref_district.csv" DISTRICT`
+ 
+
 
 ### Configuration File
 The file contains the URLs to the Core and Auth services, as well as the username and password 
