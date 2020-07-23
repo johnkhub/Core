@@ -20,10 +20,6 @@ import za.co.imqs.coreservice.imports.Rules;
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper=true, includeFieldNames=true)
 public class AssetFacilityDto extends CoreAssetDto  {
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String description;
-
     @CsvBindByName(required = true)
     @PreAssignmentValidator(validator = Rules.MustNotBeNull.class)
     private String facility_type_code;
