@@ -73,12 +73,12 @@ public class LookupControllerKvAPITest {
         org.hamcrest.MatcherAssert.assertThat(
                 defs,
                 containsInAnyOrder(
-                    def("SUBURB", "Suburb", "asset.ref_suburb", null),
-                    def("WARD", "Ward", "asset.ref_ward", null),
-                    def("REGION", "Region", "asset.ref_region", null),
-                    def("TOWN", "Town", "asset.ref_town", null),
-                    def("MUNIC", "Municiplaity", "asset.ref_municipality", null),
-                    def("DISTRICT", "District", "asset.ref_district", null),
+                    def("SUBURB", "Suburb", "public.ref_suburb", null),
+                    def("WARD", "Ward", "public.ref_ward", null),
+                    def("REGION", "Region", "public.ref_region", null),
+                    def("TOWN", "Town", "public.ref_town", null),
+                    def("MUNIC", "Municiplaity", "public.ref_municipality", null),
+                    def("DISTRICT", "District", "public.ref_district", null),
                     def("TAGS", "List of tags", "public.tags", null),
 
                     def("BRANCH", "Branch", "dtpw.ref_branch", null),
