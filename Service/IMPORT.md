@@ -65,7 +65,7 @@ java
 |flag|description|
 |----|------------|
 |`FORCE_INSERT`|Mostly relevant to developers. Will force the insert of a row even if it contains an asset_id. This is useful to import an export from another system while retaining the asset_id values.|
-|`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file|
+|`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file. **NOTE:** Incorrectly formatted CSV files will fail on first error.|
 
 ### Configuration File
 The file contains the URLs to the Core and Auth services, as well as the username and password 

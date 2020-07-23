@@ -8,6 +8,7 @@ import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
 import za.co.imqs.coreservice.imports.Rules;
 
+import static za.co.imqs.coreservice.imports.Rules.VALID_FREE_TEXT;
 import static za.co.imqs.coreservice.imports.Rules.VALID_PATH;
 
 /**
@@ -40,7 +41,6 @@ public class CoreAssetDto {
 
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.Trim.class)
-    //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String asset_id;
 
 
@@ -53,6 +53,7 @@ public class CoreAssetDto {
 
     @CsvBindByName(required = true)
     @PreAssignmentProcessor(processor = Rules.Trim.class)
+    @PreAssignmentValidator(validator = MustMatchRegexExpression.class, paramString = VALID_FREE_TEXT)
     private String name;
 
     @CsvBindByName(required = false)
@@ -74,6 +75,7 @@ public class CoreAssetDto {
 
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    @PreAssignmentValidator(validator = Rules.OptionallyMatchRegex.class, paramString = VALID_FREE_TEXT)
     private String address;
 
     @CsvBindByName(required = false)

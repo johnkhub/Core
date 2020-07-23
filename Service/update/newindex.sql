@@ -1,2 +1,0 @@
-CREATE UNIQUE INDEX asset_link_external_id_type_asset_id_external_id_idx ON public.asset_link;
-

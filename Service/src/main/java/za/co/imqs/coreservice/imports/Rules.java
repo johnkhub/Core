@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.imports;
 
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.processor.StringProcessor;
+import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.StringValidator;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,14 @@ public interface Rules {
     public static final String VALID_K = "^[\\w]*$";
     public static final String VALID_CODE = "^[\\w]*$";
     public static final String VALID_PATH = "^(\\w+([.]\\w+)*)$";
+
+    public static final String VALID_FREE_TEXT = "^[A-zÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ|\\p{Digit}|\\p{Punct}|\\p{Blank}|\\u00B1\\`\\:]*$";
+    // Or in word:
+    //  all alpha characters including diacritics
+    //  digits
+    //  punctuation
+    //  `
+    //  u00B1 = ±
 
     //
     // Validators
@@ -95,6 +104,12 @@ public interface Rules {
         }
     }
 
+    public static class OptionallyMatchRegex extends MustMatchRegexExpression implements StringValidator {
+        @Override
+        public boolean isValid(String value) {
+            return StringUtils.isEmpty(value) ? true : super.isValid(value);
+        }
+    }
 
     @Slf4j
     public static class MustBeCoordinate implements StringValidator {
@@ -181,6 +196,27 @@ public interface Rules {
 
         @Override
         public void setParameterString(String value) {
+        }
+    }
+
+    public class Replace implements StringProcessor {
+        private String replace;
+        private String with;
+
+        @Override
+        public String processString(String value) {
+            if (value == null || value.trim().isEmpty()) {
+                return null;
+            }
+            return value.trim().replace(replace, with);
+        }
+
+        @Override
+        public void setParameterString(String value) {
+            final String[] s = value.split(",");
+            if (s.length != 2) throw new IllegalArgumentException("Expected exactly two strings separated by a comma.");
+            replace = s[0];
+            with = s[1];
         }
     }
 }
