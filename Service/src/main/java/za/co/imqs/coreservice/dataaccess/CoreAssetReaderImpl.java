@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 
@@ -140,13 +141,29 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
     }
 
     @Override
-    public List<String> getExternalLinks(UUID uuid, UUID external_id_type) {
+    public String getExternalLink(UUID uuid, UUID external_id_type) {
         try {
-            return jdbc.queryForList("SELECT external_id FROM asset_link WHERE asset_id = ? AND external_id_type = ? ", String.class, uuid, external_id_type);
+            return jdbc.queryForObject("SELECT external_id FROM asset_link WHERE asset_id = ? AND external_id_type = ? ", String.class, uuid, external_id_type);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("No link to external_id_type %s  for asset %s", external_id_type, uuid.toString()));
+        }
+    }
+
+    @Override
+    public List<AssetExternalLinkTypeDto> getExternalLinkTypes() {
+        try {
+            return jdbc.query("SELECT * FROM public.external_id_type",
+                    (rs,i)->{
+                        final AssetExternalLinkTypeDto l = new AssetExternalLinkTypeDto();
+                        l.setType_id(UUID.fromString(rs.getString("type_id")));
+                        l.setDescription(rs.getString("description"));
+                        l.setName(rs.getString("name"));
+                        return l;
+                    });
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
         }
     }
 

@@ -55,17 +55,4 @@ public class AssetTestingController {
         assetWriter.obliterateAssets(asUUID(uuid));
         return new ResponseEntity(HttpStatus.OK);
     }
-
-    @RequestMapping(
-            method = RequestMethod.GET, value = "/link/{uuid}/to/{external_id_type}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
-        final UserContext user = ThreadLocalUser.get();
-        try {
-            return new ResponseEntity<>(assetReader.getExternalLinks(uuid,external_id_type), HttpStatus.OK);
-        } catch (Exception e) {
-            return mapException(e);
-        }
-    }
 }

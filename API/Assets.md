@@ -119,7 +119,7 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 412
 
-### `DELETE assets/{uuid}` (NOT IMPLEMENTED)
+### `DELETE assets/{uuid}`
 Deletes an Asset.  The Asset is *not deleted*, but is marked as inactive.
 
 Accepts: *Nothing*
@@ -130,7 +130,7 @@ Status codes: 200, 400, 403, 408, 409, 412
 
 
 
-### `GET assets/link/types` (NOT IMPLEMENTED)
+### `GET assets/link/types`
 Returns a list of defined external identifier types
 
 Accepts: *Nothing*
@@ -168,7 +168,7 @@ Returns: *Nothing*
 
 Status codes: 200, 400, 403, 408, 412
 
-### GET `assets/link/{uuid}/to/{external_id_type}` (NOT IMPLEMENTED)
+### GET `assets/link/{uuid}/to/{external_id_type}`
 
 Returns the link to the specified asset of the given external type. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -188,7 +188,7 @@ Status codes: 200, 400, 403, 404,  408
 
 > QUERY API: under construction
 
-### GET `assets/{uuid}` (DRAFT)
+### GET `assets/{uuid}` 
 
 Returns the Asset with the given asset_id.
 
@@ -200,7 +200,7 @@ Status codes: 200, 400, 403, 404, 408
 
 
 
-### GET `assets/func_loc_path/{path}` (DRAFT)
+### GET `assets/func_loc_path/{path}`
 
 Returns the Asset with the given Functional Location Path.
 
@@ -211,7 +211,7 @@ Returns: `CoreAssetDto`
 Status codes: 200, 400, 403, 404, 408
 
 
-### GET `assets/linked_to/{external_id_type}/{external_id}` (DRAFT)
+### GET `assets/linked_to/{external_id_type}/{external_id}`
 
 Returns the Asset with the given External Identifier. Use `GET asset/link/types` to list the external identifier types that exist on your system.
 
@@ -222,7 +222,7 @@ Returns: `CoreAssetDto`
 Status codes: 200, 400, 403, 404, 408
 
 
-### GET `assets/query?filter` (DRAFT)
+### GET `assets/query?filter`
 
 Accepts a complex filter request and returns the Assets that match.
 
@@ -333,7 +333,7 @@ The matching of the set of Tags is exact.  If you want to test for any one of a 
 
 
 
-### GET `assets/landparcel/{uuid}/assets` (DRAFT)
+### GET `assets/landparcel/{uuid}/assets`
 
 Returns the Asset identifiers linked to the Landparcel with the given id.
 
@@ -344,7 +344,7 @@ Returns: `[String]`
 Status codes: 200, 400, 403, 404, 408
 
 
-### PUT `assets/landparcel/{landparcel_id}/asset/{asset_id}` (DRAFT)
+### PUT `assets/landparcel/{landparcel_id}/asset/{asset_id}`
 
 Links the specified asset id to the specified Landparcel id.
 

@@ -207,17 +207,27 @@ public class AssetController {
         }
     }
 
-
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/link/{uuid}/to/{external_id_type}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
+        final UserContext user = ThreadLocalUser.get();
+        try {
+            return new ResponseEntity<>(assetReader.getExternalLink(uuid,external_id_type), HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
 
     @RequestMapping(
             method = RequestMethod.GET, value = "/link/types"
     )
-    public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
+    public ResponseEntity getExternalLinkTypes() {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
-            // TODO implement
-            throw new UnsupportedOperationException();
+            return new ResponseEntity(assetReader.getExternalLinkTypes(), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }

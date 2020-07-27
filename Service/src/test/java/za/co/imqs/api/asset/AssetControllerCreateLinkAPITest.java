@@ -109,7 +109,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     private void assertLinked() {
         assertTrue(given().
                 header("Cookie", session).
-                get("assets/testing/link/{uuid}/to/{external_id_type}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467").
+                get("assets/link/{uuid}/to/{external_id_type}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(String[].class)[0].equals(THE_EXTERNAL_ID));
     }
