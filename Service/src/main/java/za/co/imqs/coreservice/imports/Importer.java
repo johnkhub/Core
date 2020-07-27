@@ -21,7 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import za.co.imqs.coreservice.dataaccess.*;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.dto.lookup.*;
 
@@ -270,7 +271,6 @@ public class Importer {
     }
 
     public void importAssets(Path assets) throws Exception {
-
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
@@ -296,52 +296,7 @@ public class Importer {
         importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true;}, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
 
         log.info("Importing EMIS...");
-        importType(assets, new ExternalLinks(),
-                (dto)-> {
-                    if (dto.getEmis() == null) {
-                        return false;
-                    }
-
-                    CoreAssetDto asset = null;
-                    try {
-                        asset = restTemplate.exchange(
-                                baseUrl + "/assets/func_loc_path/{path}",
-                                HttpMethod.GET,
-                                jsonEntity(null),
-                                CoreAssetDto.class,
-                                dto.getFunc_loc_path().replace(".","+")
-                        ).getBody();
-                    } catch (Exception e) {
-
-                    }
-
-                    if (asset != null) {
-                        final UUID assetId = UUID.fromString(asset.getAsset_id());
-                        restTemplate.exchange(
-                                baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                HttpMethod.DELETE,
-                                jsonEntity(null),
-                                Void.class,
-                                assetId, EMIS, dto.getEmis()
-                        );
-
-                        restTemplate.exchange(
-                                baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
-                                HttpMethod.PUT,
-                                jsonEntity(null),
-                                Void.class,
-                                assetId, EMIS, dto.getEmis()
-                        );
-                    } else {
-                        log.warn("No asset found with func_loc_path {} to link external data {} to.", dto.getFunc_loc_path(), dto.toString());
-                    }
-
-
-                    remap(dto); // this must happen last
-
-                    return false; // we don't want to add assets
-                }, null, new FileWriter("emis_exceptions.csv")
-        );
+        importEmis(assets, new FileWriter("emis_exceptions.csv"));
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
