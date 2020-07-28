@@ -2,7 +2,7 @@ DROP VIEW IF EXISTS dtpw.asset_core_dtpw_view CASCADE;
 
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_view
 AS SELECT
-       '1_2' AS obj_version,
+       '1_3' AS obj_version,
        core.asset_id,
        core.asset_type_code,
        core.name,
@@ -25,7 +25,7 @@ AS SELECT
        a_tp_f.facility_type_code,
        classification.responsible_dept_code,
        classification.is_owned,
-       asset_link.external_id AS "EMIS"
+       asset_grouping.grouping_id AS "EMIS"
    FROM asset_core_view core
             LEFT JOIN asset e ON subpath(core.func_loc_path, 0, 1) = e.func_loc_path
             LEFT JOIN asset.a_tp_envelope a_tp_e ON e.asset_id = a_tp_e.asset_id
@@ -36,10 +36,10 @@ AS SELECT
             LEFT JOIN asset.ref_town rt ON rt.k = a_tp_e.town_code
             LEFT JOIN asset.ref_suburb rs ON rs.k = a_tp_e.suburb_code
             LEFT JOIN asset_classification classification ON core.asset_id = classification.asset_id
-            LEFT JOIN asset_link ON core.asset_id = asset_link.asset_id
-       AND asset_link.external_id_type = (( SELECT external_id_type.type_id
-                                            FROM external_id_type
-                                            WHERE external_id_type.name::text = 'EMIS'::text));
+            LEFT JOIN asset_grouping ON core.asset_id = asset_grouping.asset_id
+       AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
+                                            FROM grouping_id_type
+                                            WHERE grouping_id_type.name::text = 'EMIS'::text));
 
 COMMENT ON VIEW dtpw.asset_core_dtpw_view IS 'DTPW view. Joins facility and envelope information onto core information. Incorporates EMIS number and responsible department.';
 
@@ -54,7 +54,7 @@ COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dt
 
 CREATE MATERIALIZED VIEW dtpw.dtpw_core_report_view
 AS
-SELECT '1_2'::text AS obj_version,
+SELECT '1_3'::text AS obj_version,
        asset_core_dtpw_view.asset_id,
        asset_core_dtpw_view.asset_type_code,
        asset_core_dtpw_view.name,

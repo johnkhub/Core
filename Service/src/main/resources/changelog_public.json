@@ -1213,40 +1213,6 @@
     }
   },
 
-  
-  {
-    "changeSet": {
-      "id": "1581943138671-44",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "createIndex": {
-            "columns": [
-              {
-                "column": {
-                  "name": "external_id_type"
-                }
-              },
-              {
-                "column": {
-                  "name": "external_id"
-                }
-              },
-              {
-                "column": {
-                  "name": "external_id_type"
-                }
-              }]
-            ,
-            "indexName": "asset_link_external_id_type_external_id_external_id_type1_idx",
-            "tableName": "asset_link"
-          }
-        }]
-      
-    }
-  },
-  
   {
     "changeSet": {
       "id": "1581943138671-45",
@@ -1860,6 +1826,231 @@
         }
       ]
 
+    }
+  },
+
+
+
+
+  
+ {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-1",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "grouping_id",
+                  "type": "CHARACTER VARYING"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "grouping_id_type",
+                  "type": "UUID"
+                }
+              }]
+          ,
+            "tableName": "asset_grouping"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-2",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addPrimaryKey": {
+            "columnNames": "asset_id, grouping_id",
+            "constraintName": "asset_grouping_pkey",
+            "tableName": "asset_grouping"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-3",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "grouping_id_type"
+                }
+              },
+              {
+                "column": {
+                  "name": "asset_id"
+                }
+              },
+              {
+                "column": {
+                  "name": "grouping_id"
+                }
+              }]
+          ,
+            "indexName": "asset_grouping_grouping_id_type_asset_id_grouping_id_idx",
+            "tableName": "asset_grouping"
+          }
+        }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-4",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "grouping_id_type"
+                }
+              },
+              {
+                "column": {
+                  "name": "grouping_id"
+                }
+              }]
+          ,
+            "indexName": "asset_grouping_grouping_id_type_grouping_id_idx",
+            "tableName": "asset_grouping",
+            "unique" : false
+          }
+        }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-5",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "asset_grouping",
+            "constraintName": "asset_grouping_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-6",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "type_id",
+                  "remarks": "E.g. EMIS",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "name",
+                  "type": "CHARACTER VARYING"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "description",
+                  "type": "CHARACTER VARYING"
+                }
+              }]
+          ,
+            "tableName": "grouping_id_type"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-7",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addPrimaryKey": {
+            "columnNames": "type_id",
+            "constraintName": "grouping_id_type_pkey",
+            "tableName": "grouping_id_type"
+          }
+        }]
+
+    }
+  },
+  {
+    "changeSet": {
+      "id": "af8da237-ae41-422f-938c-4d9e054e13b9-8",
+      "author": "frankvr (generated)",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "grouping_id_type",
+            "baseTableName": "asset_grouping",
+            "constraintName": "asset_grouping_grouping_id_type_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "type_id",
+            "referencedTableName": "grouping_id_type"
+          }
+        }]
     }
   }
 ]}

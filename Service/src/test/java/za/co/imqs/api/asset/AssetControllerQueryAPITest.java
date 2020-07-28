@@ -161,6 +161,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         assertEquals(asset, envelope);
     }
 
+
     @Test
     public void getByLinkNotExist() throws Exception {
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).

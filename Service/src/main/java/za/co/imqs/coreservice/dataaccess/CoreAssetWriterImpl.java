@@ -272,6 +272,39 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void addToGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
+        try {
+            jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, groupingIdType, groupingId);
+        } catch (Exception e) {
+            throw exceptionMapperGrouping(e, uuid, groupingId);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void updateGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
+        try {
+            jdbc.getJdbcTemplate().update("UPDATE asset_grouping SET grouping_Id = ? WHERE asset_id = ? AND grouping_Id_Type = ?;", groupingId, uuid, groupingIdType);
+        } catch (Exception e) {
+            throw exceptionMapperGrouping(e, uuid, groupingId);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void deleteFromGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
+        try {
+            jdbc.getJdbcTemplate().update("DELETE FROM asset_grouping WHERE asset_id = ? AND grouping_Id_Type = ? AND grouping_Id = ?", uuid, groupingIdType, groupingId);
+        } catch (Exception e) {
+            throw exceptionMapperGrouping(e, uuid, groupingId);
+        }
+    }
+
+
+
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void linkAssetToLandParcel(UUID asset, UUID to) {
@@ -430,6 +463,18 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     private RuntimeException exceptionMapperLandparcelLink(Exception e) {
+        if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
+        } else if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
+    private RuntimeException exceptionMapperGrouping(Exception e, UUID asset, String link) {
         if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {

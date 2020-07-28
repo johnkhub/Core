@@ -21,6 +21,10 @@ public interface CoreAssetWriter {
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId);
     public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId);
 
+    public void addToGrouping(UUID uuid, UUID externalIdType, String externalId);
+    public void deleteFromGrouping(UUID uuid, UUID externalIdType, String externalId);
+    public void updateGrouping(UUID uuid, UUID externalIdType, String externalId);
+
     public void linkAssetToLandParcel(UUID asset, UUID to);
     public void unlinkAssetFromLandParcel(UUID asset, UUID from);
 

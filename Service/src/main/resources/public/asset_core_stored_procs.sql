@@ -14,6 +14,7 @@ BEGIN
         END LOOP;
 
     DELETE FROM asset_link WHERE asset_id=the_asset;
+    DELETE FROM asset_grouping WHERE asset_id=the_asset;
     DELETE FROM location WHERE asset_id=the_asset;
     DELETE FROM geoms WHERE asset_id=the_asset;
     DELETE FROM asset_identification WHERE asset_id=the_asset;

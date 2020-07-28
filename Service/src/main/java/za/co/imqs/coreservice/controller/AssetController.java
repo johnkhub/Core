@@ -236,6 +236,97 @@ public class AssetController {
 
 
 
+
+    @RequestMapping(
+            method = RequestMethod.PUT, value = "/group/{uuid}/to/{grouping_id_type}/{grouping_id}"
+    )
+    public ResponseEntity addGroupingId(@PathVariable UUID uuid, @PathVariable UUID grouping_id_type, @PathVariable String grouping_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.addToGrouping(uuid, grouping_id_type, grouping_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PATCH, value = "/group/{uuid}/to/{grouping_id_type}/{grouping_id}"
+    )
+    public ResponseEntity updateGroupingId(@PathVariable UUID uuid, @PathVariable UUID grouping_id_type, @PathVariable String grouping_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.updateGrouping(uuid, grouping_id_type, grouping_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.DELETE, value = "/group/{uuid}/to/{grouping_id_type}/{grouping_id}"
+    )
+    public ResponseEntity deleteGroupingId(@PathVariable UUID uuid, @PathVariable UUID grouping_id_type, @PathVariable String grouping_id) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.deleteFromGrouping(uuid, grouping_id_type, grouping_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/group/{uuid}/to/{grouping_id_type}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity getGroupingId(@PathVariable UUID uuid, @PathVariable UUID grouping_id_type) {
+        final UserContext user = ThreadLocalUser.get();
+        try {
+            return new ResponseEntity<>(assetReader.getGrouping(uuid,grouping_id_type), HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/group/types"
+    )
+    public ResponseEntity getGroupingTypes() {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            return new ResponseEntity(assetReader.getGroupingTypes(), null, HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+
+
+
+
     @RequestMapping(
             method = RequestMethod.GET, value = "/{uuid}"
     )
@@ -277,6 +368,22 @@ public class AssetController {
         final UserContext user = ThreadLocalUser.get();
         try {
             return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path.replace("+","."))), null, HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/grouped_by/{grouping_id_type}/{grouping_id}"
+    )
+    public ResponseEntity getByGroupinglId(@PathVariable String grouping_id_type, @PathVariable String grouping_id) {
+        final UserContext user = ThreadLocalUser.get();
+        try {
+            final List<CoreAssetDto> dtos = new LinkedList<>();
+            for (CoreAsset asset : assetReader.getAssetsByGroupingId(grouping_id_type, grouping_id)) {
+                dtos.add(asDto(asset));
+            }
+            return new ResponseEntity(dtos, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }

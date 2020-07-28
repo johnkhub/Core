@@ -73,4 +73,19 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
     public void obliterateAssets(List<UUID> uuids) {
 
     }
+
+    @Override
+    public void addToGrouping(UUID uuid, UUID externalIdType, String externalId) {
+
+    }
+
+    @Override
+    public void deleteFromGrouping(UUID uuid, UUID externalIdType, String externalId) {
+
+    }
+
+    @Override
+    public void updateGrouping(UUID uuid, UUID externalIdType, String externalId) {
+
+    }
 }

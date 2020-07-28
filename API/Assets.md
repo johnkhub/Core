@@ -140,8 +140,9 @@ Returns:
 ```
 [
   {
-    "uuid":
-    "description"
+    "uuid": ...
+    "name": ...
+    "description" : ...
   }
 ]
 ```
@@ -353,3 +354,74 @@ Accepts: *Nothing*
 Returns:  *Nothing*
 
 Status codes: 200, 400, 403, 404, 408
+
+
+#### PUT `/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### PATCH `assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### DELETE `assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 408
+
+
+### GET `assets/group/{uuid}/to/{grouping_id_type}`
+
+Accepts: *Nothing*
+
+Returns: `[String]`
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### GET `assets/group/types`
+
+Returns a list of defined grouping identifier types
+
+Accepts: *Nothing*
+
+Returns:
+
+```
+[
+  {
+    "uuid": ...
+    "name": ...
+    "description" : ...
+  }
+]
+```
+
+Status codes: 200, 400, 403, 408
+
+
+### GET `assets/grouped_by/{grouping_id_type}/{grouping_id}`
+
+Returns the Assets sharing the  grouping Identifier. Use `GET asset/group/types` to list the grouping identifier types that exist on your system.
+
+Accepts: *Nothing*
+
+Returns: `[CoreAssetDto]`
+
+Status codes: 200, 400, 403, 408
+    
+
+
