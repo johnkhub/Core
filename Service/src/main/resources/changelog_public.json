@@ -1179,7 +1179,8 @@
               }]
             ,
             "indexName": "asset_link_external_id_type_asset_id_external_id_idx",
-            "tableName": "asset_link"
+            "tableName": "asset_link",
+            "unique" : true
           }
         }]
     }
@@ -1207,7 +1208,7 @@
           ,
             "indexName": "asset_link_external_id_type_external_id_idx",
             "tableName": "asset_link",
-            "unique" : false
+            "unique" : true
           }
         }]
     }

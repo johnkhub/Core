@@ -47,6 +47,22 @@ CREATE INDEX asset_grouping_grouping_id_type_grouping_id_idx
     TABLESPACE pg_default;
 
 
+DROP INDEX public.asset_link_external_id_type_asset_id_external_id_idx;
+CREATE UNIQUE INDEX asset_link_external_id_type_asset_id_external_id_idx
+    ON public.asset_link USING btree
+        (external_id_type ASC NULLS LAST, asset_id ASC NULLS LAST, external_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+DROP INDEX public.asset_link_external_id_type_external_id_idx;
+
+CREATE UNIQUE INDEX asset_link_external_id_type_external_id_idx
+    ON public.asset_link USING btree
+        (external_id_type ASC NULLS LAST, external_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+
+
+
 
 
 
