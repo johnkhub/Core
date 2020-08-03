@@ -19,7 +19,6 @@ import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
-import za.co.imqs.spring.service.auth.authorization.UserContextFactory;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;

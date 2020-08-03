@@ -86,7 +86,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
                         return null;
@@ -109,7 +109,7 @@ public class AssetController {
 
 
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.deleteAssets(Collections.singletonList(uuid));
                         return null;
@@ -130,7 +130,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.updateAssets(Collections.singletonList(aFact.update(uuid, asset)));
                         return null;
@@ -151,7 +151,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.addExternalLink(uuid, external_id_type, external_id);
                         return null;
@@ -171,7 +171,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.updateExternalLink(uuid, external_id_type, external_id);
                         return null;
@@ -191,7 +191,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.deleteExternalLink(uuid, external_id_type, external_id);
                         return null;
@@ -417,7 +417,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
                         assetWriter.linkAssetToLandParcel(asset_id, landparcel_id);
                         return null;
@@ -437,7 +437,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
                         assetWriter.unlinkAssetFromLandParcel(asset_id, landparcel_id);
                         return null;

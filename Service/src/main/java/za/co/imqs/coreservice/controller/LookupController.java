@@ -167,7 +167,7 @@ public class LookupController {
         final UserContext user = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_KV_VALUE, of("kv_type", target, "kv", kvs)),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_KV_VALUE, of("kv_type", target, "kv", kvs)),
                     () -> {
                         lookups.acceptKv(target, kvs);
                         return null;

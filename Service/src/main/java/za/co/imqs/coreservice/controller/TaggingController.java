@@ -59,7 +59,7 @@ public class TaggingController {
         try {
             return new ResponseEntity(
                     audit.tryIt(
-                        new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
+                        new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
                         () -> tagging.getTagsFor(uuid)
                     ),
                     HttpStatus.OK
@@ -80,7 +80,7 @@ public class TaggingController {
             final ArrayList<Boolean> result = new ArrayList<>();
             result.add(
                     (Boolean)audit.tryIt(
-                        new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
+                        new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
                         () -> {
                             paramMap.put(tag1, null);
                             return tagging.hasTags(uuid, paramMap.keySet().toArray(new String[0]));
@@ -101,7 +101,7 @@ public class TaggingController {
         // TODO Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_TAGS,
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_TAGS,
                             of(
                                     "asset", uuid,
                                     "tags", String.join(",", paramMap.keySet())
@@ -126,7 +126,7 @@ public class TaggingController {
         // TODO Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_TAGS,
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_TAGS,
                             of(
                                     "asset", uuid,
                                     "tags", String.join(",", paramMap.keySet())

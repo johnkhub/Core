@@ -45,6 +45,7 @@ public class AuditLogEntry {
             Object parameters,
             AuditLogger.Result result
     ) {
+        if (user == null) throw new IllegalArgumentException("User UUID is not specified!");
         this.userId = user;
         this.operation = operation;
         this.parameters = parameters;
