@@ -5,6 +5,7 @@ import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -28,4 +29,6 @@ public interface CoreAssetReader {
     String getGrouping(UUID uuid, UUID grouping_id_type);
 
     List<UUID> getAssetsLinkedToLandParcel(UUID landparcel);
+
+    Map<String,UUID> getAssetTypeUUIDs();
 }

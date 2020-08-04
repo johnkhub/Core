@@ -41,15 +41,14 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
     @Override
     public void after() throws Exception{
         super.after();
-        given().
+        int code = given().
                 header("Cookie", session).
-                delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).
-                then().assertThat().statusCode(HttpStatus.SC_OK);
-        given().
+                delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).statusCode();
+        Assert.assertTrue(code == HttpStatus.SC_OK || code == HttpStatus.SC_FORBIDDEN);
+        code = given().
                 header("Cookie", session).
-                delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).
-                then().assertThat().statusCode(HttpStatus.SC_OK);
-
+                delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).statusCode();
+        Assert.assertTrue(code == HttpStatus.SC_OK || code == HttpStatus.SC_FORBIDDEN);
         deleteAssets(FACILITY1, FACILITY2, LANDPARCEL, ENVELOPE);
     }
 
@@ -168,30 +167,34 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("e1")
+                funcloc("e1").
+                dept("WCED")
                 .get();
 
         final AssetLandparcelDto landparcel = (AssetLandparcelDto) new CoreAssetBuilder(new AssetLandparcelDto()).
                 code("l1").
                 name("Landparcel 1").
                 type("LANDPARCEL").
-                funcloc("e1.l1")
+                funcloc("e1.l1").
+                dept("WCED")
                 .get();
 
         final AssetFacilityDto facility1 = (AssetFacilityDto) new CoreAssetBuilder(new AssetFacilityDto()).
                 code("f1").
                 name("facility 1").
                 type("FACILITY").
-                funcloc("e1.f1")
-                .get();
+                funcloc("e1.f1").
+                dept("WCED").
+                get();
         facility1.setFacility_type_code("OFF");
 
         final AssetFacilityDto facility2 = (AssetFacilityDto) new CoreAssetBuilder(new AssetFacilityDto()).
                 code("f2").
                 name("facility 1").
                 type("FACILITY").
-                funcloc("e1.f2")
-                .get();
+                funcloc("e1.f2").
+                dept("WCED").
+                get();
         facility2.setFacility_type_code("OFF");
 
         putAsset(ENVELOPE, envelope);

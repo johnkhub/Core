@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
+import za.co.imqs.coreservice.auth.authorization.AssetACLPolicy;
+import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
+import za.co.imqs.coreservice.dataaccess.PermissionRepository;
+import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 import za.co.imqs.coreservice.model.AssetFactory;
@@ -35,10 +39,12 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
+import static za.co.imqs.coreservice.dataaccess.PermissionRepository.*;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -62,15 +68,21 @@ public class AssetController {
     private final AssetFactory aFact = new AssetFactory();
     private final AuditLoggingProxy audit;
 
+    private final PermissionRepository perms;
+    private final AssetACLPolicy assetAclPolicy;
+
     @Autowired
     public AssetController(
             CoreAssetWriter assetWriter,
             CoreAssetReader assetReader,
-            AuditLogger auditLogger
+            AuditLogger auditLogger,
+            PermissionRepository perms
     ) {
         this.assetWriter = assetWriter;
         this.assetReader = assetReader;
         this.audit = new AuditLoggingProxy(auditLogger);
+        this.perms = perms;
+        this.assetAclPolicy = new DtpwAclPolicy(perms, assetReader);
     }
 
     @RequestMapping(
@@ -88,7 +100,12 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        assetWriter.createAssets(Collections.singletonList(aFact.create(uuid, asset)));
+                        expectAllowCreate(user.getUserUuid(), asset);
+                        final CoreAsset assetModel = aFact.create(uuid, asset);
+                        assetWriter.createAssets(Collections.singletonList(assetModel));
+                        if (AUTHORISATION_GLOBAL.isActive()) {
+                            assetAclPolicy.onCreateEntity(user.getUserUuid(), user.getUserUuid(), assetModel);
+                        }
                         return null;
                     }
             );
@@ -106,12 +123,14 @@ public class AssetController {
         // Authorisation
         try {
             final Map<String,UUID> p = new HashMap<>();
-
-
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
+                        expectPermission(user.getUserUuid(), uuid, PERM_DELETE);
                         assetWriter.deleteAssets(Collections.singletonList(uuid));
+                        if (AUTHORISATION_GLOBAL.isActive()) {
+                            assetAclPolicy.onDeleteEntity(user.getUserUuid(), user.getUserUuid(),uuid);
+                        }
                         return null;
                     }
             );
@@ -132,6 +151,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
+                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.updateAssets(Collections.singletonList(aFact.update(uuid, asset)));
                         return null;
                     }
@@ -153,6 +173,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
+                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.addExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -173,6 +194,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
+                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.updateExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -193,6 +215,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
+                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.deleteExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -210,6 +233,7 @@ public class AssetController {
     public ResponseEntity getExternalLink(@PathVariable UUID uuid, @PathVariable UUID external_id_type) {
         final UserContext user = ThreadLocalUser.get();
         try {
+            // Read-permissions are enforced by exclusion from the result set
             return new ResponseEntity<>(assetReader.getExternalLink(uuid,external_id_type), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
@@ -223,6 +247,7 @@ public class AssetController {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
+            // Read-permissions are enforced by exclusion from the result set
             return new ResponseEntity(assetReader.getExternalLinkTypes(), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
@@ -326,10 +351,11 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.GET, value = "/{uuid}"
     )
-    public ResponseEntity<?> get(@PathVariable String uuid) {
+    public ResponseEntity<?> get(@PathVariable UUID uuid) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            return new ResponseEntity<>(asDto(assetReader.getAsset(asUUID(uuid))), null, HttpStatus.OK);
+            // Read-permissions are enforced by exclusion from the result set
+            return new ResponseEntity<>(asDto(assetReader.getAsset(uuid)), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }
@@ -347,6 +373,7 @@ public class AssetController {
             filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
             filter.limit(Math.min(Long.parseLong(paramMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
 
+            // Read-permissions are enforced by exclusion from the result set
             final List<CoreAssetDto> dtos = new LinkedList<>();
             for (CoreAsset asset : assetReader.getAssetByFilter(filter)) {
                 dtos.add(asDto(asset));
@@ -363,6 +390,7 @@ public class AssetController {
     public ResponseEntity getByPath(@PathVariable String path) {
         final UserContext user = ThreadLocalUser.get();
         try {
+            //expectPermission(user.getUserUuid(), uuid, PERM_READ generic read permissions?);
             return new ResponseEntity(asDto(assetReader.getAssetByFuncLocPath(path.replace("+","."))), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
@@ -391,6 +419,7 @@ public class AssetController {
     public ResponseEntity getByExternalId(@PathVariable String external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
         try {
+            // Read-permissions are enforced by exclusion from the result set
             return new ResponseEntity(asDto(assetReader.getAssetByExternalId(external_id_type, external_id)), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
@@ -403,6 +432,7 @@ public class AssetController {
     public ResponseEntity<?> getAssetsLinkedToLandparcel(@PathVariable String uuid) {
         final UserContext user = ThreadLocalUser.get();
         try {
+            // Read-permissions are enforced by exclusion from the result set
             return new ResponseEntity<>(assetReader.getAssetsLinkedToLandParcel(asUUID(uuid)), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
@@ -412,13 +442,14 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.PUT, value = "/landparcel/{landparcel_id}/asset/{asset_id}"
     )
-    public ResponseEntity<?> linkedAssetToLandparcel(@PathVariable UUID landparcel_id, @PathVariable UUID asset_id) {
+    public ResponseEntity<?> linkAssetToLandparcel(@PathVariable UUID landparcel_id, @PathVariable UUID asset_id) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
+                        expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
                         assetWriter.linkAssetToLandParcel(asset_id, landparcel_id);
                         return null;
                     }
@@ -439,6 +470,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
+                        expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
                         assetWriter.unlinkAssetFromLandParcel(asset_id, landparcel_id);
                         return null;
                     }
@@ -561,6 +593,28 @@ public class AssetController {
         }
     }
 
+
+    private void expectAllowCreate(UUID principal, CoreAssetDto dto) {
+        if (AUTHORISATION_GLOBAL.isActive()) {
+            final UUID type = assetReader.getAssetTypeUUIDs().get(dto.getAsset_type_code());
+            if (type == null) throw new IllegalArgumentException();
+            expectPermission(principal, type, PERM_CREATE);
+        }
+    }
+
+    private void expectPermission(UUID principal, UUID entity, int required) {
+        if (AUTHORISATION_GLOBAL.isActive()) {
+            int found = required & perms.getPermission(principal, entity);
+            if (found != required) {
+                throw new NotPermittedException(
+                        String.format(
+                                "User %s does not have permissions [%s] for  %s",
+                                principal.toString(), perms.printBitset(~found & required), principal.toString()
+                        )
+                );
+            }
+        }
+    }
 
     private FilterBuilder parse(String text) {
         synchronized (PARSER) {

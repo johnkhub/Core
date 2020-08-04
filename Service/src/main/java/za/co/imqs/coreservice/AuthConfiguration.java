@@ -10,8 +10,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import za.co.imqs.coreservice.auth.authorization.AuthorizationImpl;
+import za.co.imqs.common.security.Permissions;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
+import za.co.imqs.libimqs.auth.AuthResponse;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 import za.co.imqs.services.serviceauth.ServiceAuth;
@@ -19,6 +20,7 @@ import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
+import za.co.imqs.spring.service.auth.authorization.UserContextFactory;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -63,15 +66,16 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Bean
     public AuthInterceptor handleAuthInterceptor() {
-        if (ServiceConfiguration.Features.AUTHORISATION_GLOBAL.isActive()) {
-            return new DefaultHandleAuthInterceptor(
-                    authentication(),
-                    authorization(),
-                    new UserContextFactoryImpl()
-            ) {};
+        return new DefaultHandleAuthInterceptor(
+                authentication(),
+                new Authorization() {
+                    @Override
+                    public boolean authorize(AuthResponse authAuthResponse) {
+                        return true;
+                    }
 
         } else {
-            return new MockAuthInterceptor(); // TODO instead just use the code we have to create users and create aUUID user
+            return new MockAuthInterceptor(); // TODO instead just use the code we have to create users and create a UUID user
         }
     }
 
@@ -116,7 +120,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     }
 
 
-    // TODO move to general code for use wih all services
+    // TODO move to general code for use with all services
     private URL applyOverride(String serviceName, URL toOverride) {
         if (configClient.getProperty(serviceName) != null) {
             try {
@@ -127,15 +131,6 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         }
 
         return toOverride;
-    }
-
-    private static class MockAuthInterceptor extends HandlerInterceptorAdapter implements AuthInterceptor {
-        @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-            final UserContext uCtx = new UserContextImpl("cookie", "tenant", UUID.randomUUID().toString(), Collections.emptyList());
-            ThreadLocalUser.set(uCtx);
-            return true;
-        }
     }
 
     private static class UserContextFactoryImpl implements UserContextFactory {

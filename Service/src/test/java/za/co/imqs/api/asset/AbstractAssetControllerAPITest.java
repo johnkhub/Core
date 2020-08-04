@@ -170,6 +170,11 @@ public class AbstractAssetControllerAPITest {
             asset.setSerial_number(serial);
             return this;
         }
+
+        public CoreAssetBuilder dept(String dept) {
+            asset.setResponsible_dept_code(dept);
+            return this;
+        }
     }
 
     public static <T extends CoreAssetDto> void putAsset(UUID assetId, T asset) {

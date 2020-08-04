@@ -92,7 +92,8 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at")
+                funcloc("at").
+                dept("WCED")
                 .get();
 
 
@@ -104,10 +105,10 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     }
 
     private void assertLinked() {
-        Assert.assertEquals(THE_EXTERNAL_ID, given().
+        assertTrue(given().
                 header("Cookie", session).
                 get("assets/link/{uuid}/to/{external_id_type}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467").
                 then().assertThat().
-                statusCode(HttpStatus.SC_OK).extract().asString());
+                statusCode(HttpStatus.SC_OK).extract().asString().equals(THE_EXTERNAL_ID));
     }
 }

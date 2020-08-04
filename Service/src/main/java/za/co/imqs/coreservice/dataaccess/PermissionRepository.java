@@ -15,10 +15,18 @@ import java.util.UUID;
 public interface PermissionRepository {
     static final String SYSTEM = "System";
 
+    static final int PERM_NONE = 0;
+    static final int PERM_CREATE = 1;
+    static final int PERM_READ = 2;
+    static final int PERM_UPDATE = 4;
+    static final int PERM_DELETE = 8;
+
+
     UUID getSystemPrincipal();
 
     List<UserDto> getUsers();
     List<GroupDto> getGroups();
+    GroupDto getGroupByName(String name);
 
     void deleteUser(UUID userId);
     void deleteGroup(String name);
@@ -33,4 +41,8 @@ public interface PermissionRepository {
     void revokePermissions(UUID revoker, UUID revokee, UUID entity);
     int getPermission(UUID principal, UUID entity);
     int getGrant(UUID principal, UUID entity);
+    public List<GroupDto> getGroupsBelongsTo(UUID user);
+
+    String getAccessTypeName(int mask);
+    String printBitset(int i);
 }

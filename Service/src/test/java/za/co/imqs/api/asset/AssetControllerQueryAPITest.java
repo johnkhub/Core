@@ -65,6 +65,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("e1").
                 serial("1234").
+                dept("WCED").
                 get();
         given().
                 header("Cookie", session).
@@ -81,6 +82,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("FACILITY").
                 funcloc("e1.f1").
                 serial("1235").
+                dept("WCED").
                 get();
 
 
@@ -109,6 +111,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at").
                 serial("1234").
+                dept("WCED").
                 get();
 
         given().
@@ -136,6 +139,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at").
                 serial("1234").
+                dept("WCED").
                 get();
 
         given().
@@ -170,6 +174,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at").
                 serial("1234").
+                dept("WCED").
                 get();
 
         given().
@@ -257,6 +262,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at1").
                 serial("1235").
+                dept("WCED").
                 get();
         envelope2.setIs_owned(false);
         putAsset(THE_ASSET2, envelope2);
@@ -524,6 +530,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at").
                 serial("1234").
+                dept("WCED").
                 get();
         envelope.setIs_owned(true);
         envelope.setResponsible_dept_code("DEADP");
@@ -552,6 +559,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 type("ENVELOPE").
                 funcloc("at").
                 serial("1234").
+                dept("WCED").
                 get();
         envelope.setIs_owned(true);
         putAsset(THE_ASSET, envelope);

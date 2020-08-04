@@ -93,7 +93,7 @@ BEGIN
   -- Note the special use of the system user: it would be crazy to have to assign permission to all entities in the system to this user
 	FOREACH e IN ARRAY to_entities LOOP
         IF (grantor = access_control.fn_get_system_user()) OR (access_mask & access_control.fn_get_effective_grant(grantor,e) = access_mask) THEN
-		    INSERT INTO access_control.entity_access (entity_id, principal_id, access_types) VALUES (e, for_principal, access_mask);
+		    INSERT INTO access_control.entity_access (entity_id, principal_id, access_types) VALUES (e, for_principal, access_mask) ON CONFLICT (entity_id, principal_id) DO NOTHING;
             msg := grantor::text ||' granted ' || access_mask || ' access of ' || e || ' to ' || for_principal;
             --INSERT INTO audit.audit (audit_id, principal_id, action, status, event_time) VALUES (uuid_generate_v4(), for_principal, msg, 'Success', CURRENT_TIMESTAMP) RETURNING audit_id INTO a_id;
             --INSERT INTO audit.auditlink (asset_id, audit_id) VALUES (e, a_id); Audit kink must not have FK to asset - it must also use the entity abstraction asset types are not assets but they are entities

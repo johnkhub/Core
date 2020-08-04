@@ -41,7 +41,7 @@ public class ServiceConfiguration {
         AUTHORISATION_GLOBAL(true),
 
         @Label("Global switch to turn audit logging on / off")
-        AUDIT_GLOBAL(false),
+        AUDIT_GLOBAL(true),
 
         @Label("Enable the command line option to sync schemas - see SchemaManagment.java")
         SCHEMA_MGMT_SYNC(true),

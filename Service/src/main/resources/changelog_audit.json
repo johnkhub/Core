@@ -335,7 +335,7 @@
               {
                 "column": {
                   "name": "mnemonic",
-                  "type": "varchar(20)",
+                  "type": "varchar(40)",
                   "constraints": {
                     "primaryKey" : true
                   }

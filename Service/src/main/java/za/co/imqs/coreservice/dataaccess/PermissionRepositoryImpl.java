@@ -2,9 +2,12 @@ package za.co.imqs.coreservice.dataaccess;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
@@ -13,6 +16,7 @@ import za.co.imqs.coreservice.dto.UserDto;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,9 +31,12 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  */
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
-public class PermissionRepositoryImpl implements PermissionRepository {
+public class PermissionRepositoryImpl implements PermissionRepository, ApplicationListener<ContextRefreshedEvent> {
 
     private final JdbcTemplate jdbc;
+    private final HashMap<Integer,String> access_types = new HashMap<>();
+
+    private UUID systemPrincipal = null;
 
     @Autowired
     public PermissionRepositoryImpl(
@@ -41,11 +48,10 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     @Override
     public UUID getSystemPrincipal() {
         try {
-            return jdbc.execute("{? = call access_control.fn_get_system_user()}", (CallableStatement stmt) -> {
-                stmt.registerOutParameter(1, Types.OTHER);
-                stmt.execute();
-                return (UUID) stmt.getObject(1);
-            });
+            if (systemPrincipal == null) {
+                systemPrincipal = retrieveSystemPrincipal();
+            }
+            return systemPrincipal;
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         }
@@ -54,13 +60,29 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     @Override
     @Transactional("auth_tx_mgr")
     public List<UserDto> getUsers() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @Transactional("auth_tx_mgr")
     public List<GroupDto> getGroups() {
-        return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Transactional("auth_tx_mgr")
+    public GroupDto getGroupByName(String name) {
+        return jdbc.queryForObject(
+            "SELECT * FROM access_control.principal WHERE name = ?",
+                (resultSet, i) -> {
+                    final GroupDto g = new GroupDto();
+                    g.setGroup_id(UUID.fromString(resultSet.getString("principal_id")));
+                    g.setName(resultSet.getString("name"));
+                    g.setDescription(resultSet.getString("description"));
+                    return g;
+                },
+                name
+        );
     }
 
     @Override
@@ -205,5 +227,54 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         }
+    }
+
+    @Override
+    public List<GroupDto> getGroupsBelongsTo(UUID user) {
+        return jdbc.query(
+            "SELECT * FROM access_control.principal p JOIN access_control.principal g ON p.group_id = g.id WHERE p.principal_id = ?",
+                (resultSet, i) -> {
+                    final GroupDto g = new GroupDto();
+                    g.setGroup_id(UUID.fromString(resultSet.getString("g.principal_id")));
+                    g.setName(resultSet.getString("g.name"));
+                    g.setDescription(resultSet.getString("g.description"));
+                    return g;
+                },
+                user
+        );
+    }
+
+    @Override
+    public String getAccessTypeName(int mask) {
+        return access_types.get(mask);
+    }
+
+    @Override
+    public String printBitset(int i) {
+        String s = "";
+        for (int b = 1; b < 32; b <<= 1) {
+            if ((i & b) == b) {
+                s = s + getAccessTypeName(b)+",";
+            }
+        }
+        return s.substring(0,s.length()-1);
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        jdbc.query("SELECT * FROM access_control.access_type",
+                (rs,i) -> {
+                    access_types.put(rs.getInt("mask"), rs.getString("name"));
+                    return null;
+                }
+        );
+    }
+
+    public UUID retrieveSystemPrincipal() {
+        return jdbc.execute("{? = call access_control.fn_get_system_user()}", (CallableStatement stmt) -> {
+            stmt.registerOutParameter(1, Types.OTHER);
+            stmt.execute();
+            return (UUID) stmt.getObject(1);
+        });
     }
 }

@@ -3,7 +3,9 @@ package za.co.imqs.coreservice.dataaccess;
 import filter.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -16,11 +18,12 @@ import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
+import za.co.imqs.services.ThreadLocalUser;
+import za.co.imqs.services.UserContext;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
@@ -34,7 +37,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  */
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @Repository
-public class CoreAssetReaderImpl implements CoreAssetReader {
+public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener<ContextRefreshedEvent> {
     // TODO: We probably need to base our repo layer on a view that is client specific?
 
     private static final String SELECT_ASSET = "SELECT asset.*, " +
@@ -51,7 +54,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             "LEFT JOIN location ON asset.asset_id = location.asset_id " +
             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
-            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id ";
+            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+            "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) ";
 
     private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
@@ -69,9 +73,12 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+            "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) "+
             "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k ";
 
+
     private final JdbcTemplate jdbc;
+    private final Map<String,UUID> assettype = new HashMap<>();
 
     @Autowired
     public CoreAssetReaderImpl(
@@ -83,7 +90,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
     @Override
     public CoreAsset getAsset(UUID uuid) {
         try {
-            return jdbc.queryForObject(SELECT_ASSET + "WHERE asset.asset_id = ?", MAPPER, uuid);
+            return jdbc.queryForObject(SELECT_ASSET + "WHERE asset.asset_id = ?", MAPPER, ThreadLocalUser.get().getUserUuid(), uuid);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
@@ -102,7 +109,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
         try {
             return jdbc.queryForObject(
                     String.format(SELECT_ASSET + "WHERE asset.%s = text2ltree(?)", pathName),
-                    MAPPER, value);
+                    MAPPER, ThreadLocalUser.get().getUserUuid(), value);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
@@ -117,7 +124,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
                     SELECT_ASSET+
                         "JOIN asset_link ON asset_link.asset_id = asset.asset_id " +
                         "WHERE asset_link.external_id_type = uuid(?) AND asset_link.external_id = ?",
-                    MAPPER, externalType, externalId);
+                    MAPPER, ThreadLocalUser.get().getUserUuid(), externalType, externalId);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
@@ -134,7 +141,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
         try {
             return jdbc.query(
                     (filter.getFields().contains("responsible_dept_classif") ? SELECT_ASSET_INCL_DEPT_TREE : SELECT_ASSET) + "WHERE " + sql
-                    , MAPPER);
+                    , MAPPER, ThreadLocalUser.get().getUserUuid());
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
@@ -147,6 +154,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
     @Override
     public String getExternalLink(UUID uuid, UUID external_id_type) {
         try {
+            // TODO enforce permissions
             return jdbc.queryForObject("SELECT external_id FROM asset_link WHERE asset_id = ? AND external_id_type = ? ", String.class, uuid, external_id_type);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
@@ -217,12 +225,28 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
     @Override
     public List<UUID> getAssetsLinkedToLandParcel(UUID landparcel) {
         try {
+            // TODO enforce permissions - note we probably need to enforce for landparcel AND linked assets
             return jdbc.queryForList("SELECT asset_id FROM asset.asset_landparcel WHERE landparcel_asset_id=?", UUID.class, landparcel);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("No assets linked to landparcel %s", landparcel.toString()));
         }
+    }
+
+    @Override
+    public Map<String,UUID> getAssetTypeUUIDs() {
+        return Collections.unmodifiableMap(assettype);
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        jdbc.query("SELECT * FROM public.assettype",
+                (rs,i) -> {
+                    assettype.put(rs.getString("code"), UUID.fromString(rs.getString("uid")));
+                    return null;
+                }
+        );
     }
 
     private static final RowMapper<CoreAsset> MAPPER =

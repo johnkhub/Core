@@ -37,7 +37,8 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at")
+                funcloc("at").
+                dept("WCED")
                 .get();
 
 
@@ -59,7 +60,8 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").
                 name("Envelope 1").
-                type("ENVELOPE")
+                type("ENVELOPE").
+                dept("WCED")
                 .get();
 
         given().
@@ -79,7 +81,8 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at")
+                funcloc("at").
+                dept("WCED")
                 .get();
 
         given().

@@ -29,3 +29,11 @@ INSERT INTO audit.audit_type (mnemonic, description) VALUES ('LEAVE_GROUP','');
 
 INSERT INTO audit.audit_type (mnemonic, description) VALUES ('GRANT_ACL','');
 INSERT INTO audit.audit_type (mnemonic, description) VALUES ('REVOKE_ACL','');
+
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('ADD_TAGS', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('DELETE_TAGS', '');
+
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('ADD_LANDPARCEL_ASSET_LINK', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('DELETE_LANDPARCEL_ASSET_LINK', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('UPDATE_LANDPARCEL_ASSET_LINK', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('QUERY_LANDPARCEL_ASSET_LINK', '');
