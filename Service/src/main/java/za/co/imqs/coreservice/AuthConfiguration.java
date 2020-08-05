@@ -19,6 +19,7 @@ import za.co.imqs.services.serviceauth.ServiceAuthImpl;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
 import za.co.imqs.spring.service.auth.DefaultHandleAuthInterceptor;
 import za.co.imqs.spring.service.auth.authorization.Authorization;
+import za.co.imqs.spring.service.auth.authorization.UserContextFactory;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -67,8 +69,8 @@ public class AuthConfiguration extends BaseAuthConfiguration {
             return new DefaultHandleAuthInterceptor(
                     authentication(),
                     authorization(),
-                    (sessionCookie, userId, tenantId, roles) -> new UserContextImpl(sessionCookie, tenantId, userId, roles)) {
-            };
+                    new UserContextFactoryImpl()
+            ) {};
 
         } else {
             return new MockAuthInterceptor(); // TODO instead just use the code we have to create users and create aUUID user
@@ -135,6 +137,18 @@ public class AuthConfiguration extends BaseAuthConfiguration {
             final UserContext uCtx = new UserContextImpl("cookie", "tenant", UUID.randomUUID().toString(), Collections.emptyList());
             ThreadLocalUser.set(uCtx);
             return true;
+        }
+    }
+
+    private static class UserContextFactoryImpl implements UserContextFactory {
+        @Override
+        public UserContext get(String sessionCookie, String userId, String tenantId, List<String> roles) {
+            return get(sessionCookie, userId, tenantId, roles, null);
+        }
+
+        @Override
+        public UserContext get(String sessionCookie, String userId, String tenantId, List<String> roles, UUID userUuid) {
+            return new UserContextImpl(sessionCookie, tenantId, userId, roles, userUuid);
         }
     }
 }

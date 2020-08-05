@@ -146,10 +146,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
     @Test
     public void testFull() throws Exception{
-        loadLookups();
+        //loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
 
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
+        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
+
+        // delete assets in FLOOR to ROOM update_20200803 (based on UUID)
+        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/FLOOR additions_20200803.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/FLOOR to ROOM update_20200803.csv", "FORCE_INSERT"});
     }
 
     @Test
