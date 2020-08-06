@@ -19,6 +19,8 @@ BEGIN
     DELETE FROM asset_identification WHERE asset_id=the_asset;
     DELETE FROM asset_classification WHERE asset_id=the_asset;
     DELETE FROM asset_tags WHERE asset_id = the_asset;
+    DELETE FROM asset.asset_landparcel WHERE asset_id = the_asset;
+    DELETE FROM asset.asset_landparcel WHERE landparcel_asset_id = the_asset;
     DELETE FROM asset WHERE asset_id=the_asset;
 END; $$
     LANGUAGE PLPGSQL
