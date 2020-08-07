@@ -31,50 +31,29 @@ public class AssetFactory {
     private static <T extends CoreAsset, D extends CoreAssetDto> T createAsset(D dto) {
         if (dto instanceof AssetLandparcelDto) {
             final AssetLandparcel a = new AssetLandparcel();
-            a.setDescription(((AssetLandparcelDto) dto).getDescription());
             a.setLpi(((AssetLandparcelDto) dto).getLpi());
-
             return (T) a;
         } else if (dto instanceof AssetBuildingDto) {
             final AssetBuilding a = new AssetBuilding();
-            a.setDescription(((AssetBuildingDto) dto).getDescription());
-
             return (T) a;
         } else if (dto instanceof AssetComponentDto) {
             final AssetComponent a = new AssetComponent();
-
             return (T) a;
         } else if (dto instanceof AssetEnvelopeDto) {
             final AssetEnvelope a = new AssetEnvelope();
-            a.setDescription(((AssetEnvelopeDto) dto).getDescription());
-            a.setDistrict_code(((AssetEnvelopeDto) dto).getDistrict_code());
-            a.setMunicipality_code(((AssetEnvelopeDto) dto).getMunicipality_code());
-            a.setRegion_code(((AssetEnvelopeDto) dto).getRegion_code());
-            a.setSuburb_code(((AssetEnvelopeDto) dto).getSuburb_code());
-            a.setTown_code(((AssetEnvelopeDto) dto).getTown_code());
-            a.setWard_code(((AssetEnvelopeDto) dto).getWard_code());
-
             return (T) a;
         } else if (dto instanceof AssetFacilityDto) {
             final AssetFacility a = new AssetFacility();
-            a.setDescription(((AssetFacilityDto) dto).getDescription());
             a.setFacility_type_code(((AssetFacilityDto) dto).getFacility_type_code());
-
             return (T) a;
         } else if (dto instanceof AssetFloorDto) {
             final AssetFloor a = new AssetFloor();
-            a.setDescription(((AssetFloorDto) dto).getDescription());
-
             return (T) a;
         } else if (dto instanceof AssetRoomDto) {
             final AssetRoom a = new AssetRoom();
-            a.setDescription(((AssetRoomDto) dto).getDescription());
-
             return (T) a;
         } else if (dto instanceof AssetSiteDto) {
             final AssetRoom a = new AssetRoom();
-            a.setDescription(((AssetSiteDto) dto).getDescription());
-
             return (T) a;
         }
         throw new IllegalArgumentException("Unknown type " + dto.getClass().getCanonicalName());
@@ -137,6 +116,15 @@ public class AssetFactory {
 
         if (dto.getResponsible_dept_code() != null) asset.setResponsible_dept_code(dto.getResponsible_dept_code());
         if (dto.getIs_owned() != null) asset.setIs_owned(dto.getIs_owned());
+
+        if (dto.getDescription() != null) asset.setDescription(dto.getDescription());
+
+        if (dto.getDistrict_code() != null) asset.setDistrict_code(dto.getDistrict_code());
+        if (dto.getMunicipality_code() != null) asset.setMunicipality_code(dto.getMunicipality_code());
+        if (dto.getRegion_code() != null) asset.setRegion_code(dto.getRegion_code());
+        if (dto.getSuburb_code() != null) asset.setSuburb_code(dto.getSuburb_code());
+        if (dto.getTown_code() != null) asset.setTown_code(dto.getTown_code());
+        if (dto.getWard_code() != null) asset.setWard_code(dto.getWard_code());
 
         return asset;
     }

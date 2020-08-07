@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class AssetFloor extends CoreAsset {
-    private String description;
 
     public void validate(boolean create) {
         super.validate(create);

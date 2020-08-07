@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class AssetFacility extends CoreAsset {
-    private String description;
     private String facility_type_code;
 
     public void validate(boolean create) {

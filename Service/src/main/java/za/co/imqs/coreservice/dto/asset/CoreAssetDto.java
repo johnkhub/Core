@@ -108,6 +108,35 @@ public class CoreAssetDto {
     @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
     private Boolean is_owned;
 
+
+    @CsvBindByName(required = false)
+    private String description;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String municipality_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String town_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String suburb_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String district_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String region_code;
+
+    @CsvBindByName(required = false)
+    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+    private String ward_code;
+
+
     // This is so we have a field to write errors to in the exception files
     @CsvBindByName(required = false)
     @JsonIgnore
