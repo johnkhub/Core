@@ -214,13 +214,13 @@ public class Importer {
                                 ).getBody();
 
                             if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link external data {} to.", dto.getFunc_loc_path(), dto.toString()));
+                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link grouping data {} to.", dto.getFunc_loc_path(), dto.toString()));
                             }
 
                             final UUID assetId = UUID.fromString(asset.getAsset_id());
 
                             restTemplate.exchange(
-                                    baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                    baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
                                     HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
@@ -228,7 +228,7 @@ public class Importer {
                             );
 
                             restTemplate.exchange(
-                                    baseUrl + "/assets/link/{uuid}/to/{external_id_type}/{external_id}",
+                                    baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
                                     HttpMethod.PUT,
                                     jsonEntity(null),
                                     Void.class,
