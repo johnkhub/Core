@@ -37,3 +37,8 @@ INSERT INTO audit.audit_type (mnemonic, description) VALUES ('ADD_LANDPARCEL_ASS
 INSERT INTO audit.audit_type (mnemonic, description) VALUES ('DELETE_LANDPARCEL_ASSET_LINK', '');
 INSERT INTO audit.audit_type (mnemonic, description) VALUES ('UPDATE_LANDPARCEL_ASSET_LINK', '');
 INSERT INTO audit.audit_type (mnemonic, description) VALUES ('QUERY_LANDPARCEL_ASSET_LINK', '');
+
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('ADD_ASSET_GROUPING', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('DELETE_ASSET_GROUPING', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('UPDATE_ASSET_GROUPING', '');
+INSERT INTO audit.audit_type (mnemonic, description) VALUES ('QUERY_ASSET_GROUPING', '');

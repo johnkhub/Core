@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dto.GroupDto;
 import za.co.imqs.coreservice.dto.UserDto;
@@ -72,17 +74,23 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
     @Override
     @Transactional("auth_tx_mgr")
     public GroupDto getGroupByName(String name) {
-        return jdbc.queryForObject(
-            "SELECT * FROM access_control.principal WHERE name = ?",
-                (resultSet, i) -> {
-                    final GroupDto g = new GroupDto();
-                    g.setGroup_id(UUID.fromString(resultSet.getString("principal_id")));
-                    g.setName(resultSet.getString("name"));
-                    g.setDescription(resultSet.getString("description"));
-                    return g;
-                },
-                name
-        );
+        try {
+            return jdbc.queryForObject(
+                    "SELECT * FROM access_control.principal WHERE name = ?",
+                    (resultSet, i) -> {
+                        final GroupDto g = new GroupDto();
+                        g.setGroup_id(UUID.fromString(resultSet.getString("principal_id")));
+                        g.setName(resultSet.getString("name"));
+                        g.setDescription(resultSet.getString("description"));
+                        return g;
+                    },
+                    name
+            );
+        } catch (IncorrectResultSizeDataAccessException i) {
+            return null;
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }
     }
 
     @Override
@@ -231,17 +239,21 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
 
     @Override
     public List<GroupDto> getGroupsBelongsTo(UUID user) {
-        return jdbc.query(
-            "SELECT * FROM access_control.principal p JOIN access_control.principal g ON p.group_id = g.id WHERE p.principal_id = ?",
-                (resultSet, i) -> {
-                    final GroupDto g = new GroupDto();
-                    g.setGroup_id(UUID.fromString(resultSet.getString("g.principal_id")));
-                    g.setName(resultSet.getString("g.name"));
-                    g.setDescription(resultSet.getString("g.description"));
-                    return g;
-                },
-                user
-        );
+        try {
+            return jdbc.query(
+                "SELECT * FROM access_control.principal p JOIN access_control.principal g ON p.group_id = g.id WHERE p.principal_id = ?",
+                    (resultSet, i) -> {
+                        final GroupDto g = new GroupDto();
+                        g.setGroup_id(UUID.fromString(resultSet.getString("g.principal_id")));
+                        g.setName(resultSet.getString("g.name"));
+                        g.setDescription(resultSet.getString("g.description"));
+                        return g;
+                    },
+                    user
+            );
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }
     }
 
     @Override

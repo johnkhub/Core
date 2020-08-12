@@ -213,7 +213,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
                     SELECT_ASSET+
                             "JOIN asset_grouping ON asset_grouping.asset_id = asset.asset_id " +
                             "WHERE asset_grouping.grouping_id_type = uuid(?) AND asset_grouping.grouping_id = ?",
-                    MAPPER, groupingType, groupingId);
+                    MAPPER, ThreadLocalUser.get().getUserUuid(), groupingType, groupingId);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {

@@ -266,7 +266,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.ADD_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.addToGrouping(uuid, grouping_id_type, grouping_id);
                         return null;
@@ -286,7 +286,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.updateGrouping(uuid, grouping_id_type, grouping_id);
                         return null;
@@ -306,7 +306,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET_GROUPING, of("asset", uuid, "grouping_id_type", grouping_id_type, "grouping_id", grouping_id)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.deleteFromGrouping(uuid, grouping_id_type, grouping_id);
                         return null;

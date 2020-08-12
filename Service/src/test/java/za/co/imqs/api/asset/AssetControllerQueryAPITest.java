@@ -533,12 +533,11 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 dept("WCED").
                 get();
         envelope.setIs_owned(true);
-        envelope.setResponsible_dept_code("DEADP");
         putAsset(THE_ASSET, envelope);
 
         CoreAssetDto[] dtos = given().
                 header("Cookie", session).
-                queryParam("filter", "name='Envelope 1' and (responsible_dept_classif = @('B_PPW.CD_GI.DEADP'))").
+                queryParam("filter", "name='Envelope 1' and (responsible_dept_classif = @('B_PPW.CD_EI.WCED'))").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
