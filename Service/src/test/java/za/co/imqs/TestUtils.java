@@ -1,5 +1,6 @@
 package za.co.imqs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
@@ -13,6 +14,7 @@ import org.junit.runners.model.Statement;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
+import za.co.imqs.libimqs.auth.Permit;
 import za.co.imqs.unit.dataaccess.DbCreator;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.PermissionRepositoryImpl;
@@ -123,7 +125,7 @@ public class TestUtils {
 
     public static final ServiceRegistry SERVICES = new ServiceRegistry();
 
-    public static String getAuthSession(String username, String password)  {
+    public static Object[] getAuthSession(String username, String password)   {
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
             PostMethod post = new PostMethod("http://"+SERVICES.get(AUTH)+ "/auth2/login");
@@ -131,13 +133,14 @@ public class TestUtils {
             client.executeMethod(post);
             if (post.getStatusCode() != 200)
                 throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
-            return post.getResponseHeader("Set-Cookie").getValue();
+
+            return new Object[]{post.getResponseHeader("Set-Cookie").getValue(),new ObjectMapper().readValue(post.getResponseBody(), Permit.class)};
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String waitForSession(String username, String password) {
+    public static Object[] waitForSession(String username, String password)  {
         return poll(()-> getAuthSession(username, password),TimeUnit.SECONDS, 15);
     }
 

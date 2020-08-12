@@ -49,7 +49,7 @@ public class LookupControllerGetWithOperatorAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = waitForSession(USERNAME, PASSWORD);
+        session = (String)waitForSession(USERNAME, PASSWORD)[0];
 
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 10);
     }

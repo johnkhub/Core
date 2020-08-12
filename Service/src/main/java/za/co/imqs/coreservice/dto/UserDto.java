@@ -18,4 +18,11 @@ public class UserDto {
     private String name;
     private String description;
     private Boolean reserved;
+
+    public static UserDto of(UUID principal_id, String name) {
+        final UserDto u = new UserDto();
+        u.setPrincipal_id(principal_id);
+        u.setName(name);
+        return u;
+    }
 }

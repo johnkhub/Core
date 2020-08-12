@@ -18,4 +18,11 @@ public class GroupDto {
     private String name;
     private String description;
     private Boolean reserved;
+
+    public static GroupDto of(UUID group_id, String  name) {
+        final GroupDto g = new GroupDto();
+        g.setGroup_id(group_id);
+        g.setName((name));
+        return g;
+    }
 }

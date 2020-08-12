@@ -25,6 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public static final String ASSET_ROOT_PATH = "/assets";
     public static final String LOOKUP_ROOT_PATH = "/lookups";
     public static final String ACCESS_ROOT_PATH =  ASSET_ROOT_PATH + "/access";
+    public static final String ACCESS_TESTING_ROOT_PATH =  ASSET_ROOT_PATH + "/access/testing";
 
     public static final String PING_PATH = ASSET_ROOT_PATH +"/ping";
     public static final String DIE_PATH = ASSET_ROOT_PATH +"/die";
