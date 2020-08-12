@@ -66,23 +66,29 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Bean
     public AuthInterceptor handleAuthInterceptor() {
-        return new DefaultHandleAuthInterceptor(
-                authentication(),
-                new Authorization() {
-                    @Override
-                    public boolean authorize(AuthResponse authAuthResponse) {
-                        return true;
-                    }
+            return new DefaultHandleAuthInterceptor(
+                    authentication(),
+                    new Authorization() {
+                        @Override
+                        public boolean authorize(AuthResponse authAuthResponse) {
+                            return true;
+                        }
 
-        } else {
-            return new MockAuthInterceptor(); // TODO instead just use the code we have to create users and create a UUID user
-        }
+                        @Override
+                        public boolean authorize(UserContext uCtx, String eventId) {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean authorize(UserContext uCtx, Permissions p) {
+                            return true;
+                        }
+                    },
+                    new UserContextFactoryImpl()
+            ) {};
     }
 
-    @Bean
-    public Authorization authorization() {
-        return new AuthorizationImpl();
-    }
+
 
     @Bean
     @Qualifier("auth_tx_mgr")
