@@ -39,7 +39,8 @@ public class DtpwAclPolicy implements AssetACLPolicy {
         final UUID type = assetReader.getAssetTypeUUIDs().get(asset.getAsset_type_code());
         if (type == null) throw new IllegalArgumentException();
 
-        final int grantable = perms.getGrant(group.getGroup_id(), type);
-        perms.grantPermissions(perms.getSystemPrincipal(), creator, grantable, type);
+        // Grant same permissions to asset as the group has for this asset type
+        final int grantable = perms.getPermission(group.getGroup_id(), type);
+        perms.grantPermissions(perms.getSystemPrincipal(), creator, grantable, asset.getAsset_id());
     }
 }
