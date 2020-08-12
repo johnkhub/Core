@@ -144,7 +144,7 @@ DECLARE
     group_id uuid;
 BEGIN
   group_id := uuid_generate_v4();
-  INSERT INTO access_control.principal(principal_id, name, description, is_group) VALUES (group_id, code, description, true);
+  INSERT INTO access_control.principal(principal_id, name, description, is_group) VALUES (group_id, code, description, true) ON CONFLICT(name) DO NOTHING;
 
   RETURN group_id;
 END; $$
@@ -186,7 +186,10 @@ BEGIN
   IF UPPER(code) = 'SYSTEM' THEN
     RAISE EXCEPTION 'Cannot add user. % is a reserved name. %', code, e;
   END IF;
-  INSERT INTO access_control.principal(principal_id, name, description, is_group) VALUES (user_id, code, description, false);
+
+  IF NOT EXISTS(SELECT id FROM access_control.principal WHERE principal_id = user_id) THEN
+    INSERT INTO access_control.principal(principal_id, name, description, is_group) VALUES (user_id, code, description, false) ON CONFLICT(name) DO NOTHING;
+  END IF;
 END; $$
 LANGUAGE PLPGSQL
 SECURITY DEFINER
