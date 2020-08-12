@@ -57,7 +57,7 @@ public class PermissionController {
         try {
             return new ResponseEntity(
                     audit.tryIt(
-                            new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.QUERY_USERS, null),
+                            new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.QUERY_USERS, null),
                             () -> permissions.getUsers()
                     ),
                     HttpStatus.OK
@@ -77,7 +77,7 @@ public class PermissionController {
         try {
             return new ResponseEntity(
                     audit.tryIt(
-                            new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.QUERY_GROUPS, null),
+                            new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.QUERY_GROUPS, null),
                         () ->  permissions.getGroups()
                     ),
                     HttpStatus.OK
@@ -88,6 +88,27 @@ public class PermissionController {
         }
     }
 
+    @RequestMapping(
+            method= RequestMethod.GET, value= "/group/{name}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity getGroupByName(@PathVariable String name) {
+        final UserContext invokingUser = ThreadLocalUser.get();
+        try {
+            return new ResponseEntity(
+                    audit.tryIt(
+                            new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.QUERY_GROUPS, null),
+                            () ->  permissions.getGroupByName(name)
+                    ),
+                    HttpStatus.OK
+
+            );
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+
     @SuppressWarnings("rawtypes")
     @RequestMapping(
             method= RequestMethod.DELETE, value= "/user/{uuid}"
@@ -96,7 +117,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
                 audit.tryIt(
-                        new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.DELETE_USER, of("user", uuid)),
+                        new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.DELETE_USER, of("user", uuid)),
                         () -> {
                             permissions.deleteUser(uuid);
                             return null;
@@ -116,7 +137,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.DELETE_GROUP, of("group", name)),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.DELETE_GROUP, of("group", name)),
                     () -> {
                         permissions.deleteGroup(name);
                         return null;
@@ -137,7 +158,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.ADD_GROUP, of("group", group.getGroup_id())),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.ADD_GROUP, of("group", group.getGroup_id())),
                     () -> {
                         permissions.addGroup(group);
                         return null;
@@ -158,7 +179,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.ADD_GROUP, of("group", user.getPrincipal_id())),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.ADD_GROUP, of("group", user.getPrincipal_id())),
                     () -> {
                         permissions.addUser(user);
                         return null;
@@ -172,14 +193,13 @@ public class PermissionController {
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(
-            method= RequestMethod.POST, value= "/group/{groupname}/{user_id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            method= RequestMethod.POST, value= "/group/{groupname}/{user_id}"
     )
     public ResponseEntity addUserToGroup(@PathVariable String groupname, @PathVariable UUID user_id) {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.JOIN_GROUP, of("group", groupname, "user", user_id)),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.JOIN_GROUP, of("group", groupname, "user", user_id)),
                     () -> {
                         permissions.addUserToGroup(user_id, groupname);
                         return null;
@@ -200,7 +220,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.LEAVE_GROUP, of("group", groupname, "user", user_id)),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.LEAVE_GROUP, of("group", groupname, "user", user_id)),
                     () -> {
                         permissions.removeUserFromGroup(user_id, groupname);
                         return null;
@@ -214,8 +234,7 @@ public class PermissionController {
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(
-            method= RequestMethod.POST, value= "/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            method= RequestMethod.POST, value= "/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}"
     )
     public ResponseEntity grantPermissions(
             @PathVariable UUID entity_id,
@@ -225,9 +244,9 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.GRANT_ACL, of("entity", entity_id, "permissions", perms, "grantee", grantee)),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.GRANT_ACL, of("entity", entity_id, "permissions", perms, "grantee", grantee)),
                     () -> {
-                        permissions.grantPermissions(UUID.fromString(invokingUser.getUserId()), grantee, perms, entity_id);
+                        permissions.grantPermissions(invokingUser.getUserUuid(), grantee, perms, entity_id);
                         return null;
                     }
             );
@@ -239,8 +258,7 @@ public class PermissionController {
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(
-            method= RequestMethod.DELETE, value= "/authorisation/entity/{entity_id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            method= RequestMethod.DELETE, value= "/authorisation/entity/{entity_id}"
     )
     public ResponseEntity revokePermissions(
             @PathVariable UUID entity_id,
@@ -249,7 +267,7 @@ public class PermissionController {
         final UserContext invokingUser = ThreadLocalUser.get();
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(invokingUser.getUserId()), AuditLogger.Operation.REVOKE_ACL, of("entity", entity_id, "revokee", revokee)),
+                    new AuditLogEntry(invokingUser.getUserUuid(), AuditLogger.Operation.REVOKE_ACL, of("entity", entity_id, "revokee", revokee)),
                     () -> {
                         permissions.revokePermissions(UUID.fromString(invokingUser.getUserId()), revokee, entity_id);
                         return null;
