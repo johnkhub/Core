@@ -23,14 +23,14 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
 
     @Before
     public void clearAsset() throws Exception {
+        prepPermissions();
+
         deleteAssets(THE_ASSET);
         createAsset();
 
         given().
                 header("Cookie", session).
-                delete("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
-                then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+                delete("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID);
     }
 
     @After

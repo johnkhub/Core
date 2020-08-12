@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
  * (c) 2020 IMQS Software
@@ -48,7 +49,12 @@ public class AbstractAssetControllerAPITest {
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
     public static final String THE_GROUPING_ID = "25d0e46a-8360-4fc5-b792-994cd43311b5";
+
+    public static final GroupDto GRP_WCED = GroupDto.of(UUID.fromString("20d93f56-294b-424a-8492-a8ba866d5c0c"), "WCED");
+    public static final UserDto USR_DEV = UserDto.of(UUID.fromString("f6aefa3f-e1db-4ed9-bc65-4b3265b18ebc"), "dev");
+
     public static String session;
+    public static UUID userId;
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -57,7 +63,9 @@ public class AbstractAssetControllerAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = waitForSession(USERNAME, PASSWORD);
+        Object[] s = waitForSession(USERNAME, PASSWORD);
+        session = (String)s[0];
+        userId = UUID.fromString(((Permit)s[1]).getInternalUUID());
 
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK),TimeUnit.SECONDS, 25);
     }
@@ -65,6 +73,33 @@ public class AbstractAssetControllerAPITest {
     @After
     public void after() throws Exception  {
         deleteAssets(THE_ASSET);
+    }
+
+
+    protected void prepPermissions() {
+        addGroup(GRP_WCED);
+        USR_DEV.setPrincipal_id(userId);
+        addUser(USR_DEV);
+        addUserToGroup(USR_DEV.getPrincipal_id(), GRP_WCED.getName());
+
+        grantPermissions(UUID.fromString("20430440-b8d4-45db-bedb-dbbfbe6699c6"),getGroupByName("WCED").getGroup_id(), 1|2|4);
+        grantPermissions(UUID.fromString("3c2faf23-9011-4458-9d8b-d4ffadbaeb9a"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("10fdd030-7d94-46ce-b3c9-ae82d1c0f4bd"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("9d92001f-bed0-484f-b2ae-d5fee4f4993d"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("e2963409-44eb-480f-b12f-bde4ea4f3c52"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("03298160-03d6-4d14-bd7e-1dde7e771871"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("d6adf53d-0ad9-4047-ae72-334f5a15853d"),getGroupByName("WCED").getGroup_id(),1|2|4);
+        grantPermissions(UUID.fromString("37144c0d-615f-4096-807c-d80c51c6a762"),getGroupByName("WCED").getGroup_id(),1|2|4);
+
+
+        final List<LookupProvider.Kv> kv = new LinkedList<>();
+
+        kv.add(pair("WCED","Western Cape Department of Education"));
+        given().
+                header("Cookie", session).
+                contentType(ContentType.JSON).body(kv).
+                put("/lookups/kv/{target}", "CLIENT_DEP").
+                then().statusCode(200);
     }
 
     protected static CoreAssetDto getAsset(UUID uuid) {
@@ -84,7 +119,7 @@ public class AbstractAssetControllerAPITest {
                 statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
-     protected static void assertEquals(CoreAssetDto asset, CoreAssetDto envelope) throws Exception  {
+    protected static void assertEquals(CoreAssetDto asset, CoreAssetDto envelope) throws Exception  {
         assertThat(asset, notNullValue());
         assertThat(asset.getAdm_path(), equalTo(envelope.getAdm_path()));
         assertThat(asset.getName(), equalTo(envelope.getName()));
@@ -191,6 +226,41 @@ public class AbstractAssetControllerAPITest {
                     delete("/assets/testing/{uuid}", u).
                     then().assertThat().statusCode(HttpStatus.SC_OK);
         }
+    }
+
+    public static void addGroup(GroupDto group) {
+        given().
+                header("Cookie", session).contentType(ContentType.JSON).body(group).
+                post( "/assets/access/group").
+                then().assertThat().statusCode(HttpStatus.SC_CREATED);
+    }
+
+    public static void addUser(UserDto user) {
+        given().
+                header("Cookie", session).contentType(ContentType.JSON).body(user).
+                post( "/assets/access/user").
+                then().assertThat().statusCode(HttpStatus.SC_CREATED);
+    }
+
+    public static void addUserToGroup(UUID userId, String groupName) {
+        given().
+                header("Cookie", session).
+                post("/assets/access/group/{groupname}/{user_id}", groupName, userId).
+                then().assertThat().statusCode(HttpStatus.SC_OK);
+    }
+
+    public void grantPermissions(UUID entityId, UUID toUser, int perms) {
+        given().
+                header("Cookie", session).
+                post("assets/access/testing/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}", entityId, toUser, perms).
+                then().assertThat().statusCode(HttpStatus.SC_OK);
+    }
+
+    public GroupDto getGroupByName(String name) {
+        return given().
+                header("Cookie", session).
+                get("/assets/access/group/{name}", name).
+                then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(GroupDto.class);
     }
 
 }

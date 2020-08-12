@@ -35,19 +35,17 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
 
     @Before
     public void clearAssets() throws Exception {
+        prepPermissions();
+
         deleteAssets(THE_ASSET, THE_OTHER_ASSET);
         assets = createAssets();
 
         given().
                 header("Cookie", session).
-                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID).
-                then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID);
         given().
                 header("Cookie", session).
-                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, EMIS_UUID, THE_GROUPING_ID).
-                then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, EMIS_UUID, THE_GROUPING_ID);
     }
 
     @After
@@ -136,8 +134,9 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at")
-                .get();
+                funcloc("at").
+                dept("WCED").
+                get();
 
 
         putAsset(THE_ASSET, envelope);
@@ -146,8 +145,9 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
                 code("e3").
                 name("Envelope 3").
                 type("ENVELOPE").
-                funcloc("at3")
-                .get();
+                funcloc("at3").
+                dept("WCED").
+                get();
 
         putAsset(THE_OTHER_ASSET, envelope2);
         return new AssetEnvelopeDto[]{envelope, envelope2};

@@ -26,7 +26,9 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
 
     @Before
     public void clearAsset() {
-       deleteAssets(THE_ASSET);
+        prepPermissions();
+
+        deleteAssets(THE_ASSET);
     }
 
     @Test
@@ -36,6 +38,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 name("Envelope 1").
                 type("ENVELOPE").
                 funcloc("at").
+                dept("WCED").
                 serial("1234").
                 get();
 
@@ -72,6 +75,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 name("Envelope 1").
                 type("ENVELOPE").
                 funcloc("at").
+                dept("WCED").
                 get();
 
         given().
@@ -169,5 +173,4 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
 
         assertNotFound(UUID.fromString("33a47a2a-164b-4f72-a9c4-cad267b0e56a"));
     }
-
 }

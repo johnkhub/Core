@@ -32,6 +32,8 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
 
     @Before
     public void init() throws Exception {
+        prepPermissions();
+
         after();
         populate();
     }

@@ -6,15 +6,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
+import za.co.imqs.coreservice.dto.lookup.KvRegion;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.fail;
+import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
+import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
 
 /**
  * (c) 2020 IMQS Software
@@ -29,6 +35,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
     @Before
     public void clearAsset() {
        deleteAssets(THE_ASSET);
+       prepPermissions();
     }
 
     @Test
