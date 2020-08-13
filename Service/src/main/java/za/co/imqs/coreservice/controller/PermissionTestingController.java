@@ -4,24 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.co.imqs.coreservice.audit.AuditLogEntry;
-import za.co.imqs.coreservice.audit.AuditLogger;
-import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
-import za.co.imqs.services.ThreadLocalUser;
-import za.co.imqs.services.UserContext;
 
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.WebMvcConfiguration.ACCESS_ROOT_PATH;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ACCESS_TESTING_ROOT_PATH;
-import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
-import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 

@@ -2,7 +2,6 @@ package za.co.imqs.coreservice.dto.asset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.processor.PreAssignmentProcessor;
 import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

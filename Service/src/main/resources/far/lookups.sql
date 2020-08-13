@@ -16,7 +16,7 @@ INSERT INTO "ref_disposal_method" (k,v) VALUES ('STOL','Stolen') ON CONFLICT(k) 
 INSERT INTO "ref_disposal_method" (k,v) VALUES ('TRF','Transfer') ON CONFLICT(k) DO NOTHING;
 
 -- ref_measurement_mode --
-DELETE FROM public."ref_measurement_mode" WHERE k IN ('FV','HC','RE') ON CONFLICT(k) DO NOTHING;
+DELETE FROM public."ref_measurement_mode" WHERE k IN ('FV','HC','RE');
 INSERT INTO public."ref_measurement_mode" (k, v) VALUES ('FV', 'Fair Value') ON CONFLICT(k) DO NOTHING;
 INSERT INTO public."ref_measurement_mode" (k, v) VALUES ('HC', 'Historical Cost') ON CONFLICT(k) DO NOTHING;
 INSERT INTO public."ref_measurement_mode" (k, v) VALUES ('RE', 'Revaluation') ON CONFLICT(k) DO NOTHING;

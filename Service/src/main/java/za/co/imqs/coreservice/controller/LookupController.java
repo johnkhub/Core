@@ -19,7 +19,6 @@ import za.co.imqs.services.UserContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;

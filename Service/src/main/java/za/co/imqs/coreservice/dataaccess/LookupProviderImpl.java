@@ -1,7 +1,5 @@
 package za.co.imqs.coreservice.dataaccess;
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -21,7 +19,6 @@ import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.lookup.Geometry;
-import za.co.imqs.coreservice.imports.Rules;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 import za.co.imqs.libimqs.utils.ConfigClientExt;
@@ -319,7 +316,7 @@ public class LookupProviderImpl implements LookupProvider {
             return statement.append(";").toString();
         }
 
-        private <T extends Kv> MapSqlParameterSource mapKv(T kv) throws Exception {
+        private MapSqlParameterSource mapKv(T kv) throws Exception {
             return ORM.mapToSql(kv, new HashSet<>(Arrays.asList("getClass", "getType")), Collections.singleton("getGeom"));
         }
     }

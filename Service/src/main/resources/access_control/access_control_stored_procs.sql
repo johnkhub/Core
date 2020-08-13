@@ -85,10 +85,8 @@ COMMENT ON FUNCTION access_control.fn_get_effective_access IS 'Given the princip
 
 CREATE OR REPLACE FUNCTION access_control.sp_grant_access(grantor uuid, access_mask integer, to_entities uuid[], for_principal uuid) RETURNS void AS $$
 DECLARE
-    g int;
     e uuid;
     msg text;
-    a_id uuid;
 BEGIN
   -- Note the special use of the system user: it would be crazy to have to assign permission to all entities in the system to this user
 	FOREACH e IN ARRAY to_entities LOOP
@@ -112,10 +110,8 @@ SECURITY DEFINER
 
 CREATE OR REPLACE FUNCTION access_control.sp_revoke_access(revoker uuid, to_entities uuid[], for_principal uuid) RETURNS void AS $$
 DECLARE
-    g int;
     e uuid;
     msg text;
-    a_id uuid;
 BEGIN
 	FOREACH e IN ARRAY to_entities LOOP
     IF (revoker = access_control.fn_get_system_user()) OR (access_mask & access_control.fn_get_effective_grant(revoker,e) = access_mask) THEN

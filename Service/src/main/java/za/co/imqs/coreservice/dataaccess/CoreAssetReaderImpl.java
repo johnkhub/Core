@@ -19,7 +19,6 @@ import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.services.ThreadLocalUser;
-import za.co.imqs.services.UserContext;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;

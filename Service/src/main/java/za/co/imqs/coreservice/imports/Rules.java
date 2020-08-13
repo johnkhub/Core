@@ -107,7 +107,7 @@ public interface Rules {
     public static class OptionallyMatchRegex extends MustMatchRegexExpression implements StringValidator {
         @Override
         public boolean isValid(String value) {
-            return StringUtils.isEmpty(value) ? true : super.isValid(value);
+            return StringUtils.isEmpty(value) || super.isValid(value);
         }
     }
 
@@ -132,8 +132,8 @@ public interface Rules {
                 }
                 return true;
 
-            } catch (Exception ignore) {
-                log.debug("", ignore);
+            } catch (Exception e) {
+                log.debug("", e);
             }
             return false;
         }

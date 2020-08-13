@@ -47,11 +47,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final Environment env;
-    private final TaskScheduler scheduler;
-    private final Meta meta;
 
-    private AtomicBoolean assetDirty = new AtomicBoolean(false);
-
+    private final AtomicBoolean assetDirty = new AtomicBoolean(false);
 
     @Autowired
     public CoreAssetWriterImpl(
@@ -61,7 +58,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     ) {
         this.jdbc = new NamedParameterJdbcTemplate(ds);
         this.env = env;
-        this.scheduler = scheduler;
         this.meta = new MetaImpl(ds);
         scheduler.scheduleAtFixedRate(new ExecuteModTrackUpdate(), 3000);
     }

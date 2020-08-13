@@ -4,22 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
-import java.util.UUID;
-
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
-import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -36,15 +31,12 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 public class AssetTestingController {
 
     private final CoreAssetWriter assetWriter;
-    private final CoreAssetReader assetReader;
 
     @Autowired
     public AssetTestingController(
-            CoreAssetWriter assetWriter,
-            CoreAssetReader assetReader
+            CoreAssetWriter assetWriter
     ) {
         this.assetWriter = assetWriter;
-        this.assetReader = assetReader;
     }
 
     @RequestMapping(
