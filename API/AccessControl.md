@@ -1,5 +1,4 @@
-
-Access Control (Do not use yet)
+Access Control
 ===============================
 
 There are two levels of security the first is that which is enforced by the database via functions.  In and of itself it is not completely secure.  The functions must be correctly invoked by the service layer APIs to secure the system.
@@ -52,68 +51,84 @@ The current implementation of this API:
 ### Objects
 
 
+#### UserDto ####
 
-### `GET assets/access/user` (EXPERIMENTAL)
-Accepts: 
-```
-    {
-        "name" : "...", 
-        "user_uuid" : "..."
-    } 
-```
+|Field  |Type  |o/m  |Description|
+|-------|------|-----|-----------|
+|`principal_id`|`string`|m|UUID|
+|`name`|`string`|m|Name of user|
+|`description`|`string`|o|Description|
+|`reserved`|`boolean`|o|User is a system reserved User|
+
+#### GroupDto ####
+
+|Field  |Type  |o/m  |Description|
+|-------|------|-----|-----------|
+|`group_id`|`string`|m|UUID|
+|`name`|`string`|m|Name of user|
+|`description`|`string`|o|Description|
+|`reserved`|`boolean`|o|Group is a system reserved Group|
+
+
+### `GET assets/access/user`  (NOT IMPLEMENTED)
+Returns the complete list of Users.
+
+Accepts: *Nothing*
+
 Returns:
 ```
-[
-    {
-
-    }
-]
+[UserDto]
 ```
 Status codes: 200, 400, 403, 408
 
 
+### `GET assets/access/group`  (NOT IMPLEMENTED)
+Returns the complete list of Groups.
+
+Accepts: *Nothing*
+
+Returns:
+```
+[GroupDto]
+```
+Status codes: 200, 400, 403, 408
+
+### `GET assets/access/group/{name}`
+Returns the Group with the supplied name.
+
+Accepts: *Nothing*
+
+Returns:
+```
+GroupDto
+```
+Status codes: 200, 400, 403, 408
+
+
+
 ### `POST assets/authorisation/users`
+Creates a new User.
+
 Accepts: 
 ```
-{
-    "name" : "...",
-    "user_uuid" : "..."
-}
+UserDto
 ```
 Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
 ### `DELETE assets/authorisation/users/{user_uuid}`
+Removes the User with the supplied User UUID.
+
 Accepts: *Nothing* 
 Returns: *Nothing*
 Status codes: 200, 400, 403, 408, 412
 
-### `GET assets/access/groups`
-Accepts: *Nothing*
-Returns:
-```
-[
-    {
 
-    }
-]
-```
-Status codes: 200, 400, 403, 408
-
-### `POST assets/access/groups`
-Accepts: 
-```
-    {
-        "name" : "...",
-        "group_uuid" : "..."
-    }
-```
-Returns: *Nothing*
-
-Status codes: 201, 400, 403, 408, 409, 412
 
 ### `DELETE assets/access/groups/{group_uuid}`
+Removes the Group with the supplied Group UUID.
+
 Accepts: *Nothing*
 
 Returns: *Nothing*
@@ -121,44 +136,50 @@ Returns: *Nothing*
 Status codes: 200, 400, 403, 404, 408, 412
 
 ###  `POST assets/access/groups/{group_uuid}`
+Creates a new Group with the specified UUID.
+
 Accepts: 
-```{
-    "user_uuid" : "...",
-    "group_uuid" : "..."
-    }
+```
+GroupDto
 ```
 Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/access/groups/{group_uuid}/{user_uuid}`
+
+### `POST assets/access/groups/{group_name}/{user_uuid}`
+Adds the User with the specified UUID to the Group with the specified name. The user must exist.
+
 Accepts: *Nothing*
 
 Returns: *Nothing*
 
 Status codes: 200, 400, 403, 404, 408, 412
 
-### `POST assets/access/entity/{entity_uuid}`
-Accepts: 
-```
-    {
-        "principal_uuid" : "...",
-        "access_type" : "...",
-        "grant_type" : "..."
-    }
-```
+
+### `DELETE assets/access/groups/{group_name}/{user_uuid}`
+Removes the User with the specified UUID from the Group with the specified name. 
+
+Accepts: *Nothing*
+
 Returns: *Nothing*
 
-Status codes: 201, 400, 403, 408, 409, 412
+Status codes: 200, 400, 403, 404, 408, 412
 
-### `POST assets/access/entity/{entity_uuid}/{principal_uuid}`
+
+### `POST assets/access/entity/{entity_uuid}/{grantee_uuid}/{perms}`
+Grants permissions `perms` for the specified entity to the user with UUID `grantee_uuid`.
+
 Accepts: *Nothing*
 
 Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
-### `DELETE assets/access/entity/{entity_uuid}/{principal_uuid}`
+
+### `DELETE assets/access/entity/{entity_uuid}/{revokee_uuid}`
+Revokes permissions `perms` for the specified entity to the user with UUID `revokee_uuid`.
+
 Accepts: *Nothing*
 
 Returns: *Nothing*
