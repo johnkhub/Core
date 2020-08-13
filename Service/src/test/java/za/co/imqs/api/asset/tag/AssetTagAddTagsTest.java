@@ -14,6 +14,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
 
     @Before
     public void clear() throws Exception {
+        prepPermissions();
         deleteAssets(THE_ASSET);
         Populate.populate(session, THE_ASSET);
     }

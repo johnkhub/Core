@@ -22,6 +22,8 @@ import java.util.UUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
+import static za.co.imqs.coreservice.dataaccess.PermissionRepository.PERM_READ;
+import static za.co.imqs.coreservice.dataaccess.PermissionRepository.PERM_UPDATE;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -65,7 +67,7 @@ public class TaggingController {
                     audit.tryIt(
                         new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
                         () -> {
-                            //expectPermission(user.getUserUuid(), uuid, PERM_READ generic read permissions?);
+                            perms.expectPermission(user.getUserUuid(), uuid, PERM_READ);
                             return tagging.getTagsFor(uuid);
                         }
                     ),
@@ -90,7 +92,7 @@ public class TaggingController {
                         new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.QUERY_TAGS, of("asset", uuid)).setCorrelationId(uuid),
                         () -> {
                             paramMap.put(tag1, null);
-                            //expectPermission(user.getUserUuid(), uuid, PERM_READ generic read permissions?);
+                            perms.expectPermission(user.getUserUuid(), uuid, PERM_READ);
                             return tagging.hasTags(uuid, paramMap.keySet().toArray(new String[0]));
                         }
                     )
@@ -116,7 +118,7 @@ public class TaggingController {
                             )).setCorrelationId(uuid),
                     () -> {
                         paramMap.put(tag1, null);
-                        //expectPermission(user.getUserUuid(), uuid, PERM_READ generic read permissions?);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         tagging.addTags(uuid, paramMap.keySet().toArray(new String[0]));
                         return null;
                     }
@@ -142,7 +144,7 @@ public class TaggingController {
                             )).setCorrelationId(uuid),
                     () -> {
                         paramMap.put(tag1, null);
-                        //expectPermission(user.getUserUuid(), uuid, PERM_READ generic read permissions?);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         tagging.deleteTags(uuid, paramMap.keySet().toArray(new String[0]));
                         return null;
                     }

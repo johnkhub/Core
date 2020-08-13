@@ -31,8 +31,9 @@ public class Populate {
                 code("e1").
                 name("Envelope 1").
                 type("ENVELOPE").
-                funcloc("at")
-                .get();
+                funcloc("at").
+                dept("WCED").
+                get();
 
         given().
                 header("Cookie", session).

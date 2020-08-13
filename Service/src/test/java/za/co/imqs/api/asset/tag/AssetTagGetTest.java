@@ -18,6 +18,11 @@ public class AssetTagGetTest extends AbstractAssetControllerAPITest {
 
     // TODO add the asset here, add the tags here
 
+    @Before
+    public void before() {
+        prepPermissions();
+    }
+
     @Test
     public void getAll() {
         final List<String> results =  Arrays.asList(given().

@@ -126,7 +126,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        expectPermission(user.getUserUuid(), uuid, PERM_DELETE);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_DELETE);
                         assetWriter.deleteAssets(Collections.singletonList(uuid));
                         if (AUTHORISATION_GLOBAL.isActive()) {
                             assetAclPolicy.onDeleteEntity(user.getUserUuid(), user.getUserUuid(),uuid);
@@ -151,7 +151,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.updateAssets(Collections.singletonList(aFact.update(uuid, asset)));
                         return null;
                     }
@@ -173,7 +173,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
-                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.addExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -194,7 +194,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
-                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.updateExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -215,7 +215,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET_LINK, of("asset", uuid, "external_id_type", external_id_type, "external_id", external_id)).setCorrelationId(uuid),
                     () -> {
-                        expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
                         assetWriter.deleteExternalLink(uuid, external_id_type, external_id);
                         return null;
                     }
@@ -449,7 +449,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
-                        expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
                         assetWriter.linkAssetToLandParcel(asset_id, landparcel_id);
                         return null;
                     }
@@ -470,7 +470,7 @@ public class AssetController {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
-                        expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
+                        perms.expectPermission(user.getUserUuid(), landparcel_id, PERM_UPDATE);
                         assetWriter.unlinkAssetFromLandParcel(asset_id, landparcel_id);
                         return null;
                     }
@@ -598,21 +598,7 @@ public class AssetController {
         if (AUTHORISATION_GLOBAL.isActive()) {
             final UUID type = assetReader.getAssetTypeUUIDs().get(dto.getAsset_type_code());
             if (type == null) throw new IllegalArgumentException();
-            expectPermission(principal, type, PERM_CREATE);
-        }
-    }
-
-    private void expectPermission(UUID principal, UUID entity, int required) {
-        if (AUTHORISATION_GLOBAL.isActive()) {
-            int found = required & perms.getPermission(principal, entity);
-            if (found != required) {
-                throw new NotPermittedException(
-                        String.format(
-                                "User %s does not have permissions [%s] for  %s",
-                                principal.toString(), perms.printBitset(~found & required), principal.toString()
-                        )
-                );
-            }
+            perms.expectPermission(principal, type, PERM_CREATE);
         }
     }
 

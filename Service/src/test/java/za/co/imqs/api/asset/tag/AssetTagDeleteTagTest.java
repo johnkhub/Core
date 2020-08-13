@@ -1,6 +1,7 @@
 package za.co.imqs.api.asset.tag;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
@@ -11,6 +12,11 @@ import static com.jayway.restassured.RestAssured.given;
 import static junit.framework.TestCase.fail;
 
 public class AssetTagDeleteTagTest extends AbstractAssetControllerAPITest {
+
+    @Before
+    public void before() {
+        prepPermissions();
+    }
 
     @Test
     public void delete() {

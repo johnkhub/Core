@@ -15,6 +15,11 @@ import static org.hamcrest.Matchers.*;
 
 public class AssetTagHasTagsTest extends AbstractAssetControllerAPITest  {
 
+    @Before
+    public void before() {
+        prepPermissions();
+    }
+
     @Test
     public void has() {
         List<Boolean> results = new LinkedList<>();

@@ -1,10 +1,13 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dto.GroupDto;
 import za.co.imqs.coreservice.dto.UserDto;
 
 import java.util.List;
 import java.util.UUID;
+
+import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
 
 /**
  * (c) 2020 IMQS Software
@@ -45,4 +48,18 @@ public interface PermissionRepository {
 
     String getAccessTypeName(int mask);
     String printBitset(int i);
+
+    default void expectPermission(UUID principal, UUID entity, int required) {
+        if (AUTHORISATION_GLOBAL.isActive()) {
+            int found = required & getPermission(principal, entity);
+            if (found != required) {
+                throw new NotPermittedException(
+                        String.format(
+                                "User %s does not have permissions [%s] for  %s",
+                                principal.toString(), printBitset(~found & required), principal.toString()
+                        )
+                );
+            }
+        }
+    }
 }

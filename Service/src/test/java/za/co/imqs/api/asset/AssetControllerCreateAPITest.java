@@ -45,8 +45,8 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 name("Envelope 1").
                 type("ENVELOPE").
                 funcloc("at").
-                dept("WCED")
-                .get();
+                dept("WCED").
+                get();
 
 
         given().
