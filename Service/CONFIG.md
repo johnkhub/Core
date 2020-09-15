@@ -140,9 +140,15 @@ materialized views.
 ```
    "sql-schedules" : [
     {
-      "name" : "refresh_report_view",
+      "name" : "refresh_core_report_view",
       "description" : "",
       "sql" : "REFRESH MATERIALIZED VIEW dtpw.dtpw_core_report_view;",
+      "cron" : "0 */5 * * * *"
+    },
+    {
+      "name" : "refresh_ei_report_view",
+      "description" : "",
+      "sql" : "REFRESH MATERIALIZED VIEW dtpw.dtpw_ei_report_view;",
       "cron" : "0 */5 * * * *"
     }
   ]
