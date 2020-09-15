@@ -154,8 +154,8 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
     @Test
     public void testFull() throws Exception{
-        loadLookups();
-        loadEIlookups();
+        //loadLookups();
+        //loadEIlookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
         //Importer.main(new String[]{config, "assets","/home/frank/Downloads/prod12aug.export", "FORCE_INSERT"});
         Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1600154305509.csv","FORCE_INSERT"});

@@ -48,8 +48,10 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     private final NamedParameterJdbcTemplate jdbc;
     private final Environment env;
     private final TaskScheduler scheduler;
+    private final Meta meta;
 
     private AtomicBoolean assetDirty = new AtomicBoolean(false);
+
 
     @Autowired
     public CoreAssetWriterImpl(
@@ -60,7 +62,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         this.jdbc = new NamedParameterJdbcTemplate(ds);
         this.env = env;
         this.scheduler = scheduler;
-
+        this.meta = new MetaImpl(ds);
         scheduler.scheduleAtFixedRate(new ExecuteModTrackUpdate(), 3000);
     }
 
@@ -371,6 +373,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addLinkedData(String table, String field, UUID assetId, String value) { // TODO modify to handle multiple fields
         try {
+            assertValidLinkTable(table);
+
             jdbc.getJdbcTemplate().update(
                     String.format(
                             "INSERT INTO %s (asset_id, %s) VALUES (?,?)",
@@ -386,6 +390,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateLinkedData(String table, String field, UUID assetId, String value) { // TODO modify to handle multiple fields
         try {
+            assertValidLinkTable(table);
+
             jdbc.getJdbcTemplate().update(
                     String.format(
                             "UPDATE %s SET %s = ? WHERE asset_id = ?",
@@ -401,6 +407,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteLinkedData(String table, String field, UUID assetId) { // TODO modify to handle multiple fields
         try {
+            assertValidLinkTable(table);
+
             jdbc.getJdbcTemplate().update(
                     String.format(
                             "DELETE FROM %s WHERE asset_id = ?",
@@ -553,6 +561,12 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
     */
+
+    private void assertValidLinkTable(String table) {
+        final String[] fqn = table.split("\\.");
+        if (!meta.userSchemas().contains(fqn[0])) throw new IllegalArgumentException(String.format("%s is not a valid user schema", fqn[0]));
+        if (!fqn[1].endsWith("_link")) throw new IllegalArgumentException(String.format("%s is not a valid field link table", fqn[1]));
+    }
 
     private void updateModTrack() {
         assetDirty.set(true);
