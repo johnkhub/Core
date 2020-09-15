@@ -7,6 +7,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
+import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.springframework.expression.spel.ast.MethodReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,6 +29,7 @@ import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.dto.lookup.*;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -253,6 +256,68 @@ public class Importer {
         }
     }
 
+    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field) throws Exception {
+        final CsvImporter<T> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<eiDistrict> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
+        try (Reader reader = Files.newBufferedReader(path)) {
+            assetImporter.stream(reader, instance).forEach(
+                    (dto) -> {
+                        try {
+                            final String value = (String)get.invoke(dto);
+                            if (value == null) {
+                                return;
+                            }
+
+                            final CoreAssetDto asset = restTemplate.exchange(
+                                    baseUrl + "/assets/func_loc_path/{path}",
+                                    HttpMethod.GET,
+                                    jsonEntity(null),
+                                    CoreAssetDto.class,
+                                    dto.getFunc_loc_path().replace(".","+")
+                            ).getBody();
+
+                            if (asset == null) {
+                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link data {} to.", dto.getFunc_loc_path(), dto.toString()));
+                            }
+
+                            final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
+                                    HttpMethod.DELETE,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    table, field, assetId
+                            );
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
+                                    HttpMethod.PUT,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    table, field, assetId, value
+                            );
+
+
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
+
+                        } catch (Exception e) {
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
+                        }
+                    }
+            );
+        }
+
+        if (exceptionFile != null) {
+            exceptionFile.close();
+        }
+    }
+
+
     private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
         log.error(dto.getError());
 
@@ -271,6 +336,7 @@ public class Importer {
     }
 
     public void importAssets(Path assets) throws Exception {
+
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
@@ -297,6 +363,9 @@ public class Importer {
 
         log.info("Importing EMIS...");
         importEmis(assets, new FileWriter("emis_exceptions.csv"));
+
+        log.info("Importing Linked data...");
+        importLinkedData(assets, new FileWriter("linked_data_exceptions.csv"), new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"), "dtpw+ei_district_link", "k_education_district");
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
@@ -387,6 +456,9 @@ public class Importer {
                 return (T) new LookupProvider.ChiefDirectorateKv();
             case "CLIENT_DEP":
                 return (T) new LookupProvider.ClientDeptKv();
+
+            case "EI_DISTR":
+                return (T) new LookupProvider.Kv();
         }
         return null;
     }
@@ -399,6 +471,15 @@ public class Importer {
         @CsvBindByName(required = false)
         @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
         private String emis;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class eiDistrict extends CoreAssetDto {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String ei_district_code;
     }
 
     @Data
