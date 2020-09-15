@@ -8,7 +8,7 @@ To access the functionality of the API, the user must be authenticated vie the A
 
 ### Obtaining a session token ###
 
- **Add a link to the Auth documentation here**
+Refer to the [Auth Service](https://imqssoftware.atlassian.net/wiki/x/lwHsAw) documentation.
 
 ### Using the session token
 

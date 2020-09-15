@@ -6,6 +6,15 @@ The Lookups API, provides a simple mechanism to query data.  It only supports ve
 1. Retrieving rows from a view or table based on basic set of query parameters. *All columns are returned.*
 2. Store and Retrieve to/from KV tables via the **code** assigned to that kookup table
 
+
+### API Versioning
+
+The draft [API versioning] (https://imqssoftware.atlassian.net/wiki/x/eoCZZw) system is has not yet been implemented.
+
+### Rules
+
+[Rules and conventions ](https://imqssoftware.atlassian.net/wiki/x/S4CBeQ)
+
 ## Security
 
 See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.
