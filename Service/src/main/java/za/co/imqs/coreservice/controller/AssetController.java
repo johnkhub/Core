@@ -143,10 +143,6 @@ public class AssetController {
     }
 
 
-
-
-
-
     @RequestMapping(
             method = RequestMethod.PUT, value = "/link/{uuid}/to/{external_id_type}/{external_id}"
     )
@@ -444,6 +440,81 @@ public class AssetController {
                     new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.DELETE_LANDPARCEL_ASSET_LINK, of("landparcel", landparcel_id, "asset", asset_id)).setCorrelationId(landparcel_id),
                     () -> {
                         assetWriter.unlinkAssetFromLandParcel(asset_id, landparcel_id);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+
+    @RequestMapping(
+            method = RequestMethod.PUT, value = "/table/{table}/field/{field}/asset/{uuid}/value/{value}"
+    )
+    public ResponseEntity<?> addLinkedData(
+            @PathVariable String table,
+            @PathVariable String field,
+            @PathVariable UUID uuid,
+            @PathVariable String value
+    ) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.addLinkedData(table.replace("+","."), field, uuid, value);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PATCH, value = "/table/{table}/field/{field}/asset/{uuid}/value/{value}"
+    )
+    public ResponseEntity<?> updateLinkedData(
+            @PathVariable String table,
+            @PathVariable String field,
+            @PathVariable UUID uuid,
+            @PathVariable String value
+    ) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.updateLinkedData(table.replace("+","."), field, uuid, value);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.DELETE, value = "/table/{table}/field/{field}/asset/{uuid}"
+    )
+    public ResponseEntity<?> deleteLinkedData(
+            @PathVariable String table,
+            @PathVariable String field,
+            @PathVariable UUID uuid
+    ) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    () -> {
+                        assetWriter.deleteLinkedData(table.replace("+","."), field, uuid);
                         return null;
                     }
             );

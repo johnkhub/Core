@@ -367,6 +367,51 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         updateModTrack();
     }
 
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void addLinkedData(String table, String field, UUID assetId, String value) { // TODO modify to handle multiple fields
+        try {
+            jdbc.getJdbcTemplate().update(
+                    String.format(
+                            "INSERT INTO %s (asset_id, %s) VALUES (?,?)",
+                            table, field
+                    ),
+                    assetId, value);
+        } catch (Exception e) {
+            throw exceptionMapperLinkedData(e, assetId, field);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void updateLinkedData(String table, String field, UUID assetId, String value) { // TODO modify to handle multiple fields
+        try {
+            jdbc.getJdbcTemplate().update(
+                    String.format(
+                            "UPDATE %s SET %s = ? WHERE asset_id = ?",
+                            table, field
+                    ),
+                    value, assetId);
+        } catch (Exception e) {
+            throw exceptionMapperLinkedData(e, assetId, field);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void deleteLinkedData(String table, String field, UUID assetId) { // TODO modify to handle multiple fields
+        try {
+            jdbc.getJdbcTemplate().update(
+                    String.format(
+                            "DELETE FROM %s WHERE asset_id = ?",
+                            table
+                    ),
+                    assetId);
+        } catch (Exception e) {
+            throw exceptionMapperLinkedData(e, assetId, field);
+        }
+    }
+
     // TODO: this could make use of update T set F = coalesce(F, new value), which will simplify the code significantly
     // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateUpdate(String target, MapSqlParameterSource map) {
@@ -454,6 +499,20 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private RuntimeException exceptionMapperGrouping(Exception e, UUID asset, String link) {
         if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
+        } else if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
+    private RuntimeException exceptionMapperLinkedData(Exception e, UUID asset, String field) {
+        if (e instanceof org.springframework.dao.DuplicateKeyException) {
+            return new AlreadyExistsException("Field " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
+        } else if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {
             throw new ResubmitException(e.getMessage());

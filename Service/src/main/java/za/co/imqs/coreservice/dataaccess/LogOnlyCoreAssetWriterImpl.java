@@ -69,6 +69,22 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
 
     }
 
+
+    @Override
+    public void addLinkedData(String table, String field, UUID assetId, String value) {
+
+    }
+
+    @Override
+    public void updateLinkedData(String table, String field, UUID assetId, String value) {
+
+    }
+
+    @Override
+    public void deleteLinkedData(String table, String field, UUID assetId) {
+
+    }
+
     @Override
     public void obliterateAssets(List<UUID> uuids) {
 
