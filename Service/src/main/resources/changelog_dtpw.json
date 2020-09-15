@@ -421,24 +421,6 @@
   },
   {
     "changeSet": {
-      "id": "0000000000-2",
-      "author": "frankvr",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "sqlFile": {
-            "dbms": "postgresql",
-            "encoding": "utf8",
-            "path": "dtpw/kv_types.sql",
-            "relativeToChangelogFile": false,
-            "endDelimiter": ";"
-          }
-        }
-      ]
-    }
-  },
-  {
-    "changeSet": {
       "id": "0bd5c466-9743-4b85-a10b-c12e50039273",
       "author": "frankvr",
       "comment" : "Add support for tags",
@@ -449,25 +431,6 @@
             "dbms" : "postgresql",
             "encoding" : "utf8",
             "path": "dtpw/tags.sql",
-            "relativeToChangelogFile": false,
-            "endDelimiter" : "//"
-          }
-        }]
-
-    }
-  },
-  {
-    "changeSet": {
-      "id": "8ed152b2-f8c7-403e-a57e-737ee5f370dc",
-      "author": "frankvr",
-      "comment" : "Add support for tags",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "sqlFile": {
-            "dbms" : "postgresql",
-            "encoding" : "utf8",
-            "path": "dtpw/dtpw_views.sql",
             "relativeToChangelogFile": false,
             "endDelimiter" : "//"
           }
@@ -513,6 +476,227 @@
             "validate": true
           }
         }]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "26990f61-024c-4a6a-9870-2c2263bb07c2",
+      "author": "frankvr (generated)",
+      "comment" : "Add ei_district lookup table",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "geom",
+                  "type": "GEOMETRY(Geometryz, 4326)"
+                }
+              }
+            ]
+          ,
+            "schemaName": "dtpw",
+            "tableName": "ref_ei_district"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_ei_district_k_idx",
+            "schemaName": "dtpw",
+            "tableName": "ref_ei_district",
+            "unique": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "11e4eb32-e3af-4fca-b650-e92e177992b5",
+      "author": "frankvr (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k_education_district",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "organogram_path",
+                  "remarks": "Organogram path",
+                  "type": "PUBLIC.LTREE",
+                  "constraints": {
+                    "nullable": true
+                  }
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ei_district_link"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k_education_district"
+                }
+              }],
+            "indexName": "k_education_district_idx",
+            "schemaName": "dtpw",
+            "tableName": "ei_district_link",
+            "unique": true
+          },
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "organogram_path"
+                }
+              }],
+            "indexName": "ei_district_link_organogram_path_idx",
+            "schemaName": "dtpw",
+            "tableName": "ei_district_link"
+          },
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "asset_id"
+                }
+              }],
+            "indexName": "ei_district_link_asset_id_idx",
+            "schemaName": "dtpw",
+            "tableName": "ei_district_link"
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "k_education_district",
+            "baseTableName": "ei_district_link",
+            "baseTableSchemaName": "dtpw",
+            "constraintName": "ei_district_k_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_ei_district",
+            "referencedTableSchemaName": "dtpw",
+            "validate": true
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "ei_district_link",
+            "baseTableSchemaName": "dtpw",
+            "constraintName": "ei_district_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "a3606bec-1fa8-4183-871e-d52ec90aecc4",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "comment" : "Apply view changes for versioning and bug fixing",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "dtpw/dtpw_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }
+      ]
     }
   },
   {
@@ -573,21 +757,20 @@
   },
   {
     "changeSet": {
-      "id": "a3606bec-1fa8-4183-871e-d52ec90aecc4",
+      "id": "0000000000-2",
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "comment" : "Apply view changes for versioning and bug fixing",
       "changes": [
         {
           "sqlFile": {
-            "dbms" : "postgresql",
-            "encoding" : "utf8",
-            "path": "dtpw/dtpw_views.sql",
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "dtpw/kv_types.sql",
             "relativeToChangelogFile": false,
-            "endDelimiter" : "//"
+            "endDelimiter": ";"
           }
-        }]
-
+        }
+      ]
     }
   },
   {
