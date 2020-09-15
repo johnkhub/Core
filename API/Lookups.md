@@ -96,10 +96,10 @@ Registers a new kv lookup table.
 Accepts: 
 ```
 {
-  "name",
-  "description",
-  "owner",
-  "table"
+  "name" : "...",
+  "description" : "...",
+  "owner" : "...",
+  "table" : "..."
 }
 ```
 Returns: *Nothing* 

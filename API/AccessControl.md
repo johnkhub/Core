@@ -57,8 +57,8 @@ The current implementation of this API:
 Accepts: 
 ```
     {
-        "name", 
-        "user_uuid"
+        "name" : "...", 
+        "user_uuid" : "..."
     } 
 ```
 Returns:
@@ -76,8 +76,8 @@ Status codes: 200, 400, 403, 408
 Accepts: 
 ```
 {
-    "name",
-    "user_uuid"
+    "name" : "...",
+    "user_uuid" : "..."
 }
 ```
 Returns: *Nothing*
@@ -105,8 +105,8 @@ Status codes: 200, 400, 403, 408
 Accepts: 
 ```
     {
-        "name",
-        "group_uuid"
+        "name" : "...",
+        "group_uuid" : "..."
     }
 ```
 Returns: *Nothing*
@@ -123,8 +123,8 @@ Status codes: 200, 400, 403, 404, 408, 412
 ###  `POST assets/access/groups/{group_uuid}`
 Accepts: 
 ```{
-    "user_uuid",
-    "group_uuid"
+    "user_uuid" : "...",
+    "group_uuid" : "..."
     }
 ```
 Returns: *Nothing*
@@ -142,9 +142,9 @@ Status codes: 200, 400, 403, 404, 408, 412
 Accepts: 
 ```
     {
-        "principal_uuid",
-        "access_type",
-        "grant_type"
+        "principal_uuid" : "...",
+        "access_type" : "...",
+        "grant_type" : "..."
     }
 ```
 Returns: *Nothing*

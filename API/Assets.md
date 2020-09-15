@@ -77,18 +77,18 @@ Accepts:  `CoreAssetDto`
 e.g.
 {
   "asset_type_code" : "ENVELOPE"
-  "code" : ""
-  "name" : "" 
-  "adm_path" : ""
-  "func_loc_path" : ""
-  "creation_date" : ""
-  "address" : ""
-  "geom" : ""
-  "latitude" : ""
-  "longitude" : ""
+  "code" : "..."
+  "name" : "..." 
+  "adm_path" : "..."
+  "func_loc_path" : "..."
+  "creation_date" : "..."
+  "address" : "..."
+  "geom" : "..."
+  "latitude" : "..."
+  "longitude" : "..."
 
-  "barcode" : ""
-  "serial_number" : ""
+  "barcode" : "..."
+  "serial_number" : "..."
   ...
 }
 ```
@@ -105,18 +105,18 @@ Accepts:  `CoreAssetDto`
 e.g.
 {
   "asset_type_code" : "ENVELOPE"
-  "code" : ""
-  "name" : "" 
-  "adm_path" : ""
-  "func_loc_path" : ""
-  "creation_date" : ""
-  "address" : ""
-  "geom" : ""
-  "latitude" : ""
-  "longitude" : ""
+  "code" : "..."
+  "name" : "..." 
+  "adm_path" : "..."
+  "func_loc_path" : "..."
+  "creation_date" : "..."
+  "address" : "..."
+  "geom" : "..."
+  "latitude" : "..."
+  "longitude" : "..."
 
-  "barcode" : ""
-  "serial_number" : ""
+  "barcode" : "..."
+  "serial_number" : "..."
 
   ...
 }
@@ -147,8 +147,8 @@ Returns:
 ```
 [
   {
-    "uuid":
-    "description"
+    "uuid": "..."
+    "description": "..."
   }
 ]
 ```
@@ -410,9 +410,9 @@ Returns:
 ```
 [
   {
-    "uuid": ...
-    "name": ...
-    "description" : ...
+    "uuid": "..."
+    "name": "..."
+    "description" : "..."
   }
 ]
 ```
