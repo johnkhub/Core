@@ -54,6 +54,15 @@ SELECT * FROM assets WHERE public.fn_has_tags( asset_id, ARRAY['AT_RISK'])
 API level
 ----------
 
+
+### API Versioning
+
+The draft [API versioning] (https://imqssoftware.atlassian.net/wiki/x/eoCZZw) system is has not yet been implemented.
+
+### Rules
+
+[Rules and conventions ](https://imqssoftware.atlassian.net/wiki/x/S4CBeQ)
+
 ### Security
 
 See [API Security](APISecurity.md) for an overview of how security is implemented and the requirements of making secured REST calls.

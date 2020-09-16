@@ -8,12 +8,19 @@ Operations
 - Subdivision & Consolidation of assets  (Land Management module)
 - Movement of assets in the hierarchy
 
-Rules
-----
-TBD
+
+
 
 API
 ---
+
+### API Versioning
+
+The draft [API versioning] (https://imqssoftware.atlassian.net/wiki/x/eoCZZw) system is has not yet been implemented.
+
+### Rules
+
+[Rules and conventions ](https://imqssoftware.atlassian.net/wiki/x/S4CBeQ)
 
 ### Security
 
@@ -70,18 +77,18 @@ Accepts:  `CoreAssetDto`
 e.g.
 {
   "asset_type_code" : "ENVELOPE"
-  "code" : ""
-  "name" : "" 
-  "adm_path" : ""
-  "func_loc_path" : ""
-  "creation_date" : ""
-  "address" : ""
-  "geom" : ""
-  "latitude" : ""
-  "longitude" : ""
+  "code" : "..."
+  "name" : "..." 
+  "adm_path" : "..."
+  "func_loc_path" : "..."
+  "creation_date" : "..."
+  "address" : "..."
+  "geom" : "..."
+  "latitude" : "..."
+  "longitude" : "..."
 
-  "barcode" : ""
-  "serial_number" : ""
+  "barcode" : "..."
+  "serial_number" : "..."
   ...
 }
 ```
@@ -98,18 +105,18 @@ Accepts:  `CoreAssetDto`
 e.g.
 {
   "asset_type_code" : "ENVELOPE"
-  "code" : ""
-  "name" : "" 
-  "adm_path" : ""
-  "func_loc_path" : ""
-  "creation_date" : ""
-  "address" : ""
-  "geom" : ""
-  "latitude" : ""
-  "longitude" : ""
+  "code" : "..."
+  "name" : "..." 
+  "adm_path" : "..."
+  "func_loc_path" : "..."
+  "creation_date" : "..."
+  "address" : "..."
+  "geom" : "..."
+  "latitude" : "..."
+  "longitude" : "..."
 
-  "barcode" : ""
-  "serial_number" : ""
+  "barcode" : "..."
+  "serial_number" : "..."
 
   ...
 }
@@ -140,9 +147,8 @@ Returns:
 ```
 [
   {
-    "uuid": ...
-    "name": ...
-    "description" : ...
+    "uuid": "..."
+    "description": "..."
   }
 ]
 ```
@@ -356,6 +362,7 @@ Returns:  *Nothing*
 Status codes: 200, 400, 403, 404, 408
 
 
+
 #### PUT `/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
 
 Accepts: *Nothing*
@@ -403,9 +410,9 @@ Returns:
 ```
 [
   {
-    "uuid": ...
-    "name": ...
-    "description" : ...
+    "uuid": "..."
+    "name": "..."
+    "description" : "..."
   }
 ]
 ```
@@ -423,5 +430,56 @@ Returns: `[CoreAssetDto]`
 
 Status codes: 200, 400, 403, 408
     
+
+
+
+### PUT `/table/{table}/field/{field}/asset/{uuid}/value/{value}`
+
+Populate a specific field in a specific table. **Note:** The table name must be qualified with the name of the schema replacing the `.` with a `+`.
+E.g. `dtpw+ei_district_link`
+
+> * This is a low-level API that is likely to change or fall away
+> * Only xxx_link tables in the client specific schems are accessible
+
+
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 408
+
+
+
+### PATCH `/table/{table}/field/{field}/asset/{uuid}/value/{value}`
+
+Populate a specific field in a specific table. **Note:** The table name must be qualified with the name of the schema replacing the `.` with a `+`.
+E.g. `dtpw+ei_district_link`
+
+> * This is a low-level API that is likely to change or fall away
+> * Only xxx_link tables in the client specific schems are accessible
+
+
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 404, 408
+
+
+### DELETE `/table/{table}/field/{field}/asset/{uuid}`
+
+Clears the value of a specific field in a specific table. **Note:** The table name must be qualified with the name of the schema replacing the `.` with a `+`.
+E.g. `dtpw+ei_district_link`
+
+> * This is a low-level API that is likely to change or fall away
+> * Only xxx_link tables in the client specific schems are accessible
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 200, 400, 403, 408
 
 

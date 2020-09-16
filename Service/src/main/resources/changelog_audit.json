@@ -412,5 +412,23 @@
         }]
 
     }
+  },
+  {
+    "changeSet": {
+      "id": "136e1f96-4e14-4a0e-be0f-864ed6c31f72-1",
+      "author": "frankvr",
+      "comment" : "Audit types",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "audit/audit_views.sql",
+            "relativeToChangelogFile": false
+          }
+        }]
+
+    }
   }
 ]}

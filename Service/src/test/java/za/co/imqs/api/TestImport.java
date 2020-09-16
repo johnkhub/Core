@@ -30,6 +30,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
     }
 
+    @Test
+    public void loadEIlookups() throws Exception {
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_ei_district.csv", "EI_DISTR"});
+
+
+    }
+
     @Ignore("Fixup")
     @Test
     public void fixMappings() throws Exception {
@@ -149,8 +157,18 @@ public class TestImport extends AbstractAssetControllerAPITest {
     @Test
     public void testFull() throws Exception{
         loadLookups();
+        loadEIlookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/prod6Aug.export", "FORCE_INSERT"});
+        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/prod12aug.export", "FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1600154305509.csv","FORCE_INSERT"});
+    }
+
+    @Test
+    public void loadSmallSet() throws Exception{
+        loadLookups();
+        loadEIlookups();
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/small_dataset.csv","FORCE_INSERT"});
     }
 
     @Test

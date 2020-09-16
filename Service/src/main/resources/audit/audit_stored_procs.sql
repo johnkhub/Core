@@ -23,3 +23,27 @@ BEFORE insert
 ON audit.audit
 FOR EACH ROW EXECUTE PROCEDURE audit.fn_add_audit_row();
 //
+
+CREATE OR REPLACE FUNCTION audit.log(
+    principal_id uuid,
+    event_time timestamp without time zone,
+    action text,
+    status text,
+    parameters jsonb,
+    entity_id uuid
+) RETURNS void AS $$
+DECLARE
+    audit_id uuid;
+BEGIN
+    audit_id := uuid_generate_v4();
+    INSERT INTO audit.audit (audit_id, principal_id, event_time, action, status, parameters)
+    VALUES (audit_id, principal_id, event_time, action, status, parameters);
+
+    IF (entity_id IS NOT NULL ) THEN
+        INSERT INTO audit.auditlink (entity_id, audit_id) VALUES (entity_id, audit_id);
+    END IF;
+END; $$
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER
+;
+//

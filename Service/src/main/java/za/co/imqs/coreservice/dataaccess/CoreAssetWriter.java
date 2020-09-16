@@ -28,6 +28,10 @@ public interface CoreAssetWriter {
     public void linkAssetToLandParcel(UUID asset, UUID to);
     public void unlinkAssetFromLandParcel(UUID asset, UUID from);
 
+    public void addLinkedData(String table, String field, UUID assetId, String value);
+    public void updateLinkedData(String table, String field, UUID assetId, String value);
+    public void deleteLinkedData(String table, String field, UUID assetId);
+
     //
     // Extra methods for *Testing*
     // These will refuse to execute in production

@@ -3,10 +3,12 @@ package za.co.imqs.coreservice.dataaccess;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import za.co.imqs.coreservice.dto.lookup.*;
+import za.co.imqs.coreservice.imports.Rules;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,8 +74,14 @@ public interface LookupProvider {
             @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR")
     })
     public static class Kv {
-        @CsvBindByName(required = true) private String k;
-        @CsvBindByName(required = true) private String v;
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String k;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String v;
+
         private String creation_date; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private String activated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
         private String deactivated_at; // TODO check date format http://opencsv.sourceforge.net/#locales_dates_numbers
@@ -96,15 +104,22 @@ public interface LookupProvider {
     @EqualsAndHashCode(callSuper=true)
     @ToString(callSuper=true, includeFieldNames=true)
     public static class ClientDeptKv extends Kv {
-        @CsvBindByName(required = false) private String chief_directorate_code;
-        @CsvBindByName(required = false) private String responsible_dept_classif;
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String chief_directorate_code;
+
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String responsible_dept_classif;
     }
 
     @Data
     @EqualsAndHashCode(callSuper=true)
     @ToString(callSuper=true, includeFieldNames=true)
     public static class ChiefDirectorateKv extends Kv {
-        @CsvBindByName(required = false) private String branch_code;
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String branch_code;
     }
 
     public List<KvDef> getKvTypes();

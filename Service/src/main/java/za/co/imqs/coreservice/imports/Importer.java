@@ -277,7 +277,87 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         }
     }
 
+    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field) throws Exception {
+        final CsvImporter<T> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<eiDistrict> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
+        try (Reader reader = Files.newBufferedReader(path)) {
+            assetImporter.stream(reader, instance).forEach(
+                    (dto) -> {
+                        try {
+                            final String value = (String)get.invoke(dto);
+                            if (value == null) {
+                                return;
+                            }
+
+                            final CoreAssetDto asset = restTemplate.exchange(
+                                    baseUrl + "/assets/func_loc_path/{path}",
+                                    HttpMethod.GET,
+                                    jsonEntity(null),
+                                    CoreAssetDto.class,
+                                    dto.getFunc_loc_path().replace(".","+")
+                            ).getBody();
+
+                            if (asset == null) {
+                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link data {} to.", dto.getFunc_loc_path(), dto.toString()));
+                            }
+
+                            final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
+                                    HttpMethod.DELETE,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    table, field, assetId
+                            );
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
+                                    HttpMethod.PUT,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    table, field, assetId, value
+                            );
+
+
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
+
+                        } catch (Exception e) {
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
+                        }
+                    }
+            );
+        }
+
+        if (exceptionFile != null) {
+            exceptionFile.close();
+        }
+    }
+
+
+    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
+        log.error(dto.getError());
+
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
+            throw new RuntimeException(dto.getError());
+        }
+
+        if (sbc != null) {
+            try {
+                sbc.write(dto);
+
+            } catch (Exception w) {
+                log.error("Unable to update exceptions file:", w);
+            }
+        }
+    }
+
     public void importAssets(Path assets) throws Exception {
+
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
