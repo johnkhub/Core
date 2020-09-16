@@ -13,9 +13,15 @@ import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
+import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dto.GroupDto;
+import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
+import za.co.imqs.libimqs.auth.Permit;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 

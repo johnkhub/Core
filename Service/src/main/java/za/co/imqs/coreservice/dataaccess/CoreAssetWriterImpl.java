@@ -47,6 +47,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final Environment env;
+    private final Meta meta;
 
     private final AtomicBoolean assetDirty = new AtomicBoolean(false);
 
