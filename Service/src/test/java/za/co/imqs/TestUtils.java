@@ -7,6 +7,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -319,4 +322,6 @@ public class TestUtils {
         }
         return null;
     }
+
+    public static final TestRule NULL_RULE = (Statement statement, Description description) -> statement;
 }

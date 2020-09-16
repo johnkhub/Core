@@ -27,6 +27,7 @@ import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.dto.lookup.*;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -338,24 +339,6 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         }
     }
 
-
-    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
-        log.error(dto.getError());
-
-        if (!flags.contains(Flags.FORCE_CONTINUE)) {
-            throw new RuntimeException(dto.getError());
-        }
-
-        if (sbc != null) {
-            try {
-                sbc.write(dto);
-
-            } catch (Exception w) {
-                log.error("Unable to update exceptions file:", w);
-            }
-        }
-    }
-
     public void importAssets(Path assets) throws Exception {
 
         log.info("Importing Envelopes...");
@@ -384,9 +367,10 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         log.info("Importing EMIS...");
         importEmis(assets, new FileWriter("emis_exceptions.csv"));
+
+        log.info("Importing Linked data...");
+        importLinkedData(assets, new FileWriter("linked_data_exceptions.csv"), new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"), "dtpw+ei_district_link", "k_education_district");
     }
-
-
 
     private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
         log.error(dto.getError());
@@ -526,5 +510,14 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         @CsvBindByName(required = false)
         private String error;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class eiDistrict extends CoreAssetDto {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String ei_district_code;
     }
 }

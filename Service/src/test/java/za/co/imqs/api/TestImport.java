@@ -154,6 +154,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
        // generate a report here
     }
 
+    @Ignore
     @Test
     public void testFull() throws Exception{
         loadLookups();
@@ -169,6 +170,8 @@ public class TestImport extends AbstractAssetControllerAPITest {
         loadEIlookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
         Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/small_dataset.csv","FORCE_INSERT"});
+
+        // TODO do an export and binary compare of the data
     }
 
     @Test

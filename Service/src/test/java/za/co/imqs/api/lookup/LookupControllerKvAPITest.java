@@ -9,6 +9,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
@@ -41,12 +42,13 @@ import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
 @Slf4j
 public class LookupControllerKvAPITest {
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final boolean DOCKER = true;
     private static String session;
 
     @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(new File(COMPOSE_FILE)).
-            withServices("auth", "router", "db", "asset-core-service")
-            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+    public static TestRule compose = !DOCKER ? NULL_RULE :
+            new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
+                    .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -84,7 +86,9 @@ public class LookupControllerKvAPITest {
                     def("BRANCH", "Branch", "dtpw.ref_branch", null),
                     def("CHIEF_DIR", "Chief Directorate", "dtpw.ref_chief_directorate", null),
                     def("CLIENT_DEP", "Client Department", "dtpw.ref_client_department", null),
-                    def("FACIL_TYPE","Facility Type", "asset.ref_facility_type", null)
+                    def("FACIL_TYPE","Facility Type", "asset.ref_facility_type", null),
+                    def("EI_DISTR","Educational District", "dtpw.ref_ei_district", null)
+
                 )
         );
     }

@@ -4,13 +4,14 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 
@@ -36,15 +37,14 @@ public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final boolean DOCKER = true;
 
-/*
     @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(new File(COMPOSE_FILE)).
-            withServices("auth", "router", "db", "asset-core-service")
-            ;
-            //.withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+    public static TestRule compose = !DOCKER ? NULL_RULE :
+            new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
+            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
 
-*/
+
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
     public static final String THE_GROUPING_ID = "25d0e46a-8360-4fc5-b792-994cd43311b5";

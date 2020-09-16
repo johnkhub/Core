@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.TestUtils;
@@ -35,12 +36,15 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 @Slf4j
 public class LookupControllerGetAPITest {
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final boolean DOCKER = true;
     private static String session;
 
+
     @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(new File(COMPOSE_FILE)).
-            withServices("auth", "router", "db", "asset-core-service")
-            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+    public static TestRule compose = !DOCKER ? NULL_RULE :
+            new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
+           .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+
 
     @BeforeClass
     public static void configure() {
