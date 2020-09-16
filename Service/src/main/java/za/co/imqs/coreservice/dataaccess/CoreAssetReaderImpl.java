@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.util.*;
 
+import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -54,7 +55,11 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
-            "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) ";
+            (
+                    AUTHORISATION_GLOBAL.isActive() ?
+                    "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) " :
+                    ""
+            );
 
     private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
@@ -72,7 +77,13 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
             "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
             "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
             "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
-            "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) "+
+
+            (
+                    AUTHORISATION_GLOBAL.isActive() ?
+                            "LEFT JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) " :
+                            ""
+            ) +
+
             "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k ";
 
 

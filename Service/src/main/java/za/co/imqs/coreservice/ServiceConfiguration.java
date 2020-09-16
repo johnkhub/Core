@@ -38,7 +38,7 @@ public class ServiceConfiguration {
     // At least the interface of checking if a feature is enabled sprinkled throughout the code remains the same
     public enum Features implements Feature {
         @Label("Global switch to turn authorisation on / off")
-        AUTHORISATION_GLOBAL(true),
+        AUTHORISATION_GLOBAL(false),
 
         @Label("Global switch to turn audit logging on / off")
         AUDIT_GLOBAL(true),
