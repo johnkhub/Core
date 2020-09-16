@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class AssetLandparcel extends CoreAsset {
-    private String description;
     private String lpi;
 
     public void validate(boolean create) {

@@ -21,9 +21,5 @@ import za.co.imqs.coreservice.imports.Rules;
 public class AssetLandparcelDto extends CoreAssetDto  {
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String description;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
     private String lpi;
 }

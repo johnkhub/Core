@@ -148,10 +148,9 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
     @Test
     public void testFull() throws Exception{
-        //loadLookups();
+        loadLookups();
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
-        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/Core_Updates__Rabie_and_Kairos_Primary_school/Kairos Primary School_Update.csv"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Core_Updates__Rabie_and_Kairos_Primary_school/Rabie Primary School_Update.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/prod6Aug.export", "FORCE_INSERT"});
     }
 
     @Test

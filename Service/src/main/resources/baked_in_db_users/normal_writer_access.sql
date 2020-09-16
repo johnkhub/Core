@@ -67,13 +67,13 @@ GRANT SELECT,INSERT,UPDATE ON TABLE asset.a_tp_site TO normal_writer;
 //
 GRANT SELECT,INSERT,UPDATE ON TABLE asset.asset_landparcel TO normal_writer;
 //
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_district TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_district TO normal_writer;
 GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_facility_type TO normal_writer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_municipality TO normal_writer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_region TO normal_writer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_suburb TO normal_writer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_town TO normal_writer;
-GRANT SELECT,INSERT,UPDATE ON TABLE asset.ref_ward TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_municipality TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_region TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_suburb TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_town TO normal_writer;
+GRANT SELECT,INSERT,UPDATE ON TABLE public.ref_ward TO normal_writer;
 //
 GRANT SELECT ON asset.landparcel_view TO normal_writer;
 //

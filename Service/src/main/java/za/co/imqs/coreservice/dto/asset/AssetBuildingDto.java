@@ -19,8 +19,4 @@ import za.co.imqs.coreservice.imports.Rules;
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper=true, includeFieldNames=true)
 public class AssetBuildingDto extends CoreAssetDto  {
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String description;
-
 }

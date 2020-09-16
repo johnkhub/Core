@@ -19,30 +19,4 @@ import za.co.imqs.coreservice.imports.Rules;
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper=true, includeFieldNames=true)
 public class AssetEnvelopeDto extends CoreAssetDto {
-    @CsvBindByName(required = false)
-    private String description;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String municipality_code;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String town_code;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String suburb_code;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String district_code;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String region_code;
-
-    @CsvBindByName(required = false)
-    @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-    private String ward_code;
 }

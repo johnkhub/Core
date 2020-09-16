@@ -4,10 +4,16 @@ SELECT a.asset_id,
        a.name,
        a.func_loc_path,
        a.deactivated_at IS NULL AS active,
+       a.description,
 
        location.latitude,
        location.longitude,
        location.address,
+       location.region_code,
+       location.district_code,
+       location.town_code,
+       location.suburb_code,
+       location.municipality_code,
 
        geoms.geom,
 

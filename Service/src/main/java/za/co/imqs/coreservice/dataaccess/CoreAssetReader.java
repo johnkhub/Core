@@ -18,10 +18,14 @@ public interface CoreAssetReader {
     CoreAsset getAssetByFuncLocPath(String path);
     CoreAsset getAssetByXXPath(String pathName, String value);
     CoreAsset getAssetByExternalId(String externalType, String externalId);
+    List<CoreAsset> getAssetsByGroupingId(String groupingType, String groupingId);
     List<CoreAsset> getAssetByFilter(FilterBuilder filter);
 
     List<AssetExternalLinkTypeDto> getExternalLinkTypes();
     String getExternalLink(UUID uuid, UUID external_id_type);
+
+    List<AssetExternalLinkTypeDto> getGroupingTypes();
+    String getGrouping(UUID uuid, UUID grouping_id_type);
 
     List<UUID> getAssetsLinkedToLandParcel(UUID landparcel);
 }

@@ -1,10 +1,7 @@
 package za.co.imqs.api.asset;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
@@ -107,10 +104,10 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     }
 
     private void assertLinked() {
-        assertTrue(given().
+        Assert.assertEquals(THE_EXTERNAL_ID, given().
                 header("Cookie", session).
                 get("assets/link/{uuid}/to/{external_id_type}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467").
                 then().assertThat().
-                statusCode(HttpStatus.SC_OK).extract().as(String[].class)[0].equals(THE_EXTERNAL_ID));
+                statusCode(HttpStatus.SC_OK).extract().asString());
     }
 }

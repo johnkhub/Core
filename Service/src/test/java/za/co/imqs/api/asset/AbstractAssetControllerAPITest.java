@@ -4,6 +4,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -46,6 +47,7 @@ public class AbstractAssetControllerAPITest {
 */
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
+    public static final String THE_GROUPING_ID = "25d0e46a-8360-4fc5-b792-994cd43311b5";
     public static String session;
 
     @Rule
@@ -82,7 +84,7 @@ public class AbstractAssetControllerAPITest {
                 statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
-    protected static void assertEquals(CoreAssetDto asset, CoreAssetDto envelope) throws Exception  {
+     protected static void assertEquals(CoreAssetDto asset, CoreAssetDto envelope) throws Exception  {
         assertThat(asset, notNullValue());
         assertThat(asset.getAdm_path(), equalTo(envelope.getAdm_path()));
         assertThat(asset.getName(), equalTo(envelope.getName()));

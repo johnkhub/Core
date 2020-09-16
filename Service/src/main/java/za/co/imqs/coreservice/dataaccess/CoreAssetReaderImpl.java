@@ -39,6 +39,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
 
     private static final String SELECT_ASSET = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
+            "location.region_code, location.district_code, location.municipality_code," +
+            "location.town_code, location.suburb_code, location.ward_code," +
             "ST_AsText(geoms.geom) AS geom, " +
             "asset_identification.barcode, " +
             "asset_identification.serial_number, " +
@@ -53,6 +55,8 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
 
     private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
             "location.latitude, location.longitude, location.address," +
+            "location.region_code, location.district_code, location.municipality_code," +
+            "location.town_code, location.suburb_code, location.ward_code," +
             "ST_AsText(geoms.geom) AS geom, " +
             "asset_identification.barcode, " +
             "asset_identification.serial_number, " +
@@ -166,6 +170,49 @@ public class CoreAssetReaderImpl implements CoreAssetReader {
             throw new ResubmitException(e.getMessage());
         }
     }
+
+    @Override
+    public String getGrouping(UUID uuid, UUID grouping_id_type) {
+        try {
+            return jdbc.queryForObject("SELECT grouping_id FROM asset_grouping WHERE asset_id = ? AND grouping_id_type = ? ", String.class, uuid, grouping_id_type);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("No link to grouping_id_type %s  for asset %s", grouping_id_type, uuid.toString()));
+        }
+    }
+
+    @Override
+    public List<AssetExternalLinkTypeDto> getGroupingTypes() {
+        try {
+            return jdbc.query("SELECT * FROM public.grouping_id_type",
+                    (rs,i)->{
+                        final AssetExternalLinkTypeDto l = new AssetExternalLinkTypeDto();
+                        l.setType_id(UUID.fromString(rs.getString("type_id")));
+                        l.setDescription(rs.getString("description"));
+                        l.setName(rs.getString("name"));
+                        return l;
+                    });
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<CoreAsset> getAssetsByGroupingId(String groupingType, String groupingId) {
+        try {
+            return jdbc.query(
+                    SELECT_ASSET+
+                            "JOIN asset_grouping ON asset_grouping.asset_id = asset.asset_id " +
+                            "WHERE asset_grouping.grouping_id_type = uuid(?) AND asset_grouping.grouping_id = ?",
+                    MAPPER, groupingType, groupingId);
+        } catch (TransientDataAccessException e) {
+            throw new ResubmitException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("Asset where grouping id of type %s = %s not found", groupingType, groupingId));
+        }
+    }
+
 
     @Override
     public List<UUID> getAssetsLinkedToLandParcel(UUID landparcel) {

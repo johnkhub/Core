@@ -32,12 +32,15 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
 
     @Before
     public void init() throws Exception {
-        clear();
+        after();
         populate();
     }
 
+
     @After
-    public void clear() throws Exception{
+    @Override
+    public void after() throws Exception{
+        super.after();
         given().
                 header("Cookie", session).
                 delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).

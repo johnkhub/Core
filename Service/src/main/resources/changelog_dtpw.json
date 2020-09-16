@@ -589,5 +589,23 @@
         }]
 
     }
+  },
+  {
+    "changeSet": {
+      "id": "9c504e2c-5a1f-4b28-847a-3580ebc1884a",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "dtpw/grouping_id_types.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter": ";"
+          }
+        }
+      ]
+    }
   }
 ]}
