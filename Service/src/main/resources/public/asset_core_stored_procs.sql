@@ -4,6 +4,7 @@
 CREATE OR REPLACE FUNCTION public.fn_delete_asset(the_asset uuid) RETURNS void AS $$
 DECLARE
     sub_classes  text[];
+    link_tables text[];
     stmt text;
 BEGIN
     sub_classes := 	ARRAY(SELECT code FROM public.assettype);
@@ -20,9 +21,29 @@ BEGIN
     DELETE FROM asset_identification WHERE asset_id=the_asset;
     DELETE FROM asset_classification WHERE asset_id=the_asset;
     DELETE FROM asset_tags WHERE asset_id = the_asset;
+
     DELETE FROM asset.asset_landparcel WHERE asset_id = the_asset;
     DELETE FROM asset.asset_landparcel WHERE landparcel_asset_id = the_asset;
     DELETE FROM asset WHERE asset_id=the_asset;
+
+    DELETE FROM access_control.entity_access WHERE entity_id = the_asset;
+
+    link_tables := ARRAY (SELECT table_name::text FROM information_schema.tables WHERE table_schema = 'dtpw' AND table_name like '%_link');
+    FOR lnk IN 1..array_upper(link_tables,1)
+        LOOP
+            stmt := format('DELETE FROM dtpw.%s WHERE asset_id=''%s''::UUID', link_tables[lnk], the_asset);
+            EXECUTE stmt;
+        END LOOP;
+
+    -- update audit trail
+    PERFORM audit.log(
+        (SELECT access_control.fn_get_system_user()),
+        NOW()::timestamp without time zone,
+        'DELETE_ASSET'::text,
+        'HARD_DELETE'::text,
+        format('{"asset": "''%s''"}', the_asset)::jsonb,
+        the_asset
+    );
 END; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
