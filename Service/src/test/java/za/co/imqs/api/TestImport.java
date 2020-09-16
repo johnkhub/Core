@@ -162,6 +162,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    public void loadSmallSet() throws Exception{
+        loadLookups();
+        loadEIlookups();
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/small_dataset.csv","FORCE_INSERT"});
+    }
+
+    @Test
     @Ignore
     public void testLandparcelLink() throws Exception{
         //loadLookups();
