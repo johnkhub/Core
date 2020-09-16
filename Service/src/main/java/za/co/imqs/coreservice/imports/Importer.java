@@ -35,12 +35,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class Importer {
+public class Importer { // TODO split this into utility classes and DTPW specific implementation
     private static final String EMIS = "4a6a4f78-2dc4-4b29-aa9e-5033b834a564";
 
     enum Flags {
         FORCE_INSERT,
-        FORCE_CONTINUE
+        FORCE_CONTINUE,
+        FORCE_UPSERT
     }
 
 
@@ -66,6 +67,9 @@ public class Importer {
         this.flags = flags;
     }
 
+    //
+    // Utility methods to construct solution from
+    //
     public void importLookups(String lookupType, Path path) throws Exception  {
         importLookups(lookupType, path, new LookupProvider.Kv());
     }
@@ -104,6 +108,12 @@ public class Importer {
                         try {
                             if (flags.contains(Flags.FORCE_INSERT)) {
                                 restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
+                            } else if (flags.contains(Flags.FORCE_UPSERT)) {
+                                if (getAsset(dto.getFunc_loc_path()) == null) {
+                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
+                                } else {
+                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
+                                }
                             } else {
                                 if (dto.getAsset_id() == null) {
                                     restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
@@ -161,6 +171,21 @@ public class Importer {
         return valueToKey;
     }
 
+    public <T extends CoreAssetDto> T getAsset(String func_loc_path) throws Exception {
+        final CoreAssetDto asset = restTemplate.exchange(
+                baseUrl + "/assets/func_loc_path/{path}",
+                HttpMethod.GET,
+                jsonEntity(null),
+                CoreAssetDto.class,
+                func_loc_path.replace(".","+")
+        ).getBody();
+
+        return (T)asset;
+    }
+
+    //
+    // Implementations for DTPW
+    //
     public void importLandParcelMappings(Path path, Writer exceptionFile) throws Exception {
         log.info("Map Assets to Landparcels");
         final CsvImporter<AssetToLandparcel> assetImporter = new CsvImporter<>();
@@ -191,7 +216,6 @@ public class Importer {
             exceptionFile.close();
         }
     }
-
 
     public void importEmis(Path path, Writer exceptionFile) throws Exception {
         final CsvImporter<ExternalLinks> assetImporter = new CsvImporter<>();
@@ -253,23 +277,6 @@ public class Importer {
         }
     }
 
-    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
-        log.error(dto.getError());
-
-        if (!flags.contains(Flags.FORCE_CONTINUE)) {
-            throw new RuntimeException(dto.getError());
-        }
-
-        if (sbc != null) {
-            try {
-                sbc.write(dto);
-
-            } catch (Exception w) {
-                log.error("Unable to update exceptions file:", w);
-            }
-        }
-    }
-
     public void importAssets(Path assets) throws Exception {
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
@@ -297,6 +304,25 @@ public class Importer {
 
         log.info("Importing EMIS...");
         importEmis(assets, new FileWriter("emis_exceptions.csv"));
+    }
+
+
+
+    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
+        log.error(dto.getError());
+
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
+            throw new RuntimeException(dto.getError());
+        }
+
+        if (sbc != null) {
+            try {
+                sbc.write(dto);
+
+            } catch (Exception w) {
+                log.error("Unable to update exceptions file:", w);
+            }
+        }
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
@@ -343,19 +369,23 @@ public class Importer {
             final String lookupType = args[3];
             Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
             i.importLookups(lookupType, file, get(lookupType));
-        }
+            return;
 
-        if (cmd.equalsIgnoreCase("assets")) {
+        } else if (cmd.equalsIgnoreCase("assets")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
             final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
-            EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
+            final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
             flags.addAll(x);
+
+            final EnumSet<Flags> mutuallyExclusive = EnumSet.of(Flags.FORCE_INSERT, Flags.FORCE_UPSERT);
+            mutuallyExclusive.retainAll(flags);
+            if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
 
             final Importer i = new Importer(config.getServiceUrl(), session, flags);
             i.importAssets(file);
-        }
+            return;
 
-        if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
+        } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
             final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
             EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
@@ -363,7 +393,10 @@ public class Importer {
 
             Importer i = new Importer(config.getServiceUrl(), session, flags);
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"));
+            return;
         }
+
+        throw new IllegalArgumentException("Unknown command:" + cmd);
     }
 
     // TODO Find a way to handle this in LookupProvider since it knows this relationship

@@ -2,7 +2,9 @@ package za.co.imqs.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
 import za.co.imqs.coreservice.imports.Importer;
 
@@ -159,6 +161,25 @@ public class TestImport extends AbstractAssetControllerAPITest {
         final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
         //Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
         Importer.main(new String[]{config, "asset_to_landparcel","/home/frank/Development/Core/Service/src/test/resources/api/dummyLink.csv","FORCE_CONTINUE"});
+    }
+
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
+
+    @Test
+    public void testFlags() throws Exception {
+        final String config = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv","FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv","FORCE_UPSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv","FORCE_CONTINUE"});
+
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv", "FORCE_INSERT", "FORCE_CONTINUE"});
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv", "FORCE_UPSERT", "FORCE_CONTINUE"});
+
+        expected.expect(IllegalArgumentException.class);
+        Importer.main(new String[]{config, "assets","/home/frank/Development/Core/Service/src/test/resources/empty.csv", "FORCE_UPSERT,FORCE_INSERT"});
     }
 
 }
