@@ -336,7 +336,7 @@ public class Importer {
     }
 
     public void importAssets(Path assets) throws Exception {
-/*
+
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
 
@@ -363,7 +363,7 @@ public class Importer {
 
         log.info("Importing EMIS...");
         importEmis(assets, new FileWriter("emis_exceptions.csv"));
-*/
+
         log.info("Importing Linked data...");
         importLinkedData(assets, new FileWriter("linked_data_exceptions.csv"), new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"), "dtpw+ei_district_link", "k_education_district");
     }

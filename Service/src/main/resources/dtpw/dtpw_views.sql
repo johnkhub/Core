@@ -55,17 +55,17 @@ COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dt
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_ei_view AS
 SELECT
     core.*,
-    public.asset_link.external_id AS "EMIS",
+    public.asset_grouping.grouping_id AS "EMIS",
     dtpw.ei_district_link.k_education_district as ei_district_code,
     dtpw.ref_ei_district.v as ei_district_value
 FROM
     dtpw.asset_core_dtpw_view core
-    LEFT JOIN asset_grouping ON core.asset_id = asset_grouping.asset_id
+        LEFT JOIN asset_grouping ON core.asset_id = asset_grouping.asset_id
         AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
                                                  FROM grouping_id_type
                                                  WHERE grouping_id_type.name::text = 'EMIS'::text))
-    LEFT JOIN dtpw.ei_district_link ON core.asset_id = dtpw.ei_district_link.asset_id
-    LEFT JOIN dtpw.ref_ei_district ON k_education_district = dtpw.ref_ei_district.k
+        LEFT JOIN dtpw.ei_district_link ON core.asset_id = dtpw.ei_district_link.asset_id
+        LEFT JOIN dtpw.ref_ei_district ON k_education_district = dtpw.ref_ei_district.k
 ;
 
 
