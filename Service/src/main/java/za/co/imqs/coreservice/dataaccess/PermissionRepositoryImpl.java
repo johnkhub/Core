@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dto.GroupDto;
 import za.co.imqs.coreservice.dto.UserDto;
@@ -93,15 +95,18 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
 
     @Override
     @Transactional("auth_tx_mgr")
-    public void deleteUser(UUID name) {
+    public void deleteUser(UUID uuid) {
         try {
-            jdbc.execute("{call access_control.sp_remove_user()}", (CallableStatement stmt) -> {
-                stmt.setObject(1, name);
+            jdbc.execute("{call access_control.sp_remove_user(?)}", (CallableStatement stmt) -> {
+                stmt.setObject(1, uuid);
                 stmt.execute();
                 return null;
             });
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
+        } catch (DataAccessException s) {
+            if (s.getMessage().contains("does not exist")) throw new NotFoundException(s.getMessage());
+            throw s;
         }
     }
 
@@ -109,13 +114,16 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
     @Transactional("auth_tx_mgr")
     public void deleteGroup(String name) {
         try {
-            jdbc.execute("{call access_control.sp_remove_group()}", (CallableStatement stmt) -> {
+            jdbc.execute("{call access_control.sp_remove_group(?)}", (CallableStatement stmt) -> {
                 stmt.setString(1, name);
                 stmt.execute();
                 return null;
             });
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
+        } catch (DataAccessException s) {
+            if (s.getMessage().contains("does not exist")) throw new NotFoundException(s.getMessage());
+            throw s;
         }
     }
 
@@ -168,7 +176,7 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
     @Transactional("auth_tx_mgr")
     public void removeUserFromGroup(UUID userId, String groupName) {
         try {
-            jdbc.execute("{call access_control.sp_remove_user_group(?,?)}", (CallableStatement stmt) -> {
+            jdbc.execute("{call access_control.sp_remove_user_from_group(?,?)}", (CallableStatement stmt) -> {
                 stmt.setObject(1, userId);
                 stmt.setString(2, groupName);
                 stmt.execute();
@@ -176,6 +184,9 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
             });
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
+        } catch (DataAccessException s) {
+            if (s.getMessage().contains("does not exist")) throw new NotFoundException(s.getMessage());
+            throw s;
         }
     }
 
@@ -210,6 +221,9 @@ public class PermissionRepositoryImpl implements PermissionRepository, Applicati
             });
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
+        } catch (DataAccessException s) {
+            if (s.getMessage().contains("does not exist")) throw new NotFoundException(s.getMessage());
+            throw s;
         }
     }
 

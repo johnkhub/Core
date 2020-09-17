@@ -131,7 +131,7 @@ public class PermissionController {
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(
-            method= RequestMethod.DELETE, value= "/group/name"
+            method= RequestMethod.DELETE, value= "/group/{name}"
     )
     public ResponseEntity deleteGroup(@PathVariable String name) {
         final UserContext invokingUser = ThreadLocalUser.get();
@@ -213,8 +213,7 @@ public class PermissionController {
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(
-            method= RequestMethod.DELETE, value= "/group/{groupname}/{user_id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            method= RequestMethod.DELETE, value= "/group/{groupname}/{user_id}"
     )
     public ResponseEntity removeUserFromGroup(@PathVariable String groupname, @PathVariable UUID user_id) {
         final UserContext invokingUser = ThreadLocalUser.get();

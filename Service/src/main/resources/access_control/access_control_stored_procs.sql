@@ -194,14 +194,14 @@ SECURITY DEFINER
 COMMENT ON FUNCTION access_control.sp_add_user IS 'Add a new User. We must specify the uuid instead of the code as we need to use the indentity from Auth.';
 //
 
-CREATE OR REPLACE FUNCTION access_control.sp_remove_user(code varchar(10))  RETURNS void AS $$
+CREATE OR REPLACE FUNCTION access_control.sp_remove_user(user_id uuid)  RETURNS void AS $$
 DECLARE
-    user_id uuid;
+    r boolean;
 BEGIN
-  IF UPPER(code) = 'SYSTEM' THEN
+    r := (SELECT reserved FROM access_control.principal WHERE principal_id = user_id);
+  IF (r = true) THEN
     RAISE EXCEPTION 'Cannot remove user. % is a reserved name. %', code, e;
   END IF;
-  user_id := (SELECT user_id FROM access_control.principal WHERE name = code);
   DELETE FROM access_control.entity_access WHERE principal_id = user_id;
   DELETE FROM access_control.principal WHERE principal_id = user_id;
 
@@ -240,12 +240,12 @@ BEGIN
   IF EXISTS(SELECT id FROM access_control.principal WHERE principal_id = user_id) THEN
     g_id := (SELECT id FROM access_control.principal WHERE name = group_name);
     IF g_id IS NOT NULL THEN
-      UPDATE access_control.principal SET group_id = null WHERE principal_id = user_id AND  group_id = g_id;
+      UPDATE access_control.principal SET group_id = null WHERE principal_id = user_id AND group_id = g_id;
     ELSE
-      RAISE EXCEPTION '% does not exist as a principal. %', group_name, e;
+      RAISE EXCEPTION '% does not exist as a principal.', group_name;
     END IF;
   ELSE
-    RAISE EXCEPTION '% does not exist as a principal %', user_id, e;
+    RAISE EXCEPTION '% does not exist as a principal', user_id;
   END IF;
 END; $$
 LANGUAGE PLPGSQL

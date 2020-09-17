@@ -4,6 +4,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -44,7 +45,7 @@ public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = true;
+    private static final boolean DOCKER = false;
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
@@ -83,6 +84,10 @@ public class AbstractAssetControllerAPITest {
 
 
     protected void prepPermissions() {
+        deleteUserFromGroup(userId, GRP_WCED.getName());
+        deleteGroup(GRP_WCED.getName());
+        deleteUser(userId);
+
         addGroup(GRP_WCED);
         USR_DEV.setPrincipal_id(userId);
         addUser(USR_DEV);
@@ -260,6 +265,27 @@ public class AbstractAssetControllerAPITest {
                 header("Cookie", session).
                 post("assets/access/testing/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}", entityId, toUser, perms).
                 then().assertThat().statusCode(HttpStatus.SC_OK);
+    }
+
+    public void deleteUserFromGroup(UUID userId, String groupName) {
+        given().
+                header("Cookie", session).
+                delete("/assets/access/group/{groupname}/{user_id}", groupName, userId).
+                then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
+    }
+
+    public void deleteGroup(String groupName) {
+        given().
+                header("Cookie", session).
+                delete( "/assets/access/group/{name}", groupName).
+                then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
+    }
+
+    public void deleteUser(UUID uuid) {
+        given().
+                header("Cookie", session).
+                delete( "/assets/access/user/{uuid}", uuid).
+                then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
     }
 
     public GroupDto getGroupByName(String name) {

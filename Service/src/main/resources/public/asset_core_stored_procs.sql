@@ -34,7 +34,7 @@ BEGIN
             stmt := format('DELETE FROM dtpw.%s WHERE asset_id=''%s''::UUID', link_tables[lnk], the_asset);
             EXECUTE stmt;
         END LOOP;
-
+/*
     -- update audit trail
     PERFORM audit.log(
         (SELECT access_control.fn_get_system_user()),
@@ -44,6 +44,7 @@ BEGIN
         format('{"asset": "''%s''"}', the_asset)::jsonb,
         the_asset
     );
+ */
 END; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
