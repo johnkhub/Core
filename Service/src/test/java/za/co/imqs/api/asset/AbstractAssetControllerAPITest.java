@@ -45,7 +45,7 @@ public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = false;
+    private static final boolean DOCKER = true;
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
@@ -84,6 +84,9 @@ public class AbstractAssetControllerAPITest {
 
 
     protected void prepPermissions() {
+        // REMOVE USER PERMISSIONS HERE !
+
+
         deleteUserFromGroup(userId, GRP_WCED.getName());
         deleteGroup(GRP_WCED.getName());
         deleteUser(userId);
@@ -102,9 +105,7 @@ public class AbstractAssetControllerAPITest {
         grantPermissions(UUID.fromString("d6adf53d-0ad9-4047-ae72-334f5a15853d"),getGroupByName("WCED").getGroup_id(),1|2|4);
         grantPermissions(UUID.fromString("37144c0d-615f-4096-807c-d80c51c6a762"),getGroupByName("WCED").getGroup_id(),1|2|4);
 
-
         final List<LookupProvider.Kv> kv = new LinkedList<>();
-
         kv.add(pair("WCED","Western Cape Department of Education"));
         given().
                 header("Cookie", session).

@@ -90,7 +90,7 @@ services:
   #  ports:
   #    - 127.0.0.1:1433:1433
   asset-core-service:
-    image: imqs/asset-core-service:master
+    image: imqs/asset-core-service:auth
     ports:
       - "127.0.0.1:8669:80"
     volumes:

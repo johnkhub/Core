@@ -495,7 +495,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.addLinkedData(table.replace("+","."), field, uuid, value);
                         return null;
@@ -520,7 +520,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.updateLinkedData(table.replace("+","."), field, uuid, value);
                         return null;
@@ -544,7 +544,7 @@ public class AssetController {
         // Authorisation
         try {
             audit.tryIt(
-                    new AuditLogEntry(UUID.fromString(user.getUserId()), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
                         assetWriter.deleteLinkedData(table.replace("+","."), field, uuid);
                         return null;

@@ -484,8 +484,12 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
                 return (T) new LookupProvider.ChiefDirectorateKv();
             case "CLIENT_DEP":
                 return (T) new LookupProvider.ClientDeptKv();
+
+            case "EI_DISTR":
+                return (T) new LookupProvider.Kv();
+
         }
-        return null;
+        throw new IllegalArgumentException("UNKNOWN LOOKUP TYPE");
     }
 
 
