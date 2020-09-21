@@ -98,6 +98,11 @@ java
     --config=file:/home/frank/Development/Core/Service/src/test/resources/config.json
 ```
 
+#### Native vs Docker
+**Native**
+* `in.container` removed or set to `false`
+* `--config` refers to `localhost:2010` e.g. `--config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"`
+
 ### Configuration file
 
 |Name|Description|
