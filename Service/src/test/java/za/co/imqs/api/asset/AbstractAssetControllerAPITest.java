@@ -4,6 +4,8 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -23,6 +25,7 @@ import za.co.imqs.libimqs.auth.Permit;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -152,6 +155,53 @@ public class AbstractAssetControllerAPITest {
             assertThat(asset.getCreation_date(), equalTo(envelope.getCreation_date()));
         }
     }
+    
+    public static boolean isEq(CoreAssetDto compare, CoreAssetDto to) {
+        return 
+            Objects.equals(compare.getAdm_path(), to.getAdm_path()) &&
+            Objects.equals(compare.getName(), to.getName()) &&
+            Objects.equals(compare.getAddress(), to.getAddress()) &&
+            Objects.equals(compare.getAsset_type_code(), to.getAsset_type_code()) &&
+            Objects.equals(compare.getBarcode(), to.getBarcode()) &&
+            Objects.equals(compare.getCode(), to.getCode()) &&
+            Objects.equals(compare.getGeom(), to.getGeom()) &&
+            Objects.equals(compare.getLatitude(), to.getLatitude()) &&
+            Objects.equals(compare.getLongitude(), to.getLongitude()) &&
+            Objects.equals(compare.getDeactivated_at(), to.getDeactivated_at()) &&
+            Objects.equals(compare.getSerial_number(), to.getSerial_number()) &&
+            Objects.equals(compare.getFunc_loc_path(), to.getFunc_loc_path()) &&
+            //Objects.equals(compare.getIs_owned(), to.getIs_owned()) && TODO!!!
+            Objects.equals(compare.getDescription(), to.getDistrict_code()) &&
+            Objects.equals(compare.getDistrict_code(), to.getDistrict_code()) &&
+            Objects.equals(compare.getMunicipality_code(), to.getMunicipality_code()) &&
+            Objects.equals(compare.getRegion_code(), to.getRegion_code()) &&
+            Objects.equals(compare.getSuburb_code(), to.getSuburb_code()) &&
+            Objects.equals(compare.getTown_code(), to.getTown_code()) &&
+            Objects.equals(compare.getWard_code(), to.getWard_code())
+                    &&
+            (to.getCreation_date() == null) ? true :
+            //assertThat(LocalDateTime.parse(asset.getCreation_date()), LocalDateTimeMatchers.within(100, ChronoUnit.MILLIS, LocalDateTime.now()));
+            Objects.equals(compare.getCreation_date(), to.getCreation_date());
+    }
+
+    public static class IsEqualMatcher<T extends CoreAssetDto> extends BaseMatcher<T> {
+        private final T to;
+
+        public IsEqualMatcher(T to) {
+            this.to = to;
+        }
+
+        @Override
+        public boolean matches(Object match) {
+            return isEq((T)match, to);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+
+        }
+    }
+
 
     public static class CoreAssetBuilder {
         private final CoreAssetDto asset;

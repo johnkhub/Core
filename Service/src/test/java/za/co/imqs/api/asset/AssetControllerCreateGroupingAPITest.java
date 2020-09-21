@@ -1,6 +1,8 @@
 package za.co.imqs.api.asset;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,6 +11,7 @@ import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationExceptio
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -112,8 +115,8 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
                 get("assets/grouped_by/{grouping_id_type}/{grouping_id}", EMIS_UUID, THE_GROUPING_ID).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
-        assertEquals(result[0], assets[0]);
-        assertEquals(result[1], assets[1]);
+
+        assertThat(result, arrayContainingInAnyOrder(Arrays.asList(new IsEqualMatcher<>(assets[0]), new IsEqualMatcher<>(assets[1]))));
     }
 
     @Test
