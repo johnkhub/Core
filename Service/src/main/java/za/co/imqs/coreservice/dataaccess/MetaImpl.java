@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class MetaImpl implements Meta {
 
-    private JdbcTemplate template;
+    private final JdbcTemplate template;
 
     public MetaImpl(DataSource ds) {
         this.template = new JdbcTemplate(ds);

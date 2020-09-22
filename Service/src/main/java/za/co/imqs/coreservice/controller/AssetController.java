@@ -21,7 +21,6 @@ import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
-import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 import za.co.imqs.coreservice.model.AssetFactory;

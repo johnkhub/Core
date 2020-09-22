@@ -239,7 +239,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
                                 ).getBody();
 
                             if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link grouping data {} to.", dto.getFunc_loc_path(), dto.toString()));
+                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
                             }
 
                             final UUID assetId = UUID.fromString(asset.getAsset_id());
@@ -300,7 +300,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
                             ).getBody();
 
                             if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path {} to link data {} to.", dto.getFunc_loc_path(), dto.toString()));
+                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
                             }
 
                             final UUID assetId = UUID.fromString(asset.getAsset_id());
@@ -437,7 +437,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         } else if (cmd.equalsIgnoreCase("assets")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
+            final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
             final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
             flags.addAll(x);
 
@@ -451,7 +451,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<Flags> x = Arrays.asList(flagsS).stream().map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
+            final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
             EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
             flags.addAll(x);
 
