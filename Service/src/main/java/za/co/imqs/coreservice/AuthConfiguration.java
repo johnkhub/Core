@@ -12,6 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.common.security.Permissions;
 import za.co.imqs.formservicebase.workflowhost.UserContextImpl;
 import za.co.imqs.libimqs.auth.AuthResponse;
+import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.services.serviceauth.ServiceAuthImpl;
@@ -21,12 +22,15 @@ import za.co.imqs.spring.service.auth.authorization.Authorization;
 import za.co.imqs.spring.service.auth.authorization.UserContextFactory;
 import za.co.imqs.spring.service.factorybeandefinitions.BaseAuthConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHENTICATION_GLOBAL;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -62,6 +66,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Bean
     public AuthInterceptor handleAuthInterceptor() {
+        if (AUTHENTICATION_GLOBAL.isActive()) {
             return new DefaultHandleAuthInterceptor(
                     authentication(),
                     new Authorization() {
@@ -82,6 +87,22 @@ public class AuthConfiguration extends BaseAuthConfiguration {
                     },
                     new UserContextFactoryImpl()
             ) {};
+        }
+
+        return new AuthInterceptor() {
+            final UserContextFactory uCtxFact = new UserContextFactoryImpl();
+            final UUID session = UUID.randomUUID();
+            final UUID user = UUID.randomUUID();
+
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                ThreadLocalUser.set(
+                        uCtxFact.get(session.toString(),"SYSTEM","tenantId", Collections.emptyList(),user));
+
+                return true;
+            }
+        };
+
     }
 
 

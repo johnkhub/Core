@@ -47,13 +47,13 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
     private static final boolean DOCKER = true;
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
             new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
-            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).withEnv("DROPDB","true");
 
 
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
@@ -201,7 +201,6 @@ public class AbstractAssetControllerAPITest {
 
         }
     }
-
 
     public static class CoreAssetBuilder {
         private final CoreAssetDto asset;

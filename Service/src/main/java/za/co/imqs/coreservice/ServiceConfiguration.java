@@ -37,6 +37,10 @@ public class ServiceConfiguration {
     // Yeah, this is mutton dressed as lamb, but it starts us down the road of making use of Togglz
     // At least the interface of checking if a feature is enabled sprinkled throughout the code remains the same
     public enum Features implements Feature {
+
+        @Label("Global switch to turn authentication on / off")
+        AUTHENTICATION_GLOBAL(true),
+
         @Label("Global switch to turn authorisation on / off")
         AUTHORISATION_GLOBAL(false),
 
