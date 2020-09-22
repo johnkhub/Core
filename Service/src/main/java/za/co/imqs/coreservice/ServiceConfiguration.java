@@ -92,6 +92,7 @@ public class ServiceConfiguration {
         for (ScheduledSql s : (ScheduledSql[])configClient.getObject("sql-schedules", ScheduledSql[].class)) {
             sched.schedule(new SqlTask(s.getName(), s.getSql(), ds), new CronTrigger(s.getCron()));
         }
+
         return sched;
     }
 

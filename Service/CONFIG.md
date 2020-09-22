@@ -24,8 +24,16 @@ Developer
 Run
 -----
 
-### Commandline parameters
+### Dependencies
 
+|Service          |M/O|           |
+|-----------------|---|-----------|
+|*Config Service* |O  |Possible to read config from files as well                   |
+|Auth Service     |M  |Setting the environment variable FAKEAUTH=true and using teh test profile (see below) disables authentication
+|*Router Service* |O  |Can run without it if no inter-service communication happens |
+|Postgres with PostGIS installed | M | |
+
+### Commandline parameters
 
 |Name                     |M/O (Default)     |Type     |Description |
 |-------------------------|-----------------|---------|------------|

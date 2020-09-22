@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import za.co.imqs.common.security.Permissions;
@@ -49,6 +51,9 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     private final ObjectMapper mapper;
     private final DataSource ds;
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     @Autowired
     public AuthConfiguration(
             @Qualifier("core_ds") DataSource ds,
@@ -66,43 +71,45 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Bean
     public AuthInterceptor handleAuthInterceptor() {
-        if (AUTHENTICATION_GLOBAL.isActive()) {
-            return new DefaultHandleAuthInterceptor(
-                    authentication(),
-                    new Authorization() {
-                        @Override
-                        public boolean authorize(AuthResponse authAuthResponse) {
-                            return true;
-                        }
+        if (!AUTHENTICATION_GLOBAL.isActive() || (activeProfile.equals(PROFILE_TEST) && Boolean.valueOf(System.getenv("FAKEAUTH")))) {
+            log.warn("AUTHENTICATION HAS BEEN DISABLED!");
+            return new AuthInterceptor() {
+                final UserContextFactory uCtxFact = new UserContextFactoryImpl();
+                final UUID session = UUID.randomUUID();
+                UUID user = null;
 
-                        @Override
-                        public boolean authorize(UserContext uCtx, String eventId) {
-                            return true;
-                        }
+                @Override
+                public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                    if (user == null) {
+                        user = new JdbcTemplate(ds).queryForObject("SELECT principal_id FROM access_control.principal WHERE name = 'System'", UUID.class);
+                    }
+                    ThreadLocalUser.set(
+                            uCtxFact.get(session.toString(),"SYSTEM","tenantId", Collections.emptyList(),user));
 
-                        @Override
-                        public boolean authorize(UserContext uCtx, Permissions p) {
-                            return true;
-                        }
-                    },
-                    new UserContextFactoryImpl()
-            ) {};
+                    return true;
+                }
+            };
         }
+        return new DefaultHandleAuthInterceptor(
+                authentication(),
+                new Authorization() {
+                    @Override
+                    public boolean authorize(AuthResponse authAuthResponse) {
+                        return true;
+                    }
 
-        return new AuthInterceptor() {
-            final UserContextFactory uCtxFact = new UserContextFactoryImpl();
-            final UUID session = UUID.randomUUID();
-            final UUID user = UUID.randomUUID();
+                    @Override
+                    public boolean authorize(UserContext uCtx, String eventId) {
+                        return true;
+                    }
 
-            @Override
-            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                ThreadLocalUser.set(
-                        uCtxFact.get(session.toString(),"SYSTEM","tenantId", Collections.emptyList(),user));
-
-                return true;
-            }
-        };
-
+                    @Override
+                    public boolean authorize(UserContext uCtx, Permissions p) {
+                        return true;
+                    }
+                },
+                new UserContextFactoryImpl()
+        ) {};
     }
 
 
