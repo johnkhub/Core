@@ -1,0 +1,12 @@
+{
+	"V6_SA_USERNAME"   : "sa",
+	"V6_WIP_PASSWORD" : "1mq5p@55w0rd",
+	"V6_GATEWAY_PASSWORD" : "1mq5p@55w0rd",
+	"V6_SA_PASSWORD": "1mq5p@55w0rd",
+	"POSTGRES_PWD" : "1mq5p@55w0rd",
+	"V6_DATABASE"   : "jdbc:sqlserver://[mssql-db|localhost]:1433;DatabaseName=BCM",
+	"FIN_SYS" : "BCX_SOLAR",
+	"PREFIX" : "bcm_",
+	"PORT" : "80"
+}
+

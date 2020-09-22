@@ -1,0 +1,192 @@
+{
+	"AccessLog": "[/var/log/imqs/|c:/imqsvar/logs/]router-access.log",
+	"ErrorLog": "[/var/log/imqs/|c:/imqsvar/logs/]router-error.log",
+	"HTTP": {
+		"MaxIdleConnections": 50,
+		"ResponseHeaderTimeout": 600,
+		"AutomaticGzip": {
+			"Whitelist": [
+				"text/plain",
+				"text/html",
+				"text/css",
+				"text/xml",
+				"application/json",
+				"application/xml"
+			]
+		}
+	},
+	"Targets": {
+		"ALBSERVER": {
+			"URL": "http://127.0.0.1:2000"
+		},
+		"WWWSERVER": {
+			"URL": "http://[www|127.0.0.1:2008]"
+		},
+		"GEONAMES": {
+			"URL": "http://api.geonames.org",
+			"UseProxy": true
+		},
+		"GOOGLEMAPAPIS": {
+			"URL": "https://maps.googleapis.com",
+			"UseProxy": true
+		},
+		"HEREMAPSAUTOCOMPLETE": {
+			"URL": "http://autocomplete.geocoder.api.here.com",
+			"UseProxy": true
+		},
+		"HEREMAPSGEOCODE": {
+			"URL": "http://geocoder.api.here.com",
+			"UseProxy": true
+		},
+		"HEREMAPSREVERSEGEOCODE": {
+			"URL": "https://reverse.geocoder.api.here.com",
+			"UseProxy": true
+		},
+		"NOMINATIM": {
+			"URL": "http://nominatim.openstreetmap.org",
+			"UseProxy": true
+		},
+		"MAPBOX": {
+			"URL": "https://api.mapbox.com",
+			"UseProxy": true
+		},
+		"MAPQUEST": {
+			"URL": "http://www.mapquestapi.com",
+			"UseProxy": true
+		},
+		"YELLOWFIN": {
+			"URL": "http://127.0.0.1:2005",
+			"RequirePermission": "enabled",
+			"PassThroughAuth": {
+				"Type": "Yellowfin"
+			}
+		},
+		"COUCHDB": {
+			"URL": "[http://couchdb:5984|http://127.0.0.1:5984]",
+			"RequirePermission": "enabled",
+			"PassThroughAuth": {
+				"Type": "CouchDB",
+				"Username": "imqs",
+				"Password": "r3l@XImq5c0ucH"
+			}
+		}
+	},
+	"Routes": {
+		"/albjs/extile/(.*)": {
+			"Target":     "http://$1",
+			"ValidHosts": ["tile.thunderforest.com", "tiles.mapbox.com"]
+		},
+
+		"/cpp/ping": 						"{ALBSERVER}/ping",
+		"/albjs(.*)":						"{ALBSERVER}/albjs$1",
+		"/apps(.*)":						"{ALBSERVER}/apps$1",
+		"/assetcap(.*)":					"{ALBSERVER}/assetcap$1",
+		"/auth(.*)":						"{ALBSERVER}/auth$1",
+		"/blobstore(.*)":					"{ALBSERVER}/blobstore$1",
+		"/db(.*)":							"{ALBSERVER}/db$1",
+		"/hello(.*)":						"{ALBSERVER}/hello$1",
+		"/imports(.*)":						"{ALBSERVER}/imports$1",
+		"/infra(.*)":						"{ALBSERVER}/infra$1",
+		"/genericdata(.*)":					"{ALBSERVER}/genericdata$1",
+		"/login(.*)":						"{ALBSERVER}/login$1",
+		"/map(.*)":							"{ALBSERVER}/map$1",
+		"/sandbox(.*)":						"{ALBSERVER}/sandbox$1",
+		"/sendlog(.*)":						"{ALBSERVER}/sendlog$1",
+		"/tests(.*)":						"{ALBSERVER}/tests$1",
+		"/version": 						"{ALBSERVER}/version",
+		"/info(.*)": 						"{ALBSERVER}/info$1",
+		"/triggerrefresh": 					"{ALBSERVER}/triggerrefresh",
+
+		"/auth2/(.*)":						"[http://auth|http://127.0.0.1:2003]/$1",
+		"/docs/(.*)":						"[http://docs|http://127.0.0.1:2004]/$1",
+		"/yellowfin/services/(.*)":			"http://127.0.0.1:2005/yellowfin/services/$1",
+		"/yellowfin/(.*)":					"{YELLOWFIN}/yellowfin/$1",
+		"/ii/(.*)":							"http://127.0.0.1:2006/$1",
+		"/search/(.*)":						"[http://search|http://127.0.0.1:2007]/$1",
+		"/audituser/(.*)":					"http://localhost:2016/$1",
+
+		"/www/ping": 						"{WWWSERVER}/ping",
+		"/www/log":							"{WWWSERVER}/log",
+		"/www/usage":						"{WWWSERVER}/usage",
+		"/www/public(.*)": 					"{WWWSERVER}/public$1",
+		"/(.*)":							"{WWWSERVER}/$1",
+		"/css(.*)": 						"{WWWSERVER}/css$1",
+		"/img(.*)": 						"{WWWSERVER}/img$1",
+		"/js(.*)": 							"{WWWSERVER}/js$1",
+		"/jsout(.*)": 						"{WWWSERVER}/jsout$1",
+		"/config(.*)": 						"{WWWSERVER}/config$1",
+		"/oldbrowser.html": 				"{WWWSERVER}/oldbrowser.html",
+		"/robots.txt": 						"{WWWSERVER}/robots.txt",
+
+		"/realtime(.*)":					"http://127.0.0.1:8484/api/realtime$1",
+		"/pcs(.*)":							"http://[pcs|127.0.0.1]:8488/pcs$1",
+		"/maintm(.*)":						"http://127.0.0.1:9497/maintm$1",
+		"/workflow(.*)":					"http://127.0.0.1:9498/workflow$1",
+		"/formbuilder(.*)":					"http://127.0.0.1:9499/formbuilder$1",
+		"/datamodel(.*)":					"[http://datamodel-queries|http://127.0.0.1:8600]/datamodel$1",
+		"/wip(.*)":							"[http://wip|http://127.0.0.1:8666]/wip$1",
+		"/inputform(.*)":					"[http://inputform-service|http://127.0.0.1:8667]/inputform$1",
+		"/meterman/(.*)":					"[http://meterman|http://localhost:2032]/$1",
+		"/mm/(.*)":							"[http://mm/mm|http://localhost:2034/mm]/$1",
+		"/devcon/(.*)":						"[http://devcon|http://localhost:2036]/$1",
+		"/mapwidget/(.*)":					"[http://mapwidget|http://localhost:2040]/$1",
+
+		"/wlp/(.*)":						"[http://distributer|http://127.0.0.1:8081]/wws/$1",
+		"/wws/(.*)":						"[ws://distributer|ws://127.0.0.1:8081]/wws/$1",
+		"/distributer/(.*)":				"[http://distributer|http://127.0.0.1:8081]/$1",
+		"/spatiallinker/(.*)":				"http://127.0.0.1:8384/$1",
+		"/pentago/(.*)":					"http://127.0.0.1:8383/pentago/$1",
+		"/scadaintegrator/(.*)":			"http://127.0.0.1:8385/$1",
+		"/gofin/(.*)":						"http://127.0.0.1:9010/$1",
+		"/scheduler/(.*)":					"http://localhost:2014/scheduler/$1",
+		"/upload/(.*)":						"http://localhost:8724/$1",
+		"/reports/(.*)":					"[http://reporting|http://localhost:2022]/$1",
+		"/job/(.*)":						"[http://job|http://localhost:2077]/$1",
+
+		"/geonames/(.*)":					"{GEONAMES}/$1",
+		"/googlemapapis/(.*)":				"{GOOGLEMAPAPIS}/$1",
+		"/heremaps/autocomplete/(.*)":		"{HEREMAPSAUTOCOMPLETE}/$1",
+		"/heremaps/geocode/(.*)":			"{HEREMAPSGEOCODE}/$1",
+		"/heremaps/reversegeocode/(.*)":    "{HEREMAPSREVERSEGEOCODE}/$1",
+		"/mapbox/(.*)":						"{MAPBOX}/$1",
+		"/mapquest/(.*)":					"{MAPQUEST}/$1",
+		"/nominatim/(.*)":					"{NOMINATIM}/$1",
+
+		"/timeseries/(.*)":					"http://localhost:2009/$1",
+		"/siteview/(.*)": 					"http://localhost:4300/$1",
+		"/insite/(.*)": 					"http://localhost:4301/$1",
+
+		"/dbwatchdog/(.*)": 				"http://localhost:2011/$1",
+
+		"/crud/(.*)": 						"[http://crudserver|http://127.0.0.1:2038]/$1",
+		"/map2/(.*)": 						"[http://mapserver|http://127.0.0.1:2039]/$1",
+		"/sim/(.*)": 						"[http://simulator|http://127.0.0.1:2037]/$1",
+		"/importer/(.*)": 					"[http://importer|http://127.0.0.1:2041]/$1",
+
+		"/messaging/(.*)":					"http://localhost:2012/$1",
+		"/workforce(.*)":					"http://127.0.0.1:9501/workforce$1",
+		"/chat/(.*)":						"http://localhost:2015/$1",
+		"/esri/(.*)":						"http://127.0.0.1:8610/esri/$1",
+		"/workorder/(.*)":					"http://localhost:2031/$1",
+
+		"/assetphoto(.*)":					"http://127.0.0.1:8482/assetphoto$1",
+		"/userstorage/(.*)":				"[http://user-storage|http://localhost:2035]/$1",
+		"/template/(.*)":					"[http://classified-template|http://localhost:8668]/template/$1",
+
+		"/jupiter/ws":						"ws://localhost:2020/ws",
+		"/jupiter/(.*)":					"http://localhost:2020/$1",
+
+		"/ipcam/(.*)": 						"http://127.0.0.1:2018/$1",
+
+		"/bucky/(.*)":						"udp://localhost:8125",
+
+		"/gateway/bcx/(.*)":				"[http://solargw|http://127.0.0.1:8671]/gateway/bcx/$1",
+
+		"/gateway/sap/(.*)":				"http://127.0.0.1:9874/gateway/sap/$1",
+
+		"/leasing(.*)":						"[http://leasing:2045|http://127.0.0.1:2045]/leasing$1",
+		"/buildings/(.*)":					"[http://buildings:2046|http://127.0.0.1:2046]/$1",
+		"/facilities(.*)":					"[http://facilities:2047|http://127.0.0.1:2047]/facilities$1",
+		"/roads(.*)":						"[http://roads:2048|http://127.0.0.1:2048]/roads$1"
+	}
+}

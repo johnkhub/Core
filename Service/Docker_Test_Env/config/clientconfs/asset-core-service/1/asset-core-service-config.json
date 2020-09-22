@@ -1,0 +1,33 @@
+{
+  "Properties": {
+    "jdbc": {
+      "idleConnectionTestPeriod": "60",
+      "idleMaxAge": "30",
+      "minConnectionsPerPartition": "1",
+      "maxConnectionsPerPartition": "2",
+      "partitionCount": "2",
+      "acquireIncrement": "2",
+      "statementsCacheSize": "100",
+      "driverClass": "org.postgresql.Driver",
+      "jdbcUrl": "jdbc:postgresql://db:5432/integ_test_core",
+      "username": "imqs",
+      "password": "1mq5p@55w0rd"
+    },
+
+    "configurationService": {
+      "host": "config",
+      "port": "80"
+    },
+
+    "serveruser" : "anonymous"
+  },
+
+  "sql-schedules" : [
+      {
+        "name" : "refresh_report_view",
+        "description" : "",
+        "sql" : "REFRESH MATERIALIZED VIEW dtpw.dtpw_core_report_view;",
+        "cron" : "0 */5 * * * *"
+      }
+    ]
+  }

@@ -1,0 +1,112 @@
+version: "2"
+services:
+  db:
+    image: "imqs/postgres:qa-10.5"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 1mq5p@55w0rd
+      AUTH_POSTGRES_PASSWORD: auth
+    command: "-c listen_addresses=*"
+  dbpool:
+    image: "imqs/dbpool:master"
+    ports:
+      - "6432:6432"
+    depends_on:
+      - db
+  auth:
+    image: "imqs/auth:master"
+    ports:
+      - "127.0.0.1:2003:80"
+    volumes:
+      - ./logs:/var/log/imqs
+      - ./secrets:/var/imqs/secrets
+    environment:
+      POSTGRES_PASSWORD: 1mq5p@55w0rd
+      IMQS_INIT_USER: dev
+      IMQS_INIT_PASS: dev
+      IMQS_HOSTNAME_URL: http://localhost:2500
+    command: run
+    depends_on:
+      - config
+      - db
+  # It's useful sometimes to have a debug container around, with tools that you can use to inspect
+  # other container. For example, you might want to be able to use curl inside the container network.
+  #debug:
+  #  image: debug
+  config:
+    image: "imqs/config:master"
+    ports:
+      # This is very dangerous, and you NEVER want to do this in production, because it leaks ALL of our secrets.
+      # For development time, it can be useful, for example when running the importer as a native process.
+      - "127.0.0.1:2010:80"
+    volumes:
+      - ./config:/etc/imqs/conf
+      - ./logs:/var/log/imqs
+      - ./secrets:/var/imqs/secrets
+    # The following setting will cause the config service to pull the latest hello-world config,
+    # but this is seldom what you want while developing.
+    #environment:
+    #  - IMQS_CONF_URL=https://hello-world:8cn4MZnP7TXUU_6Gqu1j9A@deploy.imqs.co.za/git/conf/hello-world
+    command: run -a
+  router:
+    image: "imqs/router:master"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "127.0.0.1:2013:2013"
+      - "127.0.0.1:2019:2019"
+    volumes:
+      - ./logs:/var/log/imqs
+    depends_on:
+      - config
+ # rabbitmq:
+ #   image: rabbitmq:3
+ #   ports:
+ #     - "127.0.0.1:5672:5672"
+ #   volumes:
+ #     - ./rabbit-db:/var/lib/rabbitmq
+ #   environment:
+ #     RABBITMQ_NODENAME: node@rabbitmq
+  migrations:
+    image: "imqs/migrations:master"
+    ports:
+      - "127.0.0.1:2033:80"
+    environment:
+      POSTGRES_PASSWORD: 1mq5p@55w0rd
+    depends_on:
+      - config
+      - db
+  # mssql-db:
+  #  image: microsoft/mssql-server-linux
+  #  environment:
+  #    ACCEPT_EULA: Y
+  #    SA_PASSWORD: 1mq5p@55w0rd
+  #  volumes:
+  #    - ./tmp/db-backups:/tmp
+  #    - ./scripts:/opt/imqs/scripts
+  #  ports:
+  #    - 127.0.0.1:1433:1433
+  #
+  # Core Asset Service
+  #
+  asset-core-service:
+    image: imqs/asset-core-service:auth
+    ports:
+      - "127.0.0.1:8669:80"
+    volumes:
+      - ./logs:/var/log/imqs
+    depends_on:
+      - config
+      - db
+      - router
+      - auth
+    environment:
+      # valid values are "test" and "production"
+      # "test" exposes additional endpoints to aid integration testing
+      - spring_profiles_active=test
+
+
+
