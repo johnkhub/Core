@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import za.co.imqs.libimqs.dbutils.DatabaseUtil;
@@ -34,6 +35,9 @@ public class SchemaManagement implements CliHandler{
     private final OptionGroup grp = new OptionGroup();
     private final HikariDataSource ds;
     private final String[] schemas;
+
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
     @Autowired
     public SchemaManagement(
@@ -58,8 +62,15 @@ public class SchemaManagement implements CliHandler{
     }
 
     public void upgrade() {
+        boolean drop = Boolean.valueOf(System.getenv("DROPDB"));
+        if (drop & !activeProfile.equals(PROFILE_TEST)) {
+            drop = false;
+            log.warn("DROPDB specified outside of TEST profile. Ignoring.");
+        }
+
         for (String schema : schemas) {
-            DatabaseUtil.updateDb(ds, schema, true);
+            DatabaseUtil.updateDb(ds, schema, true, drop);
+            drop = false;
         }
     }
 
