@@ -89,6 +89,7 @@ services:
   #    - ./scripts:/opt/imqs/scripts
   #  ports:
   #    - 127.0.0.1:1433:1433
+
   #
   # Core Asset Service
   #
@@ -107,6 +108,7 @@ services:
       # valid values are "test" and "production"
       # "test" exposes additional endpoints to aid integration testing
       - spring_profiles_active=test
+      - DROPDB=true
 
 
 

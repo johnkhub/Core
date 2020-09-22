@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.asset.AssetBuildingDto;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
@@ -43,11 +44,11 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
     private static final UUID THE_BUILDING = UUID.fromString("691bc006-d1c1-4f05-960b-c20bf22a0f55");
 
     // TODO this must become programmatic
-    private static final String CONFIG = "/home/frank/Development/Core/Service/src/test/resources/import_config.json";
+    private static final String CONFIG = TestUtils.resolveWorkingFolder() + "/src/test/resources/import_config.json";
 
     @Before
     public void clearAsset() throws Exception{
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
         deleteAssets(THE_BUILDING, THE_FACILITY, THE_ASSET, THE_ASSET2);
     }
 
@@ -365,7 +366,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         final AssetFacilityDto facility = new AssetFacilityDto();
         facility.setFacility_type_code("LAND");
@@ -414,7 +415,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_facility_type.csv", "FACIL_TYPE"});
 
         final AssetFacilityDto facility = new AssetFacilityDto();
         facility.setFacility_type_code("LAND");
@@ -520,9 +521,9 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
     @Test
     public void queryViaDeptTree() throws Exception {
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_chief_directorate.csv", "CHIEF_DIR"});
-        Importer.main(new String[]{CONFIG, "lookups", "/home/frank/Development/Core/Service/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_chief_directorate.csv", "CHIEF_DIR"});
+        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
 
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").
@@ -552,6 +553,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
 
     private AssetEnvelopeDto populate() {
+        prepPermissions();
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").
                 name("Envelope 1").

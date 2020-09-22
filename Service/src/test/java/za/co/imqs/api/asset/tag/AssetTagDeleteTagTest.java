@@ -14,8 +14,10 @@ import static junit.framework.TestCase.fail;
 public class AssetTagDeleteTagTest extends AbstractAssetControllerAPITest {
 
     @Before
-    public void before() {
+    public void before() throws Exception {
         prepPermissions();
+        Populate.populate(session, THE_ASSET);
+        given().header("Cookie", session).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
     }
 
     @Test
@@ -63,11 +65,5 @@ public class AssetTagDeleteTagTest extends AbstractAssetControllerAPITest {
     @Test
     public void deleteHavingSpecialCharacters() {
         fail("Not implemented");
-    }
-
-    @BeforeClass
-    public static void preconditions() throws Exception {
-        Populate.populate(session, THE_ASSET);
-        given().header("Cookie", session).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
     }
 }

@@ -36,7 +36,7 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  */
 @Slf4j
 public class LookupControllerGetWithOperatorAPITest {
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
     private static final boolean DOCKER = true;
     private static String session;
 
