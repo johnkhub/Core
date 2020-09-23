@@ -25,8 +25,10 @@ AS SELECT
        core.district_code,
        rd.v  AS district_value,
        a_tp_f.facility_type_code,
+       -- DTPW specific
        classification.responsible_dept_code,
        classification.is_owned
+
    FROM asset_core_view core
             LEFT JOIN asset e ON subpath(core.func_loc_path, 0, 1) = e.func_loc_path
             LEFT JOIN asset f ON subpath(core.func_loc_path, 0, 2) = f.func_loc_path
@@ -35,6 +37,7 @@ AS SELECT
             LEFT JOIN public.ref_municipality rm ON rm.k = core.municipality_code
             LEFT JOIN public.ref_town rt ON rt.k = core.town_code
             LEFT JOIN public.ref_suburb rs ON rs.k = core.suburb_code
+
             LEFT JOIN asset_classification classification ON core.asset_id = classification.asset_id
 ;
 COMMENT ON VIEW dtpw.asset_core_dtpw_view IS 'DTPW view. Joins facility and envelope information onto core information.';
@@ -97,6 +100,7 @@ SELECT '1_3'::text AS obj_version,
        dtpw.asset_core_dtpw_view.suburb_code,
        dtpw.asset_core_dtpw_view.suburb_value,
        dtpw.asset_core_dtpw_view.facility_type_code,
+       -- DTPW specific
        dtpw.asset_core_dtpw_view.responsible_dept_code,
        dtpw.asset_core_dtpw_view.is_owned
 FROM dtpw.asset_core_dtpw_view
@@ -109,6 +113,7 @@ CREATE INDEX m1_district_code_idx ON dtpw.dtpw_core_report_view USING btree (dis
 CREATE INDEX m1_municipality_code_idx ON dtpw.dtpw_core_report_view USING btree (municipality_code);
 CREATE INDEX m1_suburb_code_idx ON dtpw.dtpw_core_report_view USING btree (suburb_code);
 CREATE INDEX m1_town_code_idx ON dtpw.dtpw_core_report_view USING btree (town_code);
+-- DTPW specific
 CREATE INDEX m1_responsible_dept_code_idx ON dtpw.dtpw_core_report_view USING btree (responsible_dept_code);
 CREATE INDEX m1_is_owned_idx ON dtpw.dtpw_core_report_view USING btree (is_owned);
 
@@ -138,6 +143,7 @@ SELECT dtpw.dtpw_core_report_view.obj_version,
        dtpw.dtpw_core_report_view.suburb_code,
        dtpw.dtpw_core_report_view.suburb_value,
        dtpw.dtpw_core_report_view.facility_type_code,
+       -- DTPW specific
        dtpw.dtpw_core_report_view.responsible_dept_code,
        dtpw.dtpw_core_report_view.is_owned
 FROM dtpw.dtpw_core_report_view;
@@ -167,8 +173,10 @@ SELECT '1_0'::text AS obj_version,
        dtpw.asset_core_dtpw_ei_view.suburb_code,
        dtpw.asset_core_dtpw_ei_view.suburb_value,
        dtpw.asset_core_dtpw_ei_view.facility_type_code,
+       -- DTPW specific
        dtpw.asset_core_dtpw_ei_view.responsible_dept_code,
        dtpw.asset_core_dtpw_ei_view.is_owned,
+       -- DTPW EI specific
        dtpw.asset_core_dtpw_ei_view."EMIS",
        dtpw.asset_core_dtpw_ei_view.ei_district_code,
        dtpw.asset_core_dtpw_ei_view.ei_district_value
@@ -211,9 +219,10 @@ SELECT dtpw.dtpw_ei_report_view.obj_version,
        dtpw.dtpw_ei_report_view.suburb_code,
        dtpw.dtpw_ei_report_view.suburb_value,
        dtpw.dtpw_ei_report_view.facility_type_code,
+       -- DTPW specific
        dtpw.dtpw_ei_report_view.responsible_dept_code,
        dtpw.dtpw_ei_report_view.is_owned,
-
+       -- DTPW EI specific
        dtpw.dtpw_ei_report_view."EMIS",
        dtpw.dtpw_ei_report_view.ei_district_code,
        dtpw.dtpw_ei_report_view.ei_district_value
