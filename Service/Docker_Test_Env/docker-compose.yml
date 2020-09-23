@@ -94,7 +94,7 @@ services:
   # Core Asset Service
   #
   asset-core-service:
-    image: imqs/asset-core-service:${BRANCH}
+    image: imqs/asset-core-service:${BRANCH} # from commandline execute  `export BRANCH=$(git rev-parse --abbrev-ref HEAD)` before docker-compose up
     ports:
       - "127.0.0.1:8669:80"
     volumes:
