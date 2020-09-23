@@ -52,8 +52,10 @@ public class AbstractAssetControllerAPITest {
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
-            new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
-            .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).withEnv("DROPDB","true");
+            new DockerComposeContainer(new File(COMPOSE_FILE)).
+                    withServices("auth", "router", "db", "asset-core-service").
+                    withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).
+                    withEnv("BRANCH",TestUtils.getCurrentGitBranch());
 
 
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
@@ -73,7 +75,8 @@ public class AbstractAssetControllerAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        Object[] s = waitForSession(USERNAME, PASSWORD);
+
+        Object[] s = waitForSession(USERNAME, PASSWORD); // TODO Create a Login Test Rule that waits for auth and logs in
         session = (String)s[0];
         userId = UUID.fromString(((Permit)s[1]).getInternalUUID());
 

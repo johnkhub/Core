@@ -10,10 +10,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.containers.FailureDetectingExternalResource;
 import za.co.imqs.libimqs.auth.Permit;
 import za.co.imqs.unit.dataaccess.DbCreator;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
@@ -23,12 +25,12 @@ import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -301,6 +303,19 @@ public class TestUtils {
             return System.getProperty("user.dir");
         }
         throw new IllegalStateException("Unsupported OS " + System.getProperty("os.name"));
+    }
+
+    public static String getCurrentGitBranch()  {
+        try {
+            Process process = Runtime.getRuntime().exec("git rev-parse --abbrev-ref HEAD");
+            process.waitFor();
+
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                return reader.readLine();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static interface Action<T> {

@@ -47,8 +47,10 @@ public class LookupControllerKvAPITest {
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
-            new DockerComposeContainer(new File(COMPOSE_FILE)).withServices("auth", "router", "db", "asset-core-service")
-                    .withLogConsumer("asset-core-service", new Slf4jLogConsumer(log));
+            new DockerComposeContainer(new File(COMPOSE_FILE)).
+                    withServices("auth", "router", "db", "asset-core-service").
+                    withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).
+                    withEnv("BRANCH",TestUtils.getCurrentGitBranch());
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
