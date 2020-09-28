@@ -35,7 +35,6 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_ei_district.csv", "EI_DISTR"});
     }
 
-    @Ignore
     @Test
     public void testFull() throws Exception{
         loadLookups();

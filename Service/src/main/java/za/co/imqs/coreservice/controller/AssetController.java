@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.auth.authorization.AssetACLPolicy;
+import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
@@ -67,6 +67,8 @@ public class AssetController {
     private final PermissionRepository perms;
     private final AssetACLPolicy assetAclPolicy;
 
+    private int num = 0;
+
     @Value("${spring.profiles.active:}")
     private String activeProfile;
 
@@ -93,24 +95,36 @@ public class AssetController {
             @RequestBody CoreAssetDto asset,
             @RequestParam(required = false, defaultValue ="false", name="testRun") boolean testRun
     ) {
+        num++;
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        expectAllowCreate(user.getUserUuid(), asset);
+                        Benchmark.get().get("checkAllowCreate").m(() -> expectAllowCreate(user.getUserUuid(), asset));
+
                         final CoreAsset assetModel = aFact.create(uuid, asset);
-                        assetWriter.createAssets(Collections.singletonList(assetModel));
+
+                        Benchmark.get().get("create").m(()-> assetWriter.createAssets(Collections.singletonList(assetModel)));
+
                         if (AUTHORISATION_GLOBAL.isActive()) {
-                            assetAclPolicy.onCreateEntity(user.getUserUuid(), user.getUserUuid(), assetModel);
+                            Benchmark.get().get("AClPolicy").m(()-> assetAclPolicy.onCreateEntity(user.getUserUuid(), user.getUserUuid(), assetModel));
                         }
                         return null;
                     }
             );
+
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e) {
             return mapException(e);
+        } finally {
+            if (num == 10000) {
+                for (Map.Entry<String, Benchmark.Measure> m : Benchmark.get().entrySet()) {
+                    log.info("{} {} ", m.getKey(), m.getValue());
+                }
+                num = 0;
+            }
         }
     }
 
@@ -383,9 +397,9 @@ public class AssetController {
             for (Map.Entry<String,String> e : paramMap.entrySet()) {
                 sanitisedMap.put(e.getKey().trim().toLowerCase(), e.getValue());
             }
-
+            
             final FilterBuilder filter = parse(sanitisedMap.get("filter"));
-
+            
             final String orderBy = sanitisedMap.get(Modifiers.ORDER_BY);
             if (StringUtils.isNotEmpty(orderBy)) {
                 final String[] fields = orderBy.split(",");
