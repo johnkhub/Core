@@ -9,6 +9,7 @@ import java.util.UUID;
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static za.co.imqs.coreservice.model.DTPW.GROUPING_TYPE_EMIS;
 
 /**
  * (c) 2020 IMQS Software
@@ -32,7 +33,7 @@ public class AssetControllerGetGroupingTypes extends AbstractAssetControllerAPIT
 
         assertThat(result,
                 arrayContainingInAnyOrder(
-                        AssetExternalLinkTypeDto.of(UUID.fromString("4a6a4f78-2dc4-4b29-aa9e-5033b834a564"), "EMIS", "DTPW EMIS")
+                        AssetExternalLinkTypeDto.of(UUID.fromString(GROUPING_TYPE_EMIS), "EMIS", "DTPW EMIS")
                 )
         );
     }

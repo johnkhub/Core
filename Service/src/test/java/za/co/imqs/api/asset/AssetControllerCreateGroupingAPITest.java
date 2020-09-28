@@ -10,6 +10,7 @@ import org.junit.Test;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
+import za.co.imqs.coreservice.model.DTPW;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -31,7 +32,6 @@ import static org.junit.Assert.fail;
  * Consider a test case for each field as well to test validation.
  */
 public class AssetControllerCreateGroupingAPITest extends AbstractAssetControllerAPITest {
-    private static final String EMIS_UUID = "4a6a4f78-2dc4-4b29-aa9e-5033b834a564";
     private static final UUID THE_OTHER_ASSET = UUID.fromString("c28fb90c-20b7-4ba1-a0bb-1008c18aacd8");
 
     private CoreAssetDto[] assets;
@@ -45,10 +45,10 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
 
         given().
                 header("Cookie", session).
-                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID);
+                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID);
         given().
                 header("Cookie", session).
-                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, EMIS_UUID, THE_GROUPING_ID);
+                delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID);
     }
 
     @After
@@ -60,7 +60,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     public void addAssetCreateLinkSuccess() throws Exception  {
         given().
                 header("Cookie", session).
-                put("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID).
+                put("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -76,7 +76,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     public void addAssetCreateLinkTwice() throws Exception  {
         given().
                 header("Cookie", session).
-                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID).
+                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -84,7 +84,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
 
         given().
                 header("Cookie", session).
-                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID).
+                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -95,12 +95,12 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     public void addTwoAssetsCreateGrouping() {
         given().
                 header("Cookie", session).
-                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, EMIS_UUID, THE_GROUPING_ID).
+                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
         given().
                 header("Cookie", session).
-                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, EMIS_UUID, THE_GROUPING_ID).
+                put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -112,7 +112,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     public void retrieveBasedOnGrouping() throws Exception {
         addTwoAssetsCreateGrouping();
         CoreAssetDto[] result = given().header("Cookie", session).
-                get("assets/grouped_by/{grouping_id_type}/{grouping_id}", EMIS_UUID, THE_GROUPING_ID).
+                get("assets/grouped_by/{grouping_id_type}/{grouping_id}", DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
 
@@ -158,7 +158,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
 
     private void assertLinked(UUID id) {
         Assert.assertEquals(THE_GROUPING_ID, given().header("Cookie", session).
-                get("assets/group/{uuid}/to/{grouping_id_type}", id, EMIS_UUID).
+                get("assets/group/{uuid}/to/{grouping_id_type}", id, DTPW.GROUPING_TYPE_EMIS).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().asString());
     }

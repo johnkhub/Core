@@ -25,6 +25,7 @@ import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.dto.lookup.*;
+import za.co.imqs.coreservice.model.DTPW;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -37,8 +38,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Importer { // TODO split this into utility classes and DTPW specific implementation
-    private static final String EMIS = "4a6a4f78-2dc4-4b29-aa9e-5033b834a564";
-
     enum Flags {
         FORCE_INSERT,
         FORCE_CONTINUE,
@@ -249,7 +248,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
                                     HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
-                                    assetId, EMIS, dto.getEmis()
+                                    assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
                             );
 
                             restTemplate.exchange(
@@ -257,7 +256,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
                                     HttpMethod.PUT,
                                     jsonEntity(null),
                                     Void.class,
-                                    assetId, EMIS, dto.getEmis()
+                                    assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
                             );
 
 
@@ -340,6 +339,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
     }
 
     public void importAssets(Path assets) throws Exception {
+        long t0 = System.currentTimeMillis();
 
         log.info("Importing Envelopes...");
         importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
@@ -364,6 +364,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         log.info("Importing Landparcels...");
         importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true;}, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
+        log.info("Import took {} seconds", (System.currentTimeMillis()-t0)/1000); //278 464 rows
 
         log.info("Importing EMIS...");
         importEmis(assets, new FileWriter("emis_exceptions.csv"));
