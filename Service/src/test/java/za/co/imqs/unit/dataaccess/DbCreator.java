@@ -12,11 +12,11 @@ import javax.sql.DataSource;
  */
 public class DbCreator {
     private static final String[] SCHEMAS = {
-            "changelog_public.json",
-            "changelog_audit.json",
-            "changelog_asset.json",
-            "changelog_access_control.json",
-            "changelog_dtpw.json"
+            "1_changelog_public.json",
+            "2_changelog_audit.json",
+            "3_changelog_asset.json",
+            "4_changelog_access_control.json",
+            "5_changelog_dtpw.json"
     };
 
     public static void create(DataSource ds) {

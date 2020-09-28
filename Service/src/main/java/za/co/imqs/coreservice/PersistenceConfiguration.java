@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -14,6 +17,9 @@ import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 
 import javax.sql.DataSource;
+
+import java.net.URL;
+import java.util.*;
 
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
@@ -31,14 +37,6 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @EnableTransactionManagement
 public class PersistenceConfiguration {
-    private static final String[] SCHEMAS = {
-            "changelog_public.json",
-            "changelog_audit.json",
-            "changelog_asset.json",
-            "changelog_access_control.json",
-            "changelog_dtpw.json"
-    };
-
     private final ConfigClient configClient;
 
     @SuppressWarnings("InstantiationOfUtilityClass")
@@ -75,7 +73,12 @@ public class PersistenceConfiguration {
 
     @Bean
     @Qualifier("schemas")
-    public String[] getSchemas() {
-        return SCHEMAS;
+    // Get the list of schema file names (in this case from the classpath)
+    public String[] getSchemas() throws Exception {
+        final List<String> names = new LinkedList<>();
+        for (Resource resource : new PathMatchingResourcePatternResolver().getResources("classpath:*changelog_**"))   {
+            names.add(resource.getFilename());
+        }
+        return names.toArray(new String[]{});
     }
 }
