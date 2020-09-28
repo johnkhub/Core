@@ -194,34 +194,19 @@ A list of objects, with each object containing a field and value for each column
 
 Status codes: 200, 400, 403, 408
 
-### `GET /lookups/{source}/using_operators?f1="{'field':'...', value:'...'}"&f2="{'field':'...', value:'...'}"&"..."` (EXPERIMENTAL)
+### `GET /lookups/{source}/using_operators?f1={"operator":"...",value:"..."}&f2={"operator":'...',"value":"..."}&...` 
 Returns all columns from the table/view (`source`)
 
 Accepts: 
 
-A map of `field:{operator : "...", value : ".."}` specified a URL paramreters. Each such entity forms a filter criterion. The criteria are implicitly **AND**-ed.
+A map of `field:{"operator" : "...", "value" : ".."}` specified as URL parameters. Each such entity forms a filter criterion. The criteria are implicitly **AND**-ed.
 
 The operator may be one of `<`,`>`,`=`,`!=`.
 
-```
-{
-  column name 1 : {
-                    operator : "..."
-                    value : "..."
-                  },
 
-  column name 2 : { 
-                    operator : "..."
-                    value : "..."
-                  },
-  ...
-
-  column name n : { 
-                    operator : "..."
-                    value : "..."
-                  },
-}
-```
+> E.g. `http://localhost/lookups/dtpw+ref_client_department/using_operators?chief_directorate_code={"operator":"=","value":"CD_GI"}`
+>
+> Retrieves the contents of the `dtpw.ref_client_department` table where the field `chief_directorate_code` is `=` to `CD_GI`.
 
 Returns: 
 
