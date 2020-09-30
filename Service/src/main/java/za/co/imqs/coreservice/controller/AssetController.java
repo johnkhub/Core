@@ -397,9 +397,9 @@ public class AssetController {
             for (Map.Entry<String,String> e : paramMap.entrySet()) {
                 sanitisedMap.put(e.getKey().trim().toLowerCase(), e.getValue());
             }
-            
+
             final FilterBuilder filter = parse(sanitisedMap.get("filter"));
-            
+
             final String orderBy = sanitisedMap.get(Modifiers.ORDER_BY);
             if (StringUtils.isNotEmpty(orderBy)) {
                 final String[] fields = orderBy.split(",");
