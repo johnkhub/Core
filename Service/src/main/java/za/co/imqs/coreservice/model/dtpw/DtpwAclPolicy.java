@@ -1,11 +1,12 @@
-package za.co.imqs.coreservice.auth.authorization;
+package za.co.imqs.coreservice.model.dtpw;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import za.co.imqs.coreservice.auth.authorization.AssetACLPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
-import za.co.imqs.coreservice.dto.GroupDto;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 
 import java.util.UUID;

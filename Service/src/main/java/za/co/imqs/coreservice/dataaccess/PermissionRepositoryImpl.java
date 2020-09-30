@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
+import za.co.imqs.coreservice.dto.auth.UserDto;
 
 import javax.sql.DataSource;
 import java.sql.*;

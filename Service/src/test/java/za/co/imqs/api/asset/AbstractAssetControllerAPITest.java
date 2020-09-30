@@ -18,9 +18,9 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
+import za.co.imqs.coreservice.dto.auth.UserDto;
 
 import java.io.File;
 import java.util.LinkedList;

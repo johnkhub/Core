@@ -11,8 +11,8 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
+import za.co.imqs.coreservice.dto.auth.UserDto;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 

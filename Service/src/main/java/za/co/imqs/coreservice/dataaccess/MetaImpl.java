@@ -1,6 +1,5 @@
 package za.co.imqs.coreservice.dataaccess;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;

@@ -1,10 +1,6 @@
 package za.co.imqs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,16 +12,14 @@ import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.PermissionRepositoryImpl;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
-import za.co.imqs.libimqs.auth.Permit;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
+import za.co.imqs.coreservice.dto.auth.UserDto;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
 import za.co.imqs.unit.dataaccess.DbCreator;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
-import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.PG;
 import static za.co.imqs.libimqs.utils.KitchenSink.isUnix;
 import static za.co.imqs.libimqs.utils.KitchenSink.isWindows;

@@ -2,7 +2,6 @@ package za.co.imqs.coreservice.dataaccess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.Quantity;
 

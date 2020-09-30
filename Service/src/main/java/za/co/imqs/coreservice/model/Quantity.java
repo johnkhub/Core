@@ -1,12 +1,13 @@
 package za.co.imqs.coreservice.model;
 
 import lombok.Data;
-import za.co.imqs.coreservice.dto.QuantityDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 import static za.co.imqs.coreservice.Validation.assertSet;
+
 
 @Data
 public class Quantity {

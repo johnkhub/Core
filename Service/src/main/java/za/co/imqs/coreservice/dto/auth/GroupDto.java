@@ -1,4 +1,4 @@
-package za.co.imqs.coreservice.dto;
+package za.co.imqs.coreservice.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

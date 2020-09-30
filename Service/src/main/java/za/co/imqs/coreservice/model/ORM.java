@@ -39,23 +39,6 @@ public class ORM {
     }
 
 
-    /**
-     Given the asset_type_code returns a new instance of class for that model e.g. AssetEnvelope
-     */
-    public static <T> T modelFactory(String prefix, String type) {
-        final String x = type.charAt(0)+type.substring(1).toLowerCase();
-        final String name = prefix+x;
-        try {
-            return (T) Class.forName(name).newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
-            throw new RuntimeException(
-                    String.format(
-                                "Unable to instantiate model class for type %s. Make sure that a class called %s exists and has a public no-args constructor.",
-                                type, name
-                            )
-            );
-        }
-    }
 
     public static <T extends CoreAsset> T assetModelFactory(String type) {
         return modelFactory("za.co.imqs.coreservice.model.Asset", type);
@@ -68,6 +51,21 @@ public class ORM {
             return model;
         } catch( Exception e) {
             return (T) new LookupProvider.Kv();
+        }
+    }
+
+    private static <T> T modelFactory(String prefix, String type) {
+        final String x = type.charAt(0)+type.substring(1).toLowerCase();
+        final String name = prefix+x;
+        try {
+            return (T) Class.forName(name).newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException i) {
+            throw new RuntimeException(
+                    String.format(
+                            "Unable to instantiate model class for type %s. Make sure that a class called %s exists and has a public no-args constructor.",
+                            type, name
+                    )
+            );
         }
     }
 
@@ -84,6 +82,35 @@ public class ORM {
                     )
             );
         }
+    }
+
+    public static HashSet<String> getReadMethods(Class cls) {
+        final HashSet<String> names = new HashSet<>();
+
+        try {
+            for (PropertyDescriptor p : Introspector.getBeanInfo(cls).getPropertyDescriptors()) {
+                if (p.getReadMethod() != null) {
+                    names.add(p.getReadMethod().getName());
+                }
+            }
+            return names;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Set<String> getAssetSubclasses() {
+        //
+        // Make use of the JsonSubTypes annotation on the CoreAssetDto class to determine the names of the
+        // subclasses. Note that this depends on a strict naming convention
+        //
+        final Set<String> names = new HashSet<>();
+        final JsonSubTypes subTypes = CoreAssetDto.class.getAnnotation(JsonSubTypes.class);
+        for (JsonSubTypes.Type t : subTypes.value()) {
+            String name = t.value().getSimpleName().substring(5);
+            names.add(name.substring(0, name.length()-3));
+        }
+        return names;
     }
 
     public static <T extends CoreAsset> void populateFromResultSet(ResultSet rs, T model) {
@@ -130,21 +157,6 @@ public class ORM {
         }
     }
 
-
-    private static Set<String> getAssetSubclasses() {
-        //
-        // Make use of the JsonSubTypes annotation on the CoreAssetDto class to determine the names of the
-        // subclasses. Note that this depends on a strict naming convention
-        //
-        final Set<String> names = new HashSet<>();
-        final JsonSubTypes subTypes = CoreAssetDto.class.getAnnotation(JsonSubTypes.class);
-        for (JsonSubTypes.Type t : subTypes.value()) {
-            String name = t.value().getSimpleName().substring(5);
-            names.add(name.substring(0, name.length()-3));
-        }
-        return names;
-    }
-
     public static <T> MapSqlParameterSource mapToSql(T model, Set<String> exclude) throws Exception {
         return mapToSql(model, exclude, Collections.emptySet());
     }
@@ -172,21 +184,6 @@ public class ORM {
 
 
         return parameters;
-    }
-
-    public static HashSet<String> getReadMethods(Class cls) {
-        final HashSet<String> names = new HashSet<>();
-
-        try {
-            for (PropertyDescriptor p : Introspector.getBeanInfo(cls).getPropertyDescriptors()) {
-                if (p.getReadMethod() != null) {
-                    names.add(p.getReadMethod().getName());
-                }
-            }
-            return names;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static int mapToSqlType(Class cls) {

@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHENTICATION_GLOBAL;
+import static za.co.imqs.coreservice.Boot.Features.AUTHENTICATION_GLOBAL;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;

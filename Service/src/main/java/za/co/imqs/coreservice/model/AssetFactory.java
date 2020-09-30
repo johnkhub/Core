@@ -1,9 +1,19 @@
 package za.co.imqs.coreservice.model;
 
+import lombok.extern.slf4j.Slf4j;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.asset.*;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static za.co.imqs.coreservice.Validation.*;
@@ -16,6 +26,7 @@ import static za.co.imqs.coreservice.Validation.*;
  *
  * Convert DTO to domain model
  */
+@Slf4j
 public class AssetFactory {
 
     public <T extends CoreAsset, D extends CoreAssetDto> T create(UUID uuid, D dto) {
@@ -26,6 +37,42 @@ public class AssetFactory {
         return update(uuid, dto, createAsset(dto));
     }
 
+    public static <T extends CoreAssetDto, S extends CoreAsset> T asDto(S model) {
+        try {
+            T targetDto = ORM.dtoFactory(model.getAsset_type_code());
+            final Map<String, Method> setters = new HashMap<>();
+            for (PropertyDescriptor p : Introspector.getBeanInfo(targetDto.getClass()).getPropertyDescriptors()) {
+                setters.put(p.getName(), p.getWriteMethod());
+            }
+
+            for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(model.getClass()).getPropertyDescriptors()) {
+                final Method getter = propertyDescriptor.getReadMethod();
+                final Method setter = setters.get(propertyDescriptor.getName());
+
+                if (getter != null && setter != null) {
+                    Object o = getter.invoke(model);
+                    if (o != null) {
+                        if (o instanceof UUID || o instanceof Timestamp || o instanceof BigDecimal) {
+                            o = o.toString();
+                        }
+
+                        try {
+                            setter.invoke(targetDto, o);
+                        } catch (Exception c) {
+                            final String msg = "Invoking " +setter + " with " + o.getClass().getCanonicalName();
+                            log.error(msg);
+                            throw new RuntimeException(c.getMessage()+"."+ msg);
+                        }
+                    }
+                }
+            }
+
+            return targetDto;
+
+        }  catch(IntrospectionException | InvocationTargetException |IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // TODO - this should be using a generic mapping implementation
     private static <T extends CoreAsset, D extends CoreAssetDto> T createAsset(D dto) {

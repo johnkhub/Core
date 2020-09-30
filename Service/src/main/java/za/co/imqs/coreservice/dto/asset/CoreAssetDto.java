@@ -7,7 +7,6 @@ import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
 import za.co.imqs.coreservice.dto.ErrorProvider;
-import za.co.imqs.coreservice.imports.ImporterTemplate;
 import za.co.imqs.coreservice.imports.Rules;
 
 import static za.co.imqs.coreservice.imports.Rules.VALID_FREE_TEXT;

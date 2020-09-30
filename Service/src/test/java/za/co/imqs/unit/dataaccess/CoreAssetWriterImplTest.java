@@ -16,7 +16,7 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetWriterImpl;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.QuantityDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.model.AssetEnvelope;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNull;
 import static za.co.imqs.TestUtils.BOING;
 import static za.co.imqs.TestUtils.SERVICES;
 import static za.co.imqs.TestUtils.ServiceRegistry.PG;
-import static za.co.imqs.coreservice.model.ORM.SUB_CLASSES;
 import static za.co.imqs.coreservice.model.ORM.getTableName;
 
 /**

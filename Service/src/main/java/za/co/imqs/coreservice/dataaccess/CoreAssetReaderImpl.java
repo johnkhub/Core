@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
+import za.co.imqs.coreservice.dto.asset.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.coreservice.model.Quantity;
@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.*;
 
-import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
+import static za.co.imqs.coreservice.Boot.Features.AUTHORISATION_GLOBAL;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;

@@ -1,7 +1,7 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import filter.FilterBuilder;
-import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
+import za.co.imqs.coreservice.dto.asset.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.Quantity;
 

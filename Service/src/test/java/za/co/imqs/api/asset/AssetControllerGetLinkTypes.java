@@ -2,10 +2,8 @@ package za.co.imqs.api.asset;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
-import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
+import za.co.imqs.coreservice.dto.asset.AssetExternalLinkTypeDto;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.given;

@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
-import za.co.imqs.coreservice.dto.QuantityDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 
 import static com.jayway.restassured.RestAssured.given;

@@ -16,9 +16,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.ErrorProvider;
-import za.co.imqs.coreservice.dto.QuantityDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.*;
-import za.co.imqs.coreservice.model.DTPW;
+import za.co.imqs.coreservice.model.dtpw.DTPW;
 
 import java.io.FileInputStream;
 import java.io.FileWriter;

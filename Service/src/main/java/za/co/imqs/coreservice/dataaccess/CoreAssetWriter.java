@@ -1,6 +1,5 @@
 package za.co.imqs.coreservice.dataaccess;
 
-import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.Quantity;
 

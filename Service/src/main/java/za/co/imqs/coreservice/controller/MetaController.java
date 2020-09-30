@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import za.co.imqs.coreservice.dataaccess.FDW_Builder;
 import za.co.imqs.coreservice.dataaccess.Meta;
 import za.co.imqs.coreservice.dataaccess.MetaImpl;
-import za.co.imqs.services.ThreadLocalUser;
-import za.co.imqs.services.UserContext;
 
 import javax.sql.DataSource;
 

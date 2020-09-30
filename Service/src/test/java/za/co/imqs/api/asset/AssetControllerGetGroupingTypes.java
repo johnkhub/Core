@@ -2,14 +2,14 @@ package za.co.imqs.api.asset;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
-import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
+import za.co.imqs.coreservice.dto.asset.AssetExternalLinkTypeDto;
 
 import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
-import static za.co.imqs.coreservice.model.DTPW.GROUPING_TYPE_EMIS;
+import static za.co.imqs.coreservice.model.dtpw.DTPW.GROUPING_TYPE_EMIS;
 
 /**
  * (c) 2020 IMQS Software

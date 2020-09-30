@@ -1,8 +1,6 @@
 package za.co.imqs.api.asset;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,7 +8,7 @@ import org.junit.Test;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dto.asset.AssetEnvelopeDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
-import za.co.imqs.coreservice.model.DTPW;
+import za.co.imqs.coreservice.model.dtpw.DTPW;
 
 import java.util.Arrays;
 import java.util.UUID;

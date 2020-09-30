@@ -13,8 +13,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-import org.togglz.core.Feature;
-import org.togglz.core.annotation.Label;
 import za.co.imqs.configuration.client.ConfigClient;
 
 import javax.sql.DataSource;
@@ -37,44 +35,6 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @EnableConfigurationProperties(ProjectInfoProperties.class)
 @Slf4j
 public class ServiceConfiguration {
-
-    // Yeah, this is mutton dressed as lamb, but it starts us down the road of making use of Togglz
-    // At least the interface of checking if a feature is enabled sprinkled throughout the code remains the same
-    public enum Features implements Feature {
-
-        @Label("Global switch to turn authentication on / off")
-        AUTHENTICATION_GLOBAL(true),
-
-        @Label("Global switch to turn authorisation on / off")
-        AUTHORISATION_GLOBAL(false),
-
-        @Label("Global switch to turn audit logging on / off")
-        AUDIT_GLOBAL(true),
-
-        @Label("Enable the command line option to sync schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_SYNC(true),
-
-        @Label("Enable the command line option allow documenting database schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_DOC(false),
-
-        @Label("Enable the command line option allow comparing a remote database within the current schemas - see SchemaManagment.java")
-        SCHEMA_MGMT_COMPARE(true),
-
-        @Label("Enable to stop liquibase form managing the schema - see SchemaManagment.java")
-        SCHEMA_MGMT_SUPPRESS(true);
-
-        private final boolean enabled;
-
-        Features(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public boolean isActive() {
-            //return FeatureContext.getFeatureManager().isActive(this);
-            return enabled;
-        }
-    }
-
     private final ConfigClient configClient;
     private final DataSource ds;
 

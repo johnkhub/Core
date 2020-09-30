@@ -1,13 +1,13 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
-import za.co.imqs.coreservice.dto.GroupDto;
-import za.co.imqs.coreservice.dto.UserDto;
+import za.co.imqs.coreservice.dto.auth.GroupDto;
+import za.co.imqs.coreservice.dto.auth.UserDto;
 
 import java.util.List;
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
+import static za.co.imqs.coreservice.Boot.Features.AUTHORISATION_GLOBAL;
 
 /**
  * (c) 2020 IMQS Software

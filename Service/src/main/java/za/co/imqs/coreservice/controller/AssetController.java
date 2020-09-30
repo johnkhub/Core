@@ -19,37 +19,27 @@ import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.auth.authorization.AssetACLPolicy;
-import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.QuantityDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
-import za.co.imqs.coreservice.model.AssetFactory;
-import za.co.imqs.coreservice.model.CoreAsset;
-import za.co.imqs.coreservice.model.ORM;
-import za.co.imqs.coreservice.model.Quantity;
+import za.co.imqs.coreservice.model.*;
+import za.co.imqs.coreservice.model.dtpw.DtpwAclPolicy;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.*;
 
-import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
-import static za.co.imqs.coreservice.Validation.asUUID;
+import static za.co.imqs.coreservice.Boot.Features.AUTHORISATION_GLOBAL;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.coreservice.dataaccess.PermissionRepository.*;
+import static za.co.imqs.coreservice.model.AssetFactory.asDto;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -392,9 +382,9 @@ public class AssetController {
             for (Map.Entry<String,String> e : paramMap.entrySet()) {
                 sanitisedMap.put(e.getKey().trim().toLowerCase(), e.getValue());
             }
-            
+
             final FilterBuilder filter = parse(sanitisedMap.get("filter"));
-            
+
             final String orderBy = sanitisedMap.get(Modifiers.ORDER_BY);
             if (StringUtils.isNotEmpty(orderBy)) {
                 final String[] fields = orderBy.split(",");
@@ -694,42 +684,7 @@ public class AssetController {
     }
 
 
-    private static <T extends CoreAssetDto, S extends CoreAsset> T asDto(S model) {
-        try {
-            T targetDto = ORM.dtoFactory(model.getAsset_type_code());
-            final Map<String,Method> setters = new HashMap<>();
-            for (PropertyDescriptor p : Introspector.getBeanInfo(targetDto.getClass()).getPropertyDescriptors()) {
-                setters.put(p.getName(), p.getWriteMethod());
-            }
 
-            for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(model.getClass()).getPropertyDescriptors()) {
-                final Method getter = propertyDescriptor.getReadMethod();
-                final Method setter = setters.get(propertyDescriptor.getName());
-
-                if (getter != null && setter != null) {
-                    Object o = getter.invoke(model);
-                    if (o != null) {
-                        if (o instanceof UUID || o instanceof Timestamp || o instanceof BigDecimal) {
-                            o = o.toString();
-                        }
-
-                        try {
-                            setter.invoke(targetDto, o);
-                        } catch (Exception c) {
-                            final String msg = "Invoking " +setter + " with " + o.getClass().getCanonicalName();
-                            log.error(msg);
-                            throw new RuntimeException(c.getMessage()+"."+ msg);
-                        }
-                    }
-                }
-            }
-
-            return targetDto;
-
-        }  catch(IntrospectionException|InvocationTargetException|IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     private void expectAllowCreate(UUID principal, CoreAssetDto dto) {
