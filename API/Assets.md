@@ -32,39 +32,44 @@ The current implementation of this API:
 
 ### Status codes
 
-|Code|Meaning|Explanation|
-|----|-------|-----------|
-|200|OK|Operation completed successfully|
-|201|Created|Entity was created successfully|
-|400|Bad request|The Operation requested is improperly formatted - typically a validation failure.
-|403|Forbidden|User does not have permission to perform the action|
-|404|Not found|Entity not found|
-|408|Request timeout|The client should resubmit the request|
-|409|Conflict|The entity that you tried to add already exists|
-|412|Precondition failed|Indicates that the requested Operation would violate a business rule|
-|413|Payload too large|Indicates that the server truncated the resultset|
-
+|Code|Meaning            |Explanation                                                                     |
+|----|-------------------|--------------------------------------------------------------------------------|
+|200 |OK                 |Operation completed successfully                                                |
+|201 |Created            |Entity was created successfully                                                 | 
+|400 |Bad request        |The Operation requested is improperly formatted - typically a validation failure|
+|403 |Forbidden          |User does not have permission to perform the action                             |
+|404 |Not found          |Entity not found.   Where possible an empty resultset e.g. `[]` is returned rather than this code |
+|408 |Request timeout    |The client should resubmit the request                                          |
+|409 |Conflict           |The entity that you tried to add already exists                                 |
+|412 |Precondition failed|Indicates that the requested Operation would violate a business rule            |
+|413 |Payload too large  |Indicates that the server truncated the resultset                               |
 
 ### Objects
 
 #### Core Asset Dto
 
 |Field  |Type  |o/m  |Description|
-|-------|------|-----|-----------|
-|`asset_type_code`|`string`|m|One of 'ENVELOPE', 'FACILITY', 'BUILDING', 'SITE','FLOOR', 'ROOM', COMPONENT, LANDPARCEL etc. Mandatory on create.|
-|`code`|`string`|(m)|Mandatory on create.|
-|`name`|`string`|(m)|Mandatory on create. Optional on update|
-|`adm_path`|`string`|o||
-|`func_loc_path`|`string`|(m)|Mandatory on create.|
-|`creation_date`|`string`|o||
-|`address`|`string`|o||
-|`geom`|`string`|o||
-|`latitude`|`number`|o||
-|`longitude`|`number`|o||
-|`barcode`|`string`|o||
-|`serial_number`|`string`|o||
-|`responsible_dept_code`|`boolean`|o|**DTPW SPECIFIC**|
-|`is_owned`|`boolean`|o|**DTPW SPECIFIC**|
+|-----------------------|--------|----|-----------|
+|`asset_type_code`      |`string` |m  |One of 'ENVELOPE', 'FACILITY', 'BUILDING', 'SITE','FLOOR', 'ROOM', COMPONENT, LANDPARCEL etc. Mandatory on create.|
+|`code`                 |`string` |(m)|Mandatory on create.|
+|`name`                 |`string` |(m)|Mandatory on create. Optional on update|
+|`adm_path`             |`string` |o  ||
+|`func_loc_path`        |`string` |(m)|Mandatory on create.|
+|`creation_date`        |`string` |o  ||
+|`address`              |`string` |o  ||
+|`geom`                 |`string` |o  ||
+|`latitude`             |`number` |o  ||
+|`longitude`            |`number` |o  ||
+|`barcode`              |`string` |o  ||
+|`serial_number`        |`string` |o  ||
+|`region_code`          |`string` |o  ||
+|`district_code`        |`string` |o  ||
+|`municipality_code`    |`string` |o  ||
+|`town_code`            |`string` |o  ||
+|`suburb_code`          |`string` |o  ||
+|`ward`                 |`string` |o  ||
+|`responsible_dept_code`|`boolean`|o  |**DTPW SPECIFIC**|
+|`is_owned`             |`boolean`|o  |**DTPW SPECIFIC**|
 
 > Depending on the type of Asset (as defined by `asset_type_code`) more fields specific to this type of Asset may be added to the entity.
 
@@ -241,12 +246,12 @@ Status codes: 200, 400, 403, 404, 408, 413
 
 #### Parameters
 
-|Parameter|Type|Description   |
-|---------|--------|----------|
-|filter   |`String`|See below |
+|Parameter|Type|Description                                                          |
+|---------|--------|-----------------------------------------------------------------|
+|filter   |`String`|See below                                                        |
 |groupby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
 |orderby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
-|offset   |`long` |Facilitates paging|
+|offset   |`long`  |Facilitates paging                                               |
 |limit    |`long`  |Facilitates paging. Note that even if no limit is supplied the server may truncate the resultset if it is too large|
 
 > Orderby supports the `asc`|`desc` suffix
@@ -256,22 +261,22 @@ Status codes: 200, 400, 403, 404, 408, 413
 Filters allow you to specify sets of relational expressions joined by AND or OR. Grouping may be achieved using round brackets (`'('` `')'`).
 
 The filter mechanism is simple by design and somewhat restrictive.  The goal here is to have a very thin abstraction of the underlying SQL database implementation. Mostly to guard against SQL
-injection attacks, but also to maintain portability betwen teh REST API and client applications.
+injection attacks, but also to maintain portability between the REST API and client applications.
 
 >**CAVEAT**
 > * The abstraction layer does as little as possible and this results in many of the errors in filters only manifesting themselves as SQL excution errors.
 > * The reporting of parsing errors in the initial implementation is staggeringly bad. Sorry.
 
 
-|Operator|Applies to|Description|
-|--------|----------|-----------|
-|= |String, Number, Boolean, DateTime, Path|Refer to LOWER built-in function below|
-|!=|String, Number, Boolean, DateTime, Path||
-|< |Number, DateTime, Path|For Path this gets the children of the supplied path|
-|<=|Number, DateTimeh||
-|> |Number, DateTime, Path|For Path this gets the ancestors of the supplied path|
-|>=|Number, DateTime||
-|LIKE|String|Mapped to SQL `LIKE`|
+|Operator|Applies to                             |Description                                        |
+|--------|---------------------------------------|---------------------------------------------------|
+|=       |String, Number, Boolean, DateTime, Path|Refer to `LOWER` built-in function below           |
+|!=      |String, Number, Boolean, DateTime, Path|                                                   |
+|<       |Number, DateTime, Path                 |For a Path, gets the children of the supplied path |
+|<=      |Number, DateTime                       |                                                   |
+|>       |Number, DateTime, Path                 |For a Path, gets the ancestors of the supplied path|
+|>=      |Number, DateTime                       |                                                   |
+|LIKE    |String                                 |Mapped to SQL `LIKE`                               |
 
 * `String`, `Number` and `Boolean` are the Core Asset DTO fields .
 * `DateTime` is a Timestamp value transported as a `String` in the DTO.
@@ -314,12 +319,12 @@ The matching of the set of Tags is exact.  If you want to test for any one of a 
 
 |All                        |Envelope           |Facility           |Site|Building|Floor|Room|Landparcel|
 |---------------------------|-------------------|-------------------|----|--------|-----|----|----------|
-|asset_id	                  |region_code        |facility_type_code	|    |        |     |    | LPI      |
-|asset_type_code            |district_code      |    	              |    |        |     |    |          |
-|code                       |municipality_code  |    	              |    |        |     |    |          |
-|name                       |town_code          |    	              |    |        |     |    |          |
-|func_loc_path              |suburb_code        |    	              |    |        |     |    |          |
-|address                    |ward               |    	              |    |        |     |    |          |
+|asset_id	                  |                   |facility_type_code	|    |        |     |    | LPI      |
+|asset_type_code            |                   |    	              |    |        |     |    |          |
+|code                       |                   |    	              |    |        |     |    |          |
+|name                       |                   |    	              |    |        |     |    |          |
+|func_loc_path              |                   |    	              |    |        |     |    |          |
+|address                    |                   |    	              |    |        |     |    |          |
 |latitude                   |                   |    	              |    |        |     |    |          |
 |longitude                  |                   |    	              |    |        |     |    |          |
 |geom	                      |                   |    	              |    |        |     |    |          |
@@ -327,11 +332,26 @@ The matching of the set of Tags is exact.  If you want to test for any one of a 
 |deactivated_at             |                   |                   |    |        |     |    |          | 
 |barcode                    |                   |                   |    |        |     |    |          | 
 |serial_number              |                   |                   |    |        |     |    |          | 
+|region_code                |                   |                   |    |        |     |    |          |
+|district_code              |                   |                   |    |        |     |    |          |
+|municipality_code          |                   |                   |    |        |     |    |          |
+|town_code                  |                   |                   |    |        |     |    |          |
+|suburb_code                |                   |                   |    |        |     |    |          |
+|ward                       |                   |                   |    |        |     |    |          |
 |responsible_dept_code (*)  |                   |    	              |    |        |     |    |          |
 |is_owned (*)               |                   |    	              |    |        |     |    |          |
-|EMIS (*)	                  |                   |                   |    |        |     |    |          |
-
 > (*) are **DTPW specific**
+
+
+For **DTPW**, certain fields are specific to a specific Chief Directorates.  The presence of the field is dictated by the Chief Directorate.
+
+
+|CD|All             |Envelope           |Facility           |Site|Building|Floor|Room|Landparcel|
+|-------------------|-------------------|-------------------|----|--------|-----|----|----------|
+|EI|EMIS    	      |                   |                   |    |        |     |    |          |
+|EI|ei_district_code|                   |                   |    |        |     |    |          |
+
+
 
 > **NOTE:** These fields/filter criteria are not available
 > * Branch, Chief Directorate (planned)
