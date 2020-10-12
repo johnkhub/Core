@@ -63,10 +63,12 @@ SELECT
     dtpw.ref_ei_district.v as ei_district_value
 FROM
     dtpw.asset_core_dtpw_view core
-        LEFT JOIN asset_grouping ON core.asset_id = asset_grouping.asset_id
-        AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
-                                                 FROM grouping_id_type
-                                                 WHERE grouping_id_type.name::text = 'EMIS'::text))
+        JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department = 'CD_EI')
+        LEFT JOIN asset_grouping ON
+            core.asset_id = asset_grouping.asset_id
+            AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
+                                                     FROM grouping_id_type
+                                                     WHERE grouping_id_type.name::text = 'EMIS'::text))
         LEFT JOIN dtpw.ei_district_link ON core.asset_id = dtpw.ei_district_link.asset_id
         LEFT JOIN dtpw.ref_ei_district ON k_education_district = dtpw.ref_ei_district.k
 ;
