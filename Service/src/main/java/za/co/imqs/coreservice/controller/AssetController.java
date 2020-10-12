@@ -399,7 +399,7 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.GET, value = "/grouped_by/{grouping_id_type}/{grouping_id}"
     )
-    public ResponseEntity getByGroupinglId(@PathVariable String grouping_id_type, @PathVariable String grouping_id) {
+    public ResponseEntity getByGroupinglId(@PathVariable UUID grouping_id_type, @PathVariable String grouping_id) {
         final UserContext user = ThreadLocalUser.get();
         try {
             final List<CoreAssetDto> dtos = new LinkedList<>();
@@ -415,7 +415,7 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.GET, value = "/linked_to/{external_id_type}/{external_id}"
     )
-    public ResponseEntity getByExternalId(@PathVariable String external_id_type, @PathVariable String external_id) {
+    public ResponseEntity getByExternalId(@PathVariable UUID external_id_type, @PathVariable String external_id) {
         final UserContext user = ThreadLocalUser.get();
         try {
             // Read-permissions are enforced by exclusion from the result set
@@ -428,11 +428,11 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.GET, value = "/landparcel/{uuid}/assets"
     )
-    public ResponseEntity<?> getAssetsLinkedToLandparcel(@PathVariable String uuid) {
+    public ResponseEntity<?> getAssetsLinkedToLandparcel(@PathVariable UUID uuid) {
         final UserContext user = ThreadLocalUser.get();
         try {
             // Read-permissions are enforced by exclusion from the result set
-            return new ResponseEntity<>(assetReader.getAssetsLinkedToLandParcel(asUUID(uuid)), null, HttpStatus.OK);
+            return new ResponseEntity<>(assetReader.getAssetsLinkedToLandParcel(uuid), null, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }

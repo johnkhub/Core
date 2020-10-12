@@ -127,12 +127,12 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
     }
 
     @Override
-    public CoreAsset getAssetByExternalId(String externalType, String externalId) {
+    public CoreAsset getAssetByExternalId(UUID externalType, String externalId) {
         try {
             return jdbc.queryForObject(
                     SELECT_ASSET+
                         "JOIN asset_link ON asset_link.asset_id = asset.asset_id " +
-                        "WHERE asset_link.external_id_type = uuid(?) AND asset_link.external_id = ?",
+                        "WHERE asset_link.external_id_type = ? AND asset_link.external_id = ?",
                     MAPPER, ThreadLocalUser.get().getUserUuid(), externalType, externalId);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
@@ -216,12 +216,12 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
     }
 
     @Override
-    public List<CoreAsset> getAssetsByGroupingId(String groupingType, String groupingId) {
+    public List<CoreAsset> getAssetsByGroupingId(UUID groupingType, String groupingId) {
         try {
             return jdbc.query(
                     SELECT_ASSET+
                             "JOIN asset_grouping ON asset_grouping.asset_id = asset.asset_id " +
-                            "WHERE asset_grouping.grouping_id_type = uuid(?) AND asset_grouping.grouping_id = ?",
+                            "WHERE asset_grouping.grouping_id_type = ? AND asset_grouping.grouping_id = ?",
                     MAPPER, ThreadLocalUser.get().getUserUuid(), groupingType, groupingId);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());

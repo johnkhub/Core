@@ -18,8 +18,8 @@ public interface CoreAssetReader {
     CoreAsset getAsset(UUID uuid);
     CoreAsset getAssetByFuncLocPath(String path);
     CoreAsset getAssetByXXPath(String pathName, String value);
-    CoreAsset getAssetByExternalId(String externalType, String externalId);
-    List<CoreAsset> getAssetsByGroupingId(String groupingType, String groupingId);
+    CoreAsset getAssetByExternalId(UUID externalType, String externalId);
+    List<CoreAsset> getAssetsByGroupingId(UUID groupingType, String groupingId);
     List<CoreAsset> getAssetByFilter(FilterBuilder filter);
 
     List<AssetExternalLinkTypeDto> getExternalLinkTypes();
