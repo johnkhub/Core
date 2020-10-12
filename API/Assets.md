@@ -347,7 +347,7 @@ For **DTPW**, certain fields are specific to a specific Chief Directorates.  The
 
 
 |CD|All             |Envelope           |Facility           |Site|Building|Floor|Room|Landparcel|
-|-------------------|-------------------|-------------------|----|--------|-----|----|----------|
+|--|----------------|-------------------|-------------------|----|--------|-----|----|----------|
 |EI|EMIS    	      |                   |                   |    |        |     |    |          |
 |EI|ei_district_code|                   |                   |    |        |     |    |          |
 
