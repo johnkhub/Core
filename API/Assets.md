@@ -276,7 +276,7 @@ injection attacks, but also to maintain portability between the REST API and cli
 |<=      |Number, DateTime                       |                                                   |
 |>       |Number, DateTime, Path                 |For a Path, gets the ancestors of the supplied path|
 |>=      |Number, DateTime                       |                                                   |
-|LIKE    |String                                 |Mapped to SQL `LIKE`                               |
+|~~LIKE~~    |~~String~~                                 |~~Mapped to SQL `LIKE`~~                               |
 
 * `String`, `Number` and `Boolean` are the Core Asset DTO fields .
 * `DateTime` is a Timestamp value transported as a `String` in the DTO.
