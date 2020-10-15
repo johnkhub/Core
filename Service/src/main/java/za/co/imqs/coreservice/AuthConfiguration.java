@@ -141,12 +141,12 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     @Qualifier("routerHost")
     @Override
     public String getRouterHost() {
-        return Boolean.valueOf(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost();
+        return log("ROUTER=",Boolean.valueOf(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost());
     }
 
     @Override
     protected URL getAuthURL() {
-        return applyOverride("authService", super.getAuthURL());
+        return log("AUTH=", applyOverride("authService", super.getAuthURL()));
     }
 
 
@@ -173,5 +173,10 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         public UserContext get(String sessionCookie, String userId, String tenantId, List<String> roles, UUID userUuid) {
             return new UserContextImpl(sessionCookie, tenantId, userId, roles, userUuid);
         }
+    }
+
+    private <T> T log(String message, T value) {
+        log.info(String.format("%s %s",message, value.toString()));
+        return value;
     }
 }
