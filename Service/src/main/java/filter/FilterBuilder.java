@@ -16,6 +16,7 @@ public class FilterBuilder {
     private Long offset;
     private final List<String> orderBy = new ArrayList<>();
     private final List<String> groupBy = new ArrayList<>();
+    private boolean descending = false;
 
     private final Scope scope = new Scope();
     private int bracketCount = 0;
@@ -70,8 +71,17 @@ public class FilterBuilder {
         return orderBy(Arrays.asList(fields));
     }
 
+    public FilterBuilder orderBy(boolean descending, String ...fields) {
+        return orderBy(descending, Arrays.asList(fields));
+    }
+
     public FilterBuilder orderBy(List<String> fields) {
+        return orderBy(false, fields);
+    }
+
+    public FilterBuilder orderBy(boolean descending, List<String> fields) {
         orderBy.addAll(fields);
+        this.descending = descending;
         return this;
     }
 
@@ -80,7 +90,7 @@ public class FilterBuilder {
     }
 
     public FilterBuilder groupBy(List<String> fields) {
-        orderBy.addAll(fields);
+        groupBy.addAll(fields);
         return this;
     }
 
@@ -101,6 +111,7 @@ public class FilterBuilder {
         String filter = "";
         filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
         filter = orderBy.isEmpty() ? filter : (filter + " ORDER BY " + String.join(",", orderBy));
+        filter = orderBy.isEmpty() ? filter : (filter + (descending ? " DESC" : " ASC"));
         filter = limit == null ? filter : (filter + " LIMIT " + limit.toString());
         filter = offset == null ? filter : (filter + " OFFSET " + offset.toString());
 

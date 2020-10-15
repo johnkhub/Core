@@ -143,7 +143,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
 
     @Override
     public List<CoreAsset> getAssetByFilter(FilterBuilder filter) {
-        final String sql = filter.build();
+        final String sql = filter.build().replace("asset_id", "asset.asset_id");
 
 
         // TODO we obviously can't continue having logic based on explicit user specific field names

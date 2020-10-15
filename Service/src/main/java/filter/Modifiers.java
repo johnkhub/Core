@@ -7,5 +7,6 @@ public class Modifiers {
     public static final String LIMIT = "limit";
     public static final String FILTER = "filter";
 
-
+    public static final String ASC = "asc";
+    public static final String DESC = "desc";
 }

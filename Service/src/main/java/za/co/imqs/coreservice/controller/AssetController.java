@@ -7,6 +7,7 @@ import filter.SqlWhereParser;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -367,10 +368,36 @@ public class AssetController {
         final UserContext user = ThreadLocalUser.get();
         try {
             final FilterBuilder filter = parse(paramMap.get("filter"));
-            filter.orderBy(paramMap.get(Modifiers.ORDER_BY));
-            filter.groupBy(paramMap.get(Modifiers.GROUP_BY));
-            filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
-            filter.limit(Math.min(Long.parseLong(paramMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
+
+            final String orderBy = paramMap.get(Modifiers.ORDER_BY);
+            if (StringUtils.isNotEmpty(orderBy)) {
+                final String[] fields = orderBy.split(",");
+                String direction = fields[fields.length - 1].trim().toLowerCase();
+                int len = direction.length();
+                if (direction.endsWith(Modifiers.ASC)) {
+                    fields[fields.length-1] = fields[fields.length-1].substring(0, len-3);
+                    filter.orderBy(false, fields);
+                } else if (direction.endsWith(Modifiers.DESC)) {
+                    fields[fields.length-1] = fields[fields.length-1].substring(0, len-4);
+                    filter.orderBy(true, fields);
+                } else {
+                    filter.orderBy( fields);
+                }
+
+
+            }
+
+            final String groupBy = paramMap.get(Modifiers.GROUP_BY);
+            if (StringUtils.isNotEmpty(groupBy)) {
+                filter.groupBy(paramMap.get(Modifiers.GROUP_BY));
+            }
+
+            if (paramMap.get(Modifiers.OFFSET) != null) filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
+            if (paramMap.get(Modifiers.LIMIT) != null) {
+                filter.limit(Math.min(Long.parseLong(paramMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
+            } else {
+                filter.limit(MAX_RESULT_ROWS);
+            }
 
             // Read-permissions are enforced by exclusion from the result set
             final List<CoreAssetDto> dtos = new LinkedList<>();
