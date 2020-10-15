@@ -104,29 +104,13 @@ public class LookupController {
             if (result != null) {
                 return new ResponseEntity(result, HttpStatus.OK);
             } else {
-                return new ResponseEntity(HttpStatus.NO_CONTENT);
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             return mapException(e);
         }
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET, value = "/kv/{view}/{k}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity getKv(@PathVariable String view, @PathVariable String k) {
-        try {
-            final LookupProvider.Kv result = lookups.getKv(view.replace("+","."), k);
-            if (result != null) {
-                return new ResponseEntity(result, HttpStatus.OK);
-            } else {
-                return new ResponseEntity(HttpStatus.NO_CONTENT);
-            }
-        } catch (Exception e) {
-            return mapException(e);
-        }
-    }
 
     @RequestMapping(
             method = RequestMethod.GET, value = "/kv/{view}",
@@ -135,11 +119,7 @@ public class LookupController {
     public ResponseEntity getEntireTable(@PathVariable String view) {
         try {
             final List<LookupProvider.Kv> result = lookups.getEntireKvTable(view.replace("+","."));
-            if (result.isEmpty()) {
-                return new ResponseEntity(HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity(result, HttpStatus.OK);
-            }
+            return new ResponseEntity(result, HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);
         }

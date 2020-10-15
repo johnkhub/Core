@@ -62,9 +62,13 @@ public class ORM {
     }
 
     public static <T extends LookupProvider.Kv> T lookupModelFactory(String type) {
-        T model =  modelFactory("za.co.imqs.coreservice.dto.lookup.Kv", type);
-        model.setType(type);
-        return model;
+        try {
+            T model = modelFactory("za.co.imqs.coreservice.dto.lookup.Kv", type);
+            model.setType(type);
+            return model;
+        } catch( Exception e) {
+            return (T) new LookupProvider.Kv();
+        }
     }
 
     public static <T extends CoreAssetDto> T dtoFactory(String type) {

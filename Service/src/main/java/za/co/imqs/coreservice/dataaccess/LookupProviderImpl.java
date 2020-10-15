@@ -152,14 +152,17 @@ public class LookupProviderImpl implements LookupProvider {
     @Override
     public <T extends Kv> T getKv(String target, String key) {
         final String fqn = resolveTarget(target);
+        final T kv = ORM.lookupModelFactory(target);
+        final boolean isGeom = (kv instanceof Geometry);
+
         try {
+            final String selectList = "k,v,creation_date, activated_at, deactivated_at, allow_delete" + (isGeom ? ", geom" : "");
+
             List<T> list = cFact.get("kv").query(
-                    "SELECT k,v,creation_date, activated_at, deactivated_at, allow_delete, geom FROM " + fqn +" WHERE k = ?",
+                    "SELECT "+selectList+" FROM " + fqn +" WHERE k = ?",
                     (rs,i) -> {
-                        final T kv = ORM.lookupModelFactory(target);
-                        if (kv instanceof Geometry) {
-                            ((Geometry)kv).setGeom(rs.getString("geom"));
-                        }
+                        if (isGeom)  ((Geometry)kv).setGeom(rs.getString("geom"));
+
                         kv.setAllow_delete(rs.getBoolean("allow_delete"));
                         kv.setDeactivated_at("deactivated_at");
                         kv.setV(rs.getString("v"));
@@ -171,6 +174,7 @@ public class LookupProviderImpl implements LookupProvider {
                     ,key
             );
 
+            if (list.isEmpty()) return null;
             return list.get(0);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
