@@ -358,7 +358,10 @@ For **DTPW**, certain fields are specific to a specific Chief Directorates.  The
 > * The link between Landparcels and Assets
 > * Any form of spatial criteria (*not planned*)
 
+#### Examples ####
 
+
+`http://localhost:8669/assets/query?filter=%22asset_id=0000020a-7b8b-4a35-89f1-4f8d8349855e and name = %27building1%27 %22&orderby=%22func_loc_path,assetid%22%3Fasc&offset=50&limit=50`
 
 ### GET `assets/landparcel/{uuid}/assets`
 

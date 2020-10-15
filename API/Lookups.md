@@ -28,10 +28,9 @@ The current implementation of this API:
 |----|-------|-----------|
 |200|OK|Operation completed successfully|
 |201|Created|Entity was created successfully|
-|204|No Content|The service successfully processed the request, but there was no data to return. Only used in cases where an empty collection cannot be used as return value.|
 |400|Bad request|The Operation requested is improperly formatted - typically a validation failure.
 |403|Forbidden|User does not have permission to perform the action|
-|404|Not found|Entity not found|
+|404|Not found|Entity not found. Only used in cases where an empty collection cannot be used as return value|
 |408|Request timeout|The client should resubmit the request|
 |409|Conflict|The entity that you tried to add already exists|
 |412|Precondition failed|Indicates that the requested Operation would violate a business rule|
@@ -66,7 +65,7 @@ Returns all of the K/V values in the specified KV table
 Accepts: *Nothing*
 
 Returns: `[Lookup value]`
-Status codes: 200, 204, 400, 403, 408
+Status codes: 200, 400, 403, 404, 408
 
 
 ### `GET /lookups/v/{code}/{k}`
