@@ -86,6 +86,16 @@ public class LookupControllerGetWithOperatorAPITest {
     @Test
     public void testGetAllSuccess() {
         fail("Not implemented");
+        /*
+        LookupProvider.Kv[] list = given().
+                header("Cookie", session).
+                get("/lookups/kv/{lookuptype}", "SUBURB").
+                then().statusCode(200).and().extract().body().as(LookupProvider.Kv[].class);
+        for (LookupProvider.Kv s : list) {
+            log.info(s.toString());
+        }
+
+         */
     }
 
     @Test
