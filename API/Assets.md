@@ -215,6 +215,7 @@ Status codes: 200, 400, 403, 404, 408
 ### GET `assets/func_loc_path/{path}`
 
 Returns the Asset with the given Functional Location Path.
+> **NOTE**: The path must use `+` instead of `.` as a segment delimeter, when it is specified in the URL
 
 Accepts: *Nothing*
 
@@ -280,7 +281,7 @@ injection attacks, but also to maintain portability between the REST API and cli
 
 * `String`, `Number` and `Boolean` are the Core Asset DTO fields .
 * `DateTime` is a Timestamp value transported as a `String` in the DTO.
-* `Path` is a `String` enclosed in `@()` e.g. `func_loc_path > @('1718.1718.B009_B1')`
+* `Path` is a `String` enclosed in `@()` e.g. `func_loc_path > @('1718+1718+B009_B1')`
 
 Relational expressions have the form `<fieldname> <operator> <literal value>`
 The expression may be prefixed by `NOT`.
@@ -288,6 +289,8 @@ The expression may be prefixed by `NOT`.
 > CAVEAT 1: Boolean expressions must include the = true/false e.g. `... and is_owned` is invalid  whereas `... and is_owned=true` is valid.
 
 > CAVEAT 2: Boolean fields that are null in the database are treated `false` for the purposes of comparision and are returned as `false` to avoid complicating things for the calling party.
+
+> CAVEAT 3: The path must use `+` instead of `.` as a segment delimeter, when it is specified in the URL
 
 #### Built-in functions
 
