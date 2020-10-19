@@ -63,7 +63,7 @@ SELECT
     dtpw.ref_ei_district.v as ei_district_value
 FROM
     dtpw.asset_core_dtpw_view core
-        JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.k = 'CD_EI')
+        JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_EI')
         LEFT JOIN asset_grouping ON
             core.asset_id = asset_grouping.asset_id
             AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
