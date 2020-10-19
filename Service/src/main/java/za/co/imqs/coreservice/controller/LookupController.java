@@ -111,6 +111,23 @@ public class LookupController {
         }
     }
 
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/kv/{view}/{k}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public <T extends LookupProvider.Kv> ResponseEntity getKvRow(@PathVariable String view, @PathVariable String k) {
+        try {
+            final T result = lookups.getKv(view.replace("+","."), k);
+            if (result != null) {
+                return new ResponseEntity(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
 
     @RequestMapping(
             method = RequestMethod.GET, value = "/kv/{view}",
