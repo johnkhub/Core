@@ -18,11 +18,12 @@ public class ExpressionFactory {
         GR(">"),
         GEQ(">="),
         LE("<"),
-        LEQ("<=");
+        LEQ("<="),
+        LIKE("LIKE");
 
         private final String op;
 
-         RelationalOperator(String op) {
+        RelationalOperator(String op) {
             this.op = op;
         }
 
@@ -177,6 +178,10 @@ public class ExpressionFactory {
 
     public static Expression neq(String field, String value) {
         return stringCriterion(field, RelationalOperator.NEQ, value);
+    }
+
+    public static Expression like(String field, String value) {
+        return stringCriterion(field, RelationalOperator.LIKE, value);
     }
 
     /*

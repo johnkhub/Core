@@ -107,6 +107,10 @@ public class FilterTest {
         log.info(String.join(",",bob.getFields()));
     }
 
-
+    @Test
+    public void like() {
+        FilterBuilder bob = addWhere("name LIKE 'Bob'");
+        log.info(bob.build());
+    }
 }
 

@@ -35,16 +35,17 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
             ServiceHealth serviceHealth,
             ServiceAuth serviceAuth,
             SchemaManagement schema,
-            ApplicationArguments applicationArguments,
-            BuildProperties buildProps
+            ApplicationArguments applicationArguments
+            //BuildProperties buildProps
     ) {
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
         this.schema = schema;
         this.applicationArguments = applicationArguments;
-
+        /*
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
         log.info("BUILD DATE: {}", formatter.format(buildProps.getTime()));
+         */
     }
 
     @Override

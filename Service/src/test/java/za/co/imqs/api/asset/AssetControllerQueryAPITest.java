@@ -219,6 +219,34 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
     }
 
     @Test
+    public void queryOnLikeExact() throws Exception {
+        final AssetEnvelopeDto envelope = populate();
+
+        CoreAssetDto[] dtos = given().
+                header("Cookie", session).
+                queryParam("filter", "name LIKE 'Envelope 1'").
+                get("/assets/query").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
+
+        assertEquals(dtos[0], envelope);
+    }
+
+    @Test
+    public void queryOnLikeWildcard() throws Exception {
+        final AssetEnvelopeDto envelope = populate();
+
+        CoreAssetDto[] dtos = given().
+                header("Cookie", session).
+                queryParam("filter", "name LIKE 'Envelope %'").
+                get("/assets/query").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
+
+        assertEquals(dtos[0], envelope);
+    }
+
+    @Test
     public void queryOnNameLower() throws Exception {
         final AssetEnvelopeDto envelope = populate();
 

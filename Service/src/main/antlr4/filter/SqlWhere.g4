@@ -100,6 +100,7 @@ relational_operator returns [RelationalOperator value]
     | GEQ                                                           { $value = RelationalOperator.EQ; }
     | LST                                                           { $value = RelationalOperator.LE; }
     | LEQ                                                           { $value = RelationalOperator.LEQ; }
+    | LIKE                                                          { $value = RelationalOperator.LIKE; }
  ;
 
 EQ                  : '=';
@@ -108,6 +109,7 @@ GRT                 : '>';
 GEQ                 : '>' '=';
 LST                 : '<';
 LEQ                 : '<' '=';
+LIKE                : L I K E;
 
 AND                 : A N D;
 OR                  : O R;
