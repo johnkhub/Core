@@ -40,7 +40,6 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
-import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
