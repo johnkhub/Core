@@ -332,7 +332,7 @@ public class ExpressionFactory {
 
         @Override
         public String getValue() {
-            return "(asset.asset_id, ARRAY[" + String.join(",", value) + "])";
+            return "(asset_id, ARRAY[" + String.join(",", value) + "])";
         }
     }
 

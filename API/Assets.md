@@ -250,7 +250,7 @@ Status codes: 200, 400, 403, 404, 408, 413
 |Parameter|Type|Description                                                          |
 |---------|--------|-----------------------------------------------------------------|
 |filter   |`String`|See below                                                        |
-|groupby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
+|~~groupby~~|~~`String`~~|~~Comma separated list of field names. Translates to equivalent SQL~~|
 |orderby  |`String`|Comma separated list of field names. Translates to equivalent SQL|
 |offset   |`long`  |Facilitates paging                                               |
 |limit    |`long`  |Facilitates paging. Note that even if no limit is supplied the server may truncate the resultset if it is too large|

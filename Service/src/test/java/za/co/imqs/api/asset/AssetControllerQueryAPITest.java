@@ -210,7 +210,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
@@ -228,7 +228,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
@@ -247,7 +247,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
@@ -274,7 +274,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
@@ -293,7 +293,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).assertThat().extract().as(CoreAssetDto[].class);
@@ -311,7 +311,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
@@ -329,7 +329,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
@@ -347,7 +347,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
@@ -394,7 +394,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
@@ -443,7 +443,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
 
@@ -497,7 +497,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
 
@@ -511,7 +511,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
 
@@ -542,7 +542,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 queryParam("offset", 0).
                 queryParam("limit", 10).
                 queryParam("orderby", "func_loc_path").
-                queryParam("groupby", "func_loc_path").
+                //queryParam("groupby", "func_loc_path").
                 get("/assets/query").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);

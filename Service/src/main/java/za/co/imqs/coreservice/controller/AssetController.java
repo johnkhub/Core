@@ -387,10 +387,12 @@ public class AssetController {
 
             }
 
+            /*
             final String groupBy = paramMap.get(Modifiers.GROUP_BY);
             if (StringUtils.isNotEmpty(groupBy)) {
                 filter.groupBy(paramMap.get(Modifiers.GROUP_BY));
             }
+             */
 
             if (paramMap.get(Modifiers.OFFSET) != null) filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
             if (paramMap.get(Modifiers.LIMIT) != null) {

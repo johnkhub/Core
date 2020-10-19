@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.spring.service.health.ServiceHealth;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 
@@ -38,18 +37,14 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
             SchemaManagement schema,
             ApplicationArguments applicationArguments,
             BuildProperties buildProps
-
     ) {
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
         this.schema = schema;
         this.applicationArguments = applicationArguments;
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        log.info("BUILD DATE: {}",
-                formatter.format(
-                        LocalDateTime.ofEpochSecond(Long.parseLong(buildProps.get("time"))/1000, 0, ZoneOffset.UTC)));
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+        log.info("BUILD DATE: {}", formatter.format(buildProps.getTime()));
     }
 
     @Override

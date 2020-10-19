@@ -15,7 +15,7 @@ public class FilterBuilder {
     private Long limit;
     private Long offset;
     private final List<String> orderBy = new ArrayList<>();
-    private final List<String> groupBy = new ArrayList<>();
+    //private final List<String> groupBy = new ArrayList<>();
     private boolean descending = false;
 
     private final Scope scope = new Scope();
@@ -85,6 +85,7 @@ public class FilterBuilder {
         return this;
     }
 
+    /*
     public FilterBuilder groupBy(String ...fields) {
         return groupBy(Arrays.asList(fields));
     }
@@ -93,6 +94,7 @@ public class FilterBuilder {
         groupBy.addAll(fields);
         return this;
     }
+    */
 
     public FilterBuilder limit(long limit) {
         if (limit < 0) throw new IllegalArgumentException();
@@ -109,7 +111,7 @@ public class FilterBuilder {
     public String build() {
         if (bracketCount != 0) throw new ValidationFailureException("Unmatched bracket(s) in filter.");
         String filter = "";
-        filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
+        //filter = groupBy.isEmpty() ? filter : (filter + " GROUP BY " + String.join(",", groupBy));
         filter = orderBy.isEmpty() ? filter : (filter + " ORDER BY " + String.join(",", orderBy));
         filter = orderBy.isEmpty() ? filter : (filter + (descending ? " DESC" : " ASC"));
         filter = limit == null ? filter : (filter + " LIMIT " + limit.toString());
