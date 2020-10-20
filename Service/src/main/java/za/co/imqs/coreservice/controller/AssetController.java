@@ -366,9 +366,14 @@ public class AssetController {
     public ResponseEntity getWithFilter(@RequestParam Map<String, String> paramMap) {
         final UserContext user = ThreadLocalUser.get();
         try {
-            final FilterBuilder filter = parse(paramMap.get("filter"));
-
-            final String orderBy = paramMap.get(Modifiers.ORDER_BY);
+            final Map<String,String> sanitisedMap = new HashMap<>();
+            for (Map.Entry<String,String> e : paramMap.entrySet()) {
+                sanitisedMap.put(e.getKey().trim().toLowerCase(), e.getValue());
+            }
+            
+            final FilterBuilder filter = parse(sanitisedMap.get("filter"));
+            
+            final String orderBy = sanitisedMap.get(Modifiers.ORDER_BY);
             if (StringUtils.isNotEmpty(orderBy)) {
                 final String[] fields = orderBy.split(",");
                 String direction = fields[fields.length - 1].trim().toLowerCase();
@@ -387,15 +392,15 @@ public class AssetController {
             }
 
             /*
-            final String groupBy = paramMap.get(Modifiers.GROUP_BY);
+            final String groupBy = sanitisedMap.get(Modifiers.GROUP_BY);
             if (StringUtils.isNotEmpty(groupBy)) {
-                filter.groupBy(paramMap.get(Modifiers.GROUP_BY));
+                filter.groupBy(sanitisedMap.get(Modifiers.GROUP_BY));
             }
              */
 
-            if (paramMap.get(Modifiers.OFFSET) != null) filter.offset(Long.parseLong(paramMap.get(Modifiers.OFFSET)));
-            if (paramMap.get(Modifiers.LIMIT) != null) {
-                filter.limit(Math.min(Long.parseLong(paramMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
+            if (sanitisedMap.get(Modifiers.OFFSET) != null) filter.offset(Long.parseLong(sanitisedMap.get(Modifiers.OFFSET)));
+            if (sanitisedMap.get(Modifiers.LIMIT) != null) {
+                filter.limit(Math.min(Long.parseLong(sanitisedMap.get(Modifiers.LIMIT)), MAX_RESULT_ROWS));
             } else {
                 filter.limit(MAX_RESULT_ROWS);
             }
