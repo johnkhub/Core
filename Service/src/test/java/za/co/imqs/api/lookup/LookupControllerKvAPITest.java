@@ -41,7 +41,7 @@ import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
  */
 @Slf4j
 public class LookupControllerKvAPITest {
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/src/test/resources/Docker_Test_Env/docker-compose.yml";
+    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
     private static final boolean DOCKER = true;
     private static String session;
 
@@ -160,6 +160,6 @@ public class LookupControllerKvAPITest {
         given().
                 header("Cookie", session).
                 get("/lookups/v/{target}/{k}", "REGION", "bbb").
-                then().statusCode(204);
+                then().statusCode(404);
     }
 }
