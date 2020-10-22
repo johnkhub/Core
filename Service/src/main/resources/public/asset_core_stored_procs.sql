@@ -24,7 +24,7 @@ BEGIN
 
     DELETE FROM asset.asset_landparcel WHERE asset_id = the_asset;
     DELETE FROM asset.asset_landparcel WHERE landparcel_asset_id = the_asset;
-    DELETE FROM asset WHERE asset_id=the_asset;
+
 
     DELETE FROM access_control.entity_access WHERE entity_id = the_asset;
 
@@ -34,6 +34,10 @@ BEGIN
             stmt := format('DELETE FROM dtpw.%s WHERE asset_id=''%s''::UUID', link_tables[lnk], the_asset);
             EXECUTE stmt;
         END LOOP;
+
+    DELETE FROM public.quantity WHERE asset_id = the_asset;
+
+    DELETE FROM asset WHERE asset_id=the_asset;
 /*
     -- update audit trail
     PERFORM audit.log(

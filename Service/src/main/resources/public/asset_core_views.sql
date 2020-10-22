@@ -27,3 +27,14 @@ FROM asset a
 //
 COMMENT ON VIEW public.asset_core_view IS 'Inner join the basic core tables indicating what it is and where it is';
 //
+
+
+CREATE OR REPLACE VIEW public.quantities_view AS
+SELECT
+    q.name as name, q.num_units as num_units,
+    u.code as unit_code, u.name as unit_name, u.is_si as is_si, u.symbol as symbol, u.type as unit_type
+FROM
+    public.quantity q
+        JOIN unit u ON q.unit_code = u.code
+;
+//

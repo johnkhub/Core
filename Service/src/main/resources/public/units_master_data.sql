@@ -34,3 +34,5 @@ INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('power_kva', 'Kilovolt Am
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('power_mva', 'Megavolt Ampere', true,'MVA', 'T_POWER') ON CONFLICT(code) DO NOTHING;
 
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('temp_c', 'Celsius', true, '℃', 'T_TEMPERATURE') ON CONFLICT(code) DO NOTHING;
+
+INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('number', 'Units', false, '#', 'T_SCALAR') ON CONFLICT(code) DO NOTHING;
