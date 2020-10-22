@@ -11,7 +11,7 @@ import static ch.qos.logback.classic.Level.*
 statusListener(OnConsoleStatusListener)
 
 appender("FILE", RollingFileAppender) {
-    file = "asset-core-service.log"
+    file = "/var/log/imqs/services/asset-core-service.log"
 
     rollingPolicy(TimeBasedRollingPolicy) {
         fileNamePattern = "asset-core-service.%d{yyyy-MM-dd}.log"
