@@ -1,10 +1,12 @@
 package za.co.imqs.unit.dataaccess;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
@@ -14,6 +16,7 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetWriterImpl;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.model.AssetEnvelope;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
@@ -40,6 +43,7 @@ import static za.co.imqs.coreservice.model.ORM.getTableName;
  * User: frankvr
  * Date: 2020/02/06
  */
+@Slf4j
 public class CoreAssetWriterImplTest {
 
     private static final UUID THE_ASSET_ID = UUID.fromString("46514cb4-c4a1-4ef2-a76c-c2b16f4cdbaa");
@@ -49,6 +53,7 @@ public class CoreAssetWriterImplTest {
 
     @Rule
     public ExpectedException expect = ExpectedException.none();
+
 
     public CoreAssetWriterImplTest() {
         this.jdbc = new JdbcTemplate(
@@ -305,4 +310,19 @@ public class CoreAssetWriterImplTest {
             return null;
         }
     };
+
+    @Test
+    public void testIt() {
+        final QuantityDto quantity = new QuantityDto();
+        quantity.setAsset_id(UUID.randomUUID());
+        quantity.setName("nom");
+        final StringBuffer sql = new StringBuffer("UPDATE public.quantity ");
+        final BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(quantity);
+        for (String name : params.getParameterNames()) {
+            if (params.getValue(name) != null) {
+                sql.append("\n SET ").append(name).append(" = :").append(name);
+            }
+        }
+        log.info(sql.toString());
+    }
 }
