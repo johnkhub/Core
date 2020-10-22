@@ -22,7 +22,7 @@ import static za.co.imqs.TestUtils.resolveWorkingFolder;
 @Slf4j
 public class LookupProviderImplTest {
 
-    final String path = String.join("/", "file:", resolveWorkingFolder(), "src/test/resources/config.json");
+    final String path = String.join("/", "file:", resolveWorkingFolder(), "src/test/resources/asset-core-service-config.json");
 
     @Test
     public void test() throws Exception  {
