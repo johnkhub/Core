@@ -3,6 +3,7 @@ package za.co.imqs.coreservice.dataaccess;
 import filter.FilterBuilder;
 import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.Quantity;
 
 import java.util.List;
 import java.util.Map;
@@ -31,4 +32,6 @@ public interface CoreAssetReader {
     List<UUID> getAssetsLinkedToLandParcel(UUID landparcel);
 
     Map<String,UUID> getAssetTypeUUIDs();
+
+    Quantity getQuantity(UUID asset_id, String name);
 }

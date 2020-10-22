@@ -2,6 +2,7 @@ package za.co.imqs.coreservice;
 
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 
 import java.math.BigDecimal;
@@ -58,5 +59,22 @@ public class Validation {
             throw new ValidationFailureException("Invalid path format " + path);
         }
         return path;
+    }
+
+    public static <T, D> T assertSet(T value, String name, D dto) {
+        if (value == null)
+            throw new ValidationFailureException("No value set for "+name+" in "+dto.toString());
+        return value;
+    }
+
+    public static <T,D> T assertNotSet(T value, String name, D dto) {
+        return assertNotSet(value, name, null, dto);
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    public static <T,D> T assertNotSet(T value, String name, String hint, D dto) {
+        if (value != null)
+            throw new BusinessRuleViolationException("Change of "+name+" not allowed." +  ((hint != null) ? hint : "") + " in " + dto.toString());
+        return null;
     }
 }

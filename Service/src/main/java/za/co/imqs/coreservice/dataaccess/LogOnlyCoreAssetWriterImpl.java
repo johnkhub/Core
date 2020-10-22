@@ -2,7 +2,9 @@ package za.co.imqs.coreservice.dataaccess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.Quantity;
 
 import java.util.List;
 import java.util.UUID;
@@ -102,6 +104,21 @@ public class LogOnlyCoreAssetWriterImpl implements CoreAssetWriter {
 
     @Override
     public void updateGrouping(UUID uuid, UUID externalIdType, String externalId) {
+
+    }
+
+    @Override
+    public void addQuantity(Quantity quantity) {
+
+    }
+
+    @Override
+    public void updateQuantity(Quantity quantity) {
+
+    }
+
+    @Override
+    public void deleteQuantity(UUID uuid, String name) {
 
     }
 }
