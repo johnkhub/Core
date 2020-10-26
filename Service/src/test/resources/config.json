@@ -9,9 +9,9 @@
       "acquireIncrement": "2",
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
-      "jdbcUrl": "jdbc:postgresql://localhost/test_core",
-      "--jdbcUrl": "jdbc:postgresql://dtpwstaging.imqs.co.za:5432/core",
-      "username": "imqs",
+      "--jdbcUrl": "jdbc:postgresql://localhost/test_core",
+      "jdbcUrl": "jdbc:postgresql://localhost:5557/core",
+      "username": "postgres",
       "password": "1mq5p@55w0rd"
     },
 

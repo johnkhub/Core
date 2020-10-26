@@ -38,10 +38,30 @@ public class TestImport extends AbstractAssetControllerAPITest {
     @Ignore
     @Test
     public void testFull() throws Exception{
-        loadLookups();
-        loadEIlookups();
+        //loadLookups();
+        //loadEIlookups();
+
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1600767575421.csv","FORCE_INSERT"});
+        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1600767575421.csv","FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1603379308409.csv","FORCE_INSERT"});
+
+
+    }
+
+    @Test
+    public void pwei145() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-145/Update of Geometries for Switched Lat Longs.csv"});
+    }
+
+    @Test
+    public void pwei140() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        //select fn_delete_asset('fd2b6d63-494c-4243-8e44-8864650b7479');
+        //select fn_delete_asset('cb4d7eaf-fe25-47b7-8025-d3f6f7ef62f2');
+
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-140/Update of the FUNC LOc PAth for Blue Downs PS.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-140/Update of the FUNC LOc PAth for Blue Downs PS (8e52522d-f008-45e3-88db-e9a1ffdd49b0).csv"});
     }
 
     @Test
