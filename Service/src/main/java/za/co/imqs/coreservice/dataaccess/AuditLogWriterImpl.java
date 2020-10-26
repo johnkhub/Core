@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.util.Collection;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -21,7 +22,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/02/13
  */
 @Slf4j
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
 public class AuditLogWriterImpl implements AuditLogWriter {
 

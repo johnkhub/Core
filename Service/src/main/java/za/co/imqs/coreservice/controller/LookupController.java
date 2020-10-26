@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.LOOKUP_ROOT_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -33,7 +34,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/02/28
  */
 @SuppressWarnings("rawtypes")
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @RestController
 @Slf4j
 @RequestMapping(LOOKUP_ROOT_PATH)

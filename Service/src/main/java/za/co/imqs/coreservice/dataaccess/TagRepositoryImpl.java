@@ -20,10 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
 public class TagRepositoryImpl implements TagRepository {
     private final JdbcTemplate jdbc;

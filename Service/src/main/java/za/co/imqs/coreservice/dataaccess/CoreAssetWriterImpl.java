@@ -29,6 +29,7 @@ import java.sql.Types;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.model.CoreAsset.CREATE;
 import static za.co.imqs.coreservice.model.CoreAsset.UPDATE;
 import static za.co.imqs.coreservice.model.ORM.getTableName;
@@ -42,7 +43,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/02/05
  */
 @Slf4j
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
 public class CoreAssetWriterImpl implements CoreAssetWriter {
     private static final Set<String> EXCLUDED_GETTERS = Collections.unmodifiableSet(ORM.getReadMethods(CoreAsset.class));

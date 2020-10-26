@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -31,7 +32,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * User: frankvr
  * Date: 2020/02/17
  */
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
 public class PermissionRepositoryImpl implements PermissionRepository, ApplicationListener<ContextRefreshedEvent> {
 

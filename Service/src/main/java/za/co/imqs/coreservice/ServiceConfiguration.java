@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 
 import java.sql.Connection;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -31,7 +32,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2015/11/20
  */
 @Configuration
-@Profile({PROFILE_PRODUCTION,PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION,PROFILE_TEST, PROFILE_ADMIN})
 @EnableScheduling
 @EnableConfigurationProperties(ProjectInfoProperties.class)
 @Slf4j

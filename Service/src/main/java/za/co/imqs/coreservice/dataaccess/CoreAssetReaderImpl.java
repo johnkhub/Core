@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -37,7 +38,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/03/06
  *
  */
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
 public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener<ContextRefreshedEvent> {
     // TODO: We probably need to base our repo layer on a view that is client specific?

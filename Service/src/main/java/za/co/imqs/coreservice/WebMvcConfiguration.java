@@ -20,8 +20,9 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 @Configuration
 @EnableWebMvc // THIS IS IMPORTANT without it the interceptor filtering does not work
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, WebMvcConfiguration.PROFILE_ADMIN})
 public class WebMvcConfiguration implements WebMvcConfigurer {
+    public static final String PROFILE_ADMIN = "admin";
     public static final String ASSET_ROOT_PATH = "/assets";
     public static final String LOOKUP_ROOT_PATH = "/lookups";
     public static final String ACCESS_ROOT_PATH =  ASSET_ROOT_PATH + "/access";

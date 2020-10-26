@@ -9,6 +9,7 @@ import za.co.imqs.common.service.status.ServiceStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PING_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -19,7 +20,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 12/07/2016
  *
  */
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @RestController
 @RequestMapping(PING_PATH)
 public class ServiceStatusController {

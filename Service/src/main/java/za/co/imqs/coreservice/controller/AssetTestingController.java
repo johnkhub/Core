@@ -15,6 +15,7 @@ import za.co.imqs.services.UserContext;
 
 import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 /**
@@ -24,7 +25,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/03/06
  */
 @SuppressWarnings("rawtypes")
-@Profile(PROFILE_TEST)
+@Profile({PROFILE_TEST, PROFILE_ADMIN})
 @RestController
 @Slf4j
 @RequestMapping(ASSET_TESTING_PATH)

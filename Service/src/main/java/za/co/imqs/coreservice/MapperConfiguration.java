@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -18,7 +19,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2016/11/11
  */
 @Configuration
-@Profile({PROFILE_PRODUCTION , PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION , PROFILE_TEST, PROFILE_ADMIN})
 @Slf4j
 public class MapperConfiguration {
     @Bean

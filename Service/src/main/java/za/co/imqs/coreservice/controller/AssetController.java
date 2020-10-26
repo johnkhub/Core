@@ -43,6 +43,7 @@ import java.util.*;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
 import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.coreservice.dataaccess.PermissionRepository.*;
@@ -56,7 +57,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2020/02/05
  */
 @SuppressWarnings("rawtypes")
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @RestController
 @Slf4j
 @RequestMapping(ASSET_ROOT_PATH)

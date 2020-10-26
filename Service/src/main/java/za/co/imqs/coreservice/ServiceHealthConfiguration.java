@@ -8,6 +8,7 @@ import org.springframework.retry.annotation.Retryable;
 import za.co.imqs.spring.service.health.ServiceHealth;
 import za.co.imqs.spring.service.health.ServiceHealthImpl;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -15,7 +16,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 @Configuration
 @Retryable
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 public class ServiceHealthConfiguration {
 
     @Bean

@@ -24,12 +24,13 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.*;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
 @Slf4j
 @Component
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 public class SchemaManagement implements CliHandler{
 
     private final OptionGroup grp = new OptionGroup();

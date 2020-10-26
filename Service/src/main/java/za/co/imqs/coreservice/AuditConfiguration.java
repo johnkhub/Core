@@ -14,6 +14,7 @@ import za.co.imqs.coreservice.dataaccess.AuditLogWriterImpl;
 
 import javax.sql.DataSource;
 
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -24,7 +25,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  * Date: 2019/02/15
  */
 @Configuration
-@Profile({PROFILE_PRODUCTION, PROFILE_TEST})
+@Profile({PROFILE_PRODUCTION, PROFILE_TEST,PROFILE_ADMIN})
 public class AuditConfiguration {
 
 
