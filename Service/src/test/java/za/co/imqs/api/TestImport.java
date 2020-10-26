@@ -49,6 +49,13 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    public void pwei136() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        // select fn_delete_asset('43ff9429-58d5-467a-a06f-9f6f2a113c4e');
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-136/Update of the FUNC LOc PAth for Hostel Facility at Durbanville HS.csv"});
+    }
+
+    @Test
     public void pwei145() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-145/Update of Geometries for Switched Lat Longs.csv"});

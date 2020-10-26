@@ -48,7 +48,7 @@ public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = true;
+    private static final boolean DOCKER = false;
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
