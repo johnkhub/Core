@@ -514,6 +514,14 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
     }
 
     public static void main(String[] args) throws Exception {
+
+        //
+        // 0 = config file
+        // 1 = command {lookups, assets, asset_to_landparcel, delete}
+        // 2 =  path of input file
+        // 3 = flags (optional)
+        //
+
         final ObjectMapper mapper = new ObjectMapper();
         Config config;
         try (InputStream is = new FileInputStream(args[0])) {
@@ -526,7 +534,6 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         final Path file = Paths.get(args[2]);
         log.info("Processing {}", file);
 
-
         if (cmd.equalsIgnoreCase("lookups")) {
             final String lookupType = args[3];
             Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
@@ -535,34 +542,35 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         } else if (cmd.equalsIgnoreCase("assets")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
-            final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
-            flags.addAll(x);
-
-            final EnumSet<Flags> mutuallyExclusive = EnumSet.of(Flags.FORCE_INSERT, Flags.FORCE_UPSERT);
-            mutuallyExclusive.retainAll(flags);
-            if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
-
-            final Importer i = new Importer(config.getServiceUrl(), session, flags);
+            final Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
             i.importAssets(file);
             return;
 
         } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
-            EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
-            flags.addAll(x);
-
-            Importer i = new Importer(config.getServiceUrl(), session, flags);
+            Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"));
             return;
         } else if (cmd.equalsIgnoreCase("delete")) {
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
+            Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
             i.deleteAssets(file, new FileWriter("delete_exceptions.csv"));
             return;
         }
 
         throw new IllegalArgumentException("Unknown command:" + cmd);
+    }
+
+    private static EnumSet<Flags> processFlags(String[] flagsS) {
+        final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
+        final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
+        flags.addAll(x);
+
+        final EnumSet<Flags> mutuallyExclusive = EnumSet.of(Flags.FORCE_INSERT, Flags.FORCE_UPSERT);
+        mutuallyExclusive.retainAll(flags);
+        if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
+
+        return flags;
     }
 
     // TODO Find a way to handle this in LookupProvider since it knows this relationship
