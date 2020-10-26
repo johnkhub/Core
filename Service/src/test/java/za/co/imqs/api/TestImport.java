@@ -38,8 +38,8 @@ public class TestImport extends AbstractAssetControllerAPITest {
     @Ignore
     @Test
     public void testFull() throws Exception{
-        //loadLookups();
-        //loadEIlookups();
+        loadLookups();
+        loadEIlookups();
 
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         //Importer.main(new String[]{config, "assets","/home/frank/Downloads/data-1600767575421.csv","FORCE_INSERT"});
@@ -53,6 +53,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     public void pwei136() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         // select fn_delete_asset('43ff9429-58d5-467a-a06f-9f6f2a113c4e');
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-136/TO be deleted - Extra Envelope for Durbanville HS.csv"});
         Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-136/Update of the FUNC LOc PAth for Hostel Facility at Durbanville HS.csv"});
     }
 
@@ -67,6 +68,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     @Ignore
     public void pwei140() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "delete","/home/frank/Downloads/Updates/PWEI-140/TO be deleted - Extra Envelope and FAcility for Blue Downs PS.csv"});
         //select fn_delete_asset('fd2b6d63-494c-4243-8e44-8864650b7479');
         //select fn_delete_asset('cb4d7eaf-fe25-47b7-8025-d3f6f7ef62f2');
 
