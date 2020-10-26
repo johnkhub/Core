@@ -29,7 +29,7 @@ Run
 |Service          |M/O|           |
 |-----------------|---|-----------|
 |*Config Service* |O  |Possible to read config from files as well                   |
-|Auth Service     |M  |Setting the environment variable FAKEAUTH=true and using teh test profile (see below) disables authentication
+|Auth Service     |M  |Setting the environment variable FAKEAUTH=true and using the test profile (see below) disables authentication
 |*Router Service* |O  |Can run without it if no inter-service communication happens |
 |Postgres with PostGIS installed | M | |
 
@@ -39,7 +39,7 @@ Run
 |-------------------------|-----------------|---------|------------|
 |in.container             |O (false)        |Java     |Is the service running inside a container or not             |
 |logback.configurationFile|M                |Java     |Typically a link to a file hosted by the configuration Server|
-|spring.profiles.active   |O (`production`) |Java     |Spring profile. For integration testing, specify `test`      |
+|spring.profiles.active   |O (`production`) |Java     |Spring profile. For integration testing, specify `test`. See profiles section below      |
 |server.port              |M                |Argument |HTTP port                                                    |
 |sync-schemas             |O                |Argument |See Schema Management section                                |
 |document-schemas         |O                |Argument |See Schema Management section                                |
@@ -55,11 +55,19 @@ Run
 > 2. Java property
 > 3. Hardcoded default (`production`) 
 
+### Profiles ###
+
+|Profile | Description  |
+|--------|--------------|
+|production| The default. To be used in production scenarios|
+|test| For integration testing|
+|admin| special administrative profile|
+
 Example commandline
 ```
 java 
     -Din.container=true
-    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -Dlogging.config="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
     --server.port=8669
@@ -70,7 +78,7 @@ java
 ```
 java 
     -Din.container=true
-    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -Dlogging.config="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
     --server.port=8669
@@ -83,7 +91,7 @@ java
 ```
 java 
     -Din.container=true
-    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -Dlogging.config="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
     --server.port=8669
@@ -96,7 +104,7 @@ java
 ```
 java 
     -Din.container=true
-    -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
+    -Dlogging.config="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy"
     -spring.profiles.active=production 
     -jar asset-core-service.jar  
     --server.port=8669
@@ -107,9 +115,15 @@ java
 ```
 
 #### Native vs Docker
-**Native**
-* `in.container` removed or set to `false`
-* `--config` refers to `localhost:2010` e.g. `--config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"`
+* **Docker**
+  * Refer to [Dockerfile](Dockerfile) to see what the commandline looks like
+  * You will need to make a change in the `environment` section of the `compose.yaml` file to change the value
+ 
+* **Native**
+  * `in.container` removed or set to `false`
+  * `--config` refers to `localhost:2010` i.e. `--config="http://localhost:2010/config-service/config/asset-core-service/1/asset-core-service-config.json"`
+  * or `--config=file:asset-core-service-config.json`
+  * `spring.profiles` can be set on the command line as in the examples above 
 
 ### Configuration file
 

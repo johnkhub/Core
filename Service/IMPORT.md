@@ -1,10 +1,14 @@
 Import
 ======
 
-> **CAVEAT:** THERE IS NO WAY TO DELETE DATA VIA AN IMPORT. 
-> * There is no way to remove an Asset
-> * There is no way to remove a specific value for a specific asset
-> * By extension, it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number 
+ **CAVEAT:** Under normal circumstances,THERE IS NO WAY TO DELETE DATA VIA AN IMPORT, so: 
+ * There is no way to remove an Asset
+ * There is no way to remove a specific value for a specific asset
+ * By extension, it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number
+ 
+ The server may be stopped though and run using the `admin` profile. This makes it possible to delete assets via the importer.
+ Refer to the [configuration documentation](CONFIG.md).
+
 
 Data format
 -----------

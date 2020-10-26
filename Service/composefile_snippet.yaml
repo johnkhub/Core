@@ -15,6 +15,7 @@
       - router
       - auth
     #environment:
-      # valid values are "test" and "production"
+      # valid values are "test", "production" and "admin"
       # "test" exposes additional endpoints to aid integration testing
+      # "admin" should not be used under nornal circumstances - ask before you do
       #- spring_profiles_active=test
