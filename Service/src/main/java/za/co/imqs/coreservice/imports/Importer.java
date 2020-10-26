@@ -416,6 +416,41 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         return new HttpEntity<>(object, headers);
     }
 
+    public void deleteAssets(Path path, Writer exceptionFile) throws Exception {
+        final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<CoreAssetDto> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
+        try (Reader reader = Files.newBufferedReader(path)) {
+            assetImporter.stream(reader, new ExternalLinks()).forEach(
+                    (dto) -> {
+                        try {
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/testing/{uuid}",
+                                    HttpMethod.DELETE,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    dto.getAsset_id()
+                            );
+
+
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
+
+                        } catch (Exception e) {
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
+                        }
+                    }
+            );
+        }
+
+        if (exceptionFile != null) {
+            exceptionFile.close();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
         Config config;
@@ -458,6 +493,10 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
             Importer i = new Importer(config.getServiceUrl(), session, flags);
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"));
+            return;
+        } else if (cmd.equalsIgnoreCase("delete")) {
+            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
+            i.deleteAssets(file, new FileWriter("delete_exceptions.csv"));
             return;
         }
 

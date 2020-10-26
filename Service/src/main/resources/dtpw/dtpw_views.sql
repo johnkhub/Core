@@ -261,7 +261,7 @@ SELECT
     ei.ei_district_code,
 
     ST_asText(core.geom) AS geom
-FROM dtpw.asset_core_dtpw_ei_view core LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id;
+FROM dtpw.asset_core_dtpw_view core LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id;
 
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
 
