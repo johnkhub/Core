@@ -142,8 +142,9 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 412
 
-### `DELETE assets/{uuid}`
-Deletes an Asset.  The Asset is *not deleted*, but is marked as inactive.
+### `DELETE assets/{uuid}?permanent={permanent}`
+Deletes an Asset.  If `permanent` is `true` then the Asset is removed from the database, else it is marked as inactive.
+> Permanent deletion is only possible if the Core service is run in with the `admin` profile. See [CONFIG.md](../Service/CONFIG.md)
 
 Accepts: *Nothing*
 

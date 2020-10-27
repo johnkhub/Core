@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.QuantityDto;
@@ -30,6 +31,7 @@ import za.co.imqs.coreservice.model.DTPW;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -486,13 +488,12 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
             assetImporter.stream(reader, new ExternalLinks()).forEach(
                     (dto) -> {
                         try {
-
                             restTemplate.exchange(
-                                    baseUrl + "/assets/testing/{uuid}",
+                                    baseUrl + "/assets/{uuid}?permanent={permanent}",
                                     HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
-                                    dto.getAsset_id()
+                                    dto.getAsset_id(), true
                             );
 
 

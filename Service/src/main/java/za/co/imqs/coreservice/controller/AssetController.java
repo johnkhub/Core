@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
+import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
@@ -42,6 +44,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static za.co.imqs.coreservice.ServiceConfiguration.Features.AUTHORISATION_GLOBAL;
+import static za.co.imqs.coreservice.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_ROOT_PATH;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.audit.AuditLogEntry.of;
@@ -72,6 +75,9 @@ public class AssetController {
 
     private final PermissionRepository perms;
     private final AssetACLPolicy assetAclPolicy;
+
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
     @Autowired
     public AssetController(
@@ -120,16 +126,29 @@ public class AssetController {
     @RequestMapping(
             method = RequestMethod.DELETE, value = "/{uuid}"
     )
-    public ResponseEntity deleteAsset(@PathVariable UUID uuid) {
+    public ResponseEntity deleteAsset(
+                @PathVariable UUID uuid,
+                @RequestParam(required = false, defaultValue = "false", name = "permanent") boolean permanent
+            ) {
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
             final Map<String,UUID> p = new HashMap<>();
             audit.tryIt(
-                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid)).setCorrelationId(uuid),
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.DELETE_ASSET, of("asset", uuid, "permanent", permanent)).setCorrelationId(uuid),
                     () -> {
                         perms.expectPermission(user.getUserUuid(), uuid, PERM_DELETE);
-                        assetWriter.deleteAssets(Collections.singletonList(uuid));
+
+                        if (permanent) {
+                            if (activeProfile.equalsIgnoreCase("admin")) {
+                                assetWriter.obliterateAssets(uuid);
+                            } else {
+                                throw new NotPermittedException("Only ADMIN mode allows permanent delete of assets.");
+                            }
+                        } else {
+                            assetWriter.deleteAssets(Collections.singletonList(uuid));
+                        }
+
                         if (AUTHORISATION_GLOBAL.isActive()) {
                             assetAclPolicy.onDeleteEntity(user.getUserUuid(), user.getUserUuid(),uuid);
                         }
