@@ -1,5 +1,6 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -24,5 +25,30 @@ public class MetaImpl implements Meta {
     @Override
     public Set<String> systemSchemas() {
         return new HashSet<>(Arrays.asList("access_control", "asset", "audit", "crud", "public"));
+    }
+
+    @Override
+    public String getServerIP() {
+        return template.queryForObject("SELECT inet_server_addr();", String.class);
+    }
+
+    @Override
+    public String getDbName() {
+        return template.queryForObject(" SELECT current_database()", String.class);
+    }
+
+    public List<String> listExtentions() {
+        return template.queryForList("SELECT extname FROM pg_extension", String.class);
+    }
+
+    @Override
+    public List<String> getTablesAndViewsForUser(String userName) {
+        return template.query(
+                "SELECT * FROM  information_schema.table_privileges WHERE grantee = ? AND privilege_type = 'SELECT'",
+                (rs,i)-> {
+                    return rs.getString("table_schema") + "." + rs.getString("table_name");
+                },
+                userName
+                );
     }
 }
