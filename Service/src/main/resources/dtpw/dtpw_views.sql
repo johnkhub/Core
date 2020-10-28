@@ -73,6 +73,40 @@ FROM
         LEFT JOIN dtpw.ref_ei_district ON k_education_district = dtpw.ref_ei_district.k
 ;
 
+CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_gi_view AS
+SELECT
+    core.*
+FROM
+    dtpw.asset_core_dtpw_view core JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_GI')
+;
+
+CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_hi_view AS
+SELECT
+    core.*
+FROM
+    dtpw.asset_core_dtpw_view core JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_HI')
+;
+
+CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_rnm_view AS
+SELECT
+    core.*
+FROM
+    dtpw.asset_core_dtpw_view core JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_RNM')
+;
+
+CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_iam_view AS
+SELECT
+    core.*
+FROM
+    dtpw.asset_core_dtpw_view core JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_IAM')
+;
+
+CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_ppp_view AS
+SELECT
+    core.*
+FROM
+    dtpw.asset_core_dtpw_view core JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_PPP')
+;
 
 
 --
@@ -230,7 +264,41 @@ SELECT dtpw.dtpw_ei_report_view.obj_version,
        dtpw.dtpw_ei_report_view.ei_district_value
 FROM dtpw.dtpw_ei_report_view;
 
+-- WE DON"T HAVE CD SPECIFIC FIELDS FOR THESE YET, SO WE JUST ALIAS THE dtpw.dtpw_core_report_view FOR EACH
+-- GI
+CREATE OR REPLACE VIEW dtpw.dtpw_gi_report_view_wrapper
+AS
+SELECT * FROM dtpw.dtpw_core_report_view
+                  JOIN dtpw.ref_client_department ON (responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_GI')
+;
 
+-- HI
+CREATE OR REPLACE VIEW dtpw.dtpw_hi_report_view_wrapper
+AS
+SELECT * FROM dtpw.dtpw_core_report_view
+                  JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_HI')
+;
+
+-- IAM
+CREATE OR REPLACE VIEW dtpw.dtpw_iam_report_view_wrapper
+AS
+SELECT * FROM dtpw.dtpw_core_report_view
+                  JOIN dtpw.ref_client_department ON (responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_IAM')
+;
+
+-- RNM
+CREATE OR REPLACE VIEW dtpw.dtpw_rnm_report_view_wrapper
+AS
+SELECT * FROM dtpw.dtpw_core_report_view
+                  JOIN dtpw.ref_client_department ON (responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_RNM')
+;
+
+-- PPP
+CREATE OR REPLACE VIEW dtpw.dtpw_ppp_report_view_wrapper
+AS
+SELECT * FROM dtpw.dtpw_core_report_view
+                  JOIN dtpw.ref_client_department ON (responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_PPP')
+;
 
 
 
