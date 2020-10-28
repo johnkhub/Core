@@ -10,29 +10,26 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
-import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.containers.FailureDetectingExternalResource;
-import za.co.imqs.libimqs.auth.Permit;
-import za.co.imqs.unit.dataaccess.DbCreator;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.PermissionRepositoryImpl;
 import za.co.imqs.coreservice.dto.GroupDto;
 import za.co.imqs.coreservice.dto.UserDto;
+import za.co.imqs.libimqs.auth.Permit;
 import za.co.imqs.libimqs.dbutils.HikariCPClientConfigDatasourceHelper;
+import za.co.imqs.unit.dataaccess.DbCreator;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
@@ -126,25 +123,6 @@ public class TestUtils {
     };
 
     public static final ServiceRegistry SERVICES = new ServiceRegistry();
-
-    public static Object[] getAuthSession(String username, String password)   {
-        try {
-            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod("http://"+SERVICES.get(AUTH)+ "/auth2/login");
-            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-            client.executeMethod(post);
-            if (post.getStatusCode() != 200)
-                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
-
-            return new Object[]{post.getResponseHeader("Set-Cookie").getValue(),new ObjectMapper().readValue(post.getResponseBody(), Permit.class)};
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Object[] waitForSession(String username, String password)  {
-        return poll(()-> getAuthSession(username, password),TimeUnit.SECONDS, 15);
-    }
 
     public static class PermissionRepositoryImplTest {
         private final JdbcTemplate jdbc;

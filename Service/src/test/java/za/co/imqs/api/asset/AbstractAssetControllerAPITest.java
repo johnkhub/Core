@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import za.co.imqs.LoginRule;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.GroupDto;
@@ -34,6 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
@@ -49,6 +51,12 @@ public class AbstractAssetControllerAPITest {
 
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
     private static final boolean DOCKER = false;
+
+    @ClassRule
+    public static LoginRule login = new LoginRule().
+            withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
+            withUsername(USERNAME).
+            withPassword(PASSWORD);
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
@@ -76,9 +84,8 @@ public class AbstractAssetControllerAPITest {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
 
-        Object[] s = waitForSession(USERNAME, PASSWORD); // TODO Create a Login Test Rule that waits for auth and logs in
-        session = (String)s[0];
-        userId = UUID.fromString(((Permit)s[1]).getInternalUUID());
+        session = login.getSession();
+        userId = UUID.fromString(login.getPermit().getInternalUUID());
 
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK),TimeUnit.SECONDS, 25);
     }

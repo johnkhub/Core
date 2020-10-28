@@ -12,6 +12,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import za.co.imqs.LoginRule;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.BusinessRuleViolationException;
@@ -28,6 +29,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.KvDef.def;
 import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
@@ -42,15 +44,21 @@ import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
 @Slf4j
 public class LookupControllerKvAPITest {
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = true;
+    private static final boolean DOCKER = false;
     private static String session;
+
+    @ClassRule
+    public static LoginRule login = new LoginRule().
+            withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
+            withUsername(USERNAME).
+            withPassword(PASSWORD);
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
             new DockerComposeContainer(new File(COMPOSE_FILE)).
                     withServices("auth", "router", "db", "asset-core-service").
                     withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).
-                    withEnv("BRANCH",TestUtils.getCurrentGitBranch());
+                    withEnv("BRANCH", TestUtils.getCurrentGitBranch());
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -59,7 +67,7 @@ public class LookupControllerKvAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = (String)waitForSession(USERNAME, PASSWORD)[0];
+        session = login.getSession();
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 25);
     }
 

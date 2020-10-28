@@ -165,11 +165,11 @@ public class ImporterTemplate {
 
                         } catch (HttpClientErrorException c) {
                             dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto, flags);
+                            //processException(sbc, dto, flags);
 
                         } catch (Exception e) {
                             dto.setError(e.getMessage());
-                            processException(sbc, dto, flags);
+                            //processException(sbc, dto, flags);
                         }
                     }
             );
