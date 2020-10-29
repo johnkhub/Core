@@ -49,6 +49,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    @Ignore
     public void pwei136() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         // select fn_delete_asset('43ff9429-58d5-467a-a06f-9f6f2a113c4e');
@@ -56,12 +57,14 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    @Ignore
     public void pwei145() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-145/Update of Geometries for Switched Lat Longs.csv"});
     }
 
     @Test
+    @Ignore
     public void pwei140() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         //select fn_delete_asset('fd2b6d63-494c-4243-8e44-8864650b7479');

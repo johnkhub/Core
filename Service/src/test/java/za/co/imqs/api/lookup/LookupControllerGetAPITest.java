@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import za.co.imqs.LoginRule;
 import za.co.imqs.TestUtils;
 
 import java.io.File;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static za.co.imqs.TestUtils.*;
+import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 
 
@@ -36,9 +38,15 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
 @Slf4j
 public class LookupControllerGetAPITest {
     private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = true;
+    private static final boolean DOCKER = false;
     private static String session;
 
+
+    @ClassRule
+    public static LoginRule login = new LoginRule().
+            withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
+            withUsername(USERNAME).
+            withPassword(PASSWORD);
 
     @ClassRule
     public static TestRule compose = !DOCKER ? NULL_RULE :
@@ -51,7 +59,7 @@ public class LookupControllerGetAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = (String)waitForSession(USERNAME, PASSWORD)[0];
+        session = login.getSession();
 
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 25);
     }

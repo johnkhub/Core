@@ -2456,26 +2456,6 @@
 
     }
   },
-
-  {
-    "changeSet": {
-      "id": "c127a622-b465-4ec4-93d8-a34ead141099",
-      "author": "frankvr",
-      "comment" : "Add standard views",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "sqlFile": {
-            "dbms" : "postgresql",
-            "encoding" : "utf8",
-            "path": "public/asset_core_views.sql",
-            "relativeToChangelogFile": false,
-            "endDelimiter" : "//"
-          }
-        }]
-    }
-  },
-
   {
     "changeSet": {
       "id": "4090ac4b-735c-4ea7-adb8-d2082cddc365",
@@ -2997,6 +2977,99 @@
             "onUpdate": "NO ACTION",
             "referencedColumnNames": "type_id",
             "referencedTableName": "grouping_id_type"
+          }
+        }]
+    }
+  },
+
+  {
+    "changeSet": {
+      "id": "689971ef-5084-4fc2-8c2f-e22093d63304",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "primaryKey": true,
+                    "primaryKeyName": "quantity_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "unit_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "num_units",
+                  "type": "DECIMAL"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "primaryKey": true,
+                    "primaryKeyName": "quantity_pkey"
+                  },
+                  "name": "name",
+                  "type": "text"
+                }
+              }
+            ],
+            "tableName": "quantity"
+          }
+        },
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "quantity",
+            "constraintName": "asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset"
+          }
+        },
+        {
+          "addUniqueConstraint": {
+            "columnNames": "asset_id,name",
+            "constraintName": "quantity_name",
+            "tableName": "quantity"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "c127a622-b465-4ec4-93d8-a34ead141099",
+      "author": "frankvr",
+      "comment" : "Add standard views",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "public/asset_core_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
           }
         }]
     }

@@ -23,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
+import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.dto.lookup.*;
 import za.co.imqs.coreservice.model.DTPW;
@@ -65,13 +66,6 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         this.restTemplate = new RestTemplate(requestFactory);
         this.baseUrl = baseUrl;
         this.flags = flags;
-    }
-
-    //
-    // Utility methods to construct solution from
-    //
-    public void importLookups(String lookupType, Path path) throws Exception  {
-        importLookups(lookupType, path, new LookupProvider.Kv());
     }
 
     public <T extends LookupProvider.Kv> void importLookups(String lookupType, Path path, T kv) throws Exception  {
@@ -161,15 +155,6 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         void perform(T t);
     }
 
-    public Map<String,String> getReverseLookups(String lookupType) throws Exception {
-        final Map<String,String> valueToKey = new HashMap<>();
-        final LookupProvider.Kv[] results = restTemplate.getForEntity(baseUrl+"/lookups/kv/{lookupType}", LookupProvider.Kv[].class, lookupType).getBody();
-        for (LookupProvider.Kv kv : results) {
-            valueToKey.put(kv.getV(), kv.getK());
-        }
-
-        return valueToKey;
-    }
 
     public <T extends CoreAssetDto> T getAsset(String func_loc_path) throws Exception {
         final CoreAssetDto asset = restTemplate.exchange(
@@ -277,6 +262,80 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         }
     }
 
+    public void importQuantity(Path path, Writer exceptionFile) throws Exception {
+        final CsvImporter<Extent> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<Extent> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+
+        try (Reader reader = Files.newBufferedReader(path)) {
+            assetImporter.stream(reader, new Extent()).forEach(
+                    (dto) -> {
+                        try {
+                            if (dto.getExtent() == null) {
+                                return;
+                            }
+
+                            if (dto.getExtent_unit() == null) {
+                                throw new IllegalArgumentException("Extent_unit not set!");
+                            }
+
+                            final CoreAssetDto asset = restTemplate.exchange(
+                                    baseUrl + "/assets/func_loc_path/{path}",
+                                    HttpMethod.GET,
+                                    jsonEntity(null),
+                                    CoreAssetDto.class,
+                                    dto.getFunc_loc_path().replace(".","+")
+                            ).getBody();
+
+                            if (asset == null) {
+                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                            }
+
+                            final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                            try {
+                                restTemplate.exchange(
+                                        baseUrl + "/assets/quantity/{uuid}/name/{name}",
+                                        HttpMethod.DELETE,
+                                        jsonEntity(null),
+                                        Void.class,
+                                        assetId, "extent"
+                                );
+                            } catch (HttpClientErrorException e) {
+
+                            }
+
+                            final QuantityDto quantity = new QuantityDto();
+                            quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                            quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
+                            quantity.setName("extent");
+                            quantity.setNum_units(dto.getExtent());
+
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/quantity",
+                                    HttpMethod.PUT,
+                                    jsonEntity(quantity),
+                                    Void.class
+                            );
+
+
+                        } catch (HttpClientErrorException c) {
+                            dto.setError(c.getResponseBodyAsString());
+                            processException(sbc, dto);
+
+                        } catch (Exception e) {
+                            dto.setError(e.getMessage());
+                            processException(sbc, dto);
+                        }
+                    }
+            );
+        }
+
+        if (exceptionFile != null) {
+            exceptionFile.close();
+        }
+    }
+
+
     public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field) throws Exception {
         final CsvImporter<T> assetImporter = new CsvImporter<>();
         final StatefulBeanToCsv<eiDistrict> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
@@ -371,6 +430,9 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
 
         log.info("Importing Linked data...");
         importLinkedData(assets, new FileWriter("linked_data_exceptions.csv"), new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"), "dtpw+ei_district_link", "k_education_district");
+
+        log.info("Importing Extents");
+        importQuantity(assets, new FileWriter("extent_exceptions.csv"));
     }
 
     private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
@@ -540,6 +602,19 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         @CsvBindByName(required = false)
         @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
         private String emis;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class Extent extends CoreAssetDto {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String extent;
+
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String extent_unit;
     }
 
     @Data

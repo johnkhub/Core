@@ -18,9 +18,11 @@ import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.dto.AssetExternalLinkTypeDto;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
+import za.co.imqs.coreservice.model.Quantity;
 import za.co.imqs.services.ThreadLocalUser;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.*;
 
@@ -246,6 +248,20 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
     @Override
     public Map<String,UUID> getAssetTypeUUIDs() {
         return Collections.unmodifiableMap(assettype);
+    }
+
+    @Override
+    public Quantity getQuantity(UUID asset_id, String name) {
+        return jdbc.queryForObject("SELECT * FROM public.quantity WHERE asset_id = ? AND name = ?",
+                (rs,i) -> {
+                    final Quantity q = new Quantity();
+                    q.setUnit_code(rs.getString("unit_code"));
+                    q.setNum_units(new BigDecimal(rs.getString("num_units")));
+                    q.setName(rs.getString("name"));
+                    q.setAsset_id(rs.getObject("asset_id", UUID.class));
+                    return q;
+                }, asset_id, name
+        );
     }
 
     @Override

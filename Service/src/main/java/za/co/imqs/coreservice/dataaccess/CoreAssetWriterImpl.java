@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
@@ -19,6 +20,7 @@ import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
+import za.co.imqs.coreservice.model.Quantity;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -417,6 +419,53 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         }
     }
 
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void addQuantity(Quantity quantity) {
+        try {
+            jdbc.update("INSERT INTO public.quantity (asset_id,unit_code,num_units,name) VALUES (:asset_id,:unit_code,:num_units,:name)", new BeanPropertySqlParameterSource(quantity));
+        } catch (Exception e) {
+            throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void updateQuantity(Quantity quantity) {
+        try {
+            final StringBuffer sql = new StringBuffer("UPDATE public.quantity ");
+            // TODO generateInsert and generateUpsert can be simplified by using the pattern below
+            // Replace the sql.append with a lambda that manipulates the various StringBuffers
+            // Also better to use SqlParameterSource interface as opposed to MapSqlParameterSource
+            // TODO much of ORM.mapToSql can also be replaced by this pattern
+
+            final BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(quantity);
+            final Set<String> exclude = new HashSet<>(Arrays.asList("asset_id","class","name"));
+            for (String name : params.getParameterNames()) {
+                if (!exclude.contains(name) && params.getValue(name) != null) {
+                    sql.append("\nSET ").append(name).append(" = :").append(name);
+                }
+            }
+
+            sql.append("\nWHERE asset_id = :asset_id AND name = :name");
+            jdbc.update(sql.toString(), params);
+
+        } catch (Exception e) {
+            throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
+    public void deleteQuantity(UUID uuid, String name) {
+        try {
+            jdbc.getJdbcTemplate().update("DELETE FROM public.quantity WHERE asset_id = ? and name = ?", uuid, name);
+        } catch (Exception e) {
+            throw exceptionMapperQuantity(e, uuid, name);
+        }
+    }
+
     // TODO: this could make use of update T set F = coalesce(F, new value), which will simplify the code significantly
     // as we don't have to dynamically exclude fields. It will also allow us to make use of batches!!!!
     private StringBuffer generateUpdate(String target, MapSqlParameterSource map) {
@@ -517,6 +566,20 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     private RuntimeException exceptionMapperLinkedData(Exception e, UUID asset, String field) {
         if (e instanceof org.springframework.dao.DuplicateKeyException) {
             return new AlreadyExistsException("Field " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
+        } else if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            throw new ResubmitException(e.getMessage());
+        } else if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
+    private RuntimeException exceptionMapperQuantity(Exception e, UUID asset, String field) {
+        if (e instanceof org.springframework.dao.DuplicateKeyException) {
+            return new AlreadyExistsException("Quantity " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
         } else if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {

@@ -74,6 +74,17 @@ The current implementation of this API:
 > Depending on the type of Asset (as defined by `asset_type_code`) more fields specific to this type of Asset may be added to the entity.
 
 
+#### Quantity Dto
+
+|Field                  |Type     |o/m |Description|
+|-----------------------|---------|----|-----------|
+|`asset_id`             |`uuid`   |m   |UUID of the asset to which this quantity pertains|
+|`unit_code`            |`string` |(m) |Mandatory on create.|
+|`name`                 |`string` |(m) |Mandatory on create.|
+|`num_units`            |`string` |o   |Decimal value transported in string|
+
+
+
 ### `PUT assets/{uuid}`
 Creates a new Asset.
 
@@ -509,3 +520,46 @@ Returns:  *Nothing*
 Status codes: 200, 400, 403, 408
 
 
+
+### PUT `/assets/quantity`
+
+Inserts the specified Quatity into the database. 
+
+Accepts: `QuantityDto`
+
+Returns:  *Nothing*
+
+Status codes: 201, 400, 403, 408, 409
+
+### PATCH `/assets/quantity`
+
+Updates the specified Quantity in the database.
+> The combination of `asset_id` and `name` must resolve to an existig entry in the database.
+
+Accepts: `QuantityDto`
+
+Returns:  *Nothing*
+
+Status codes: 201, 400, 403, 408, 409
+
+
+### DELETE `/assets/quantity/assset_id/{asset_id}/name/{name}`
+
+Deletes the Quantity matching the specified `asset_id` and `name` from the database.
+
+Accepts: *Nothing*
+
+Returns:  *Nothing*
+
+Status codes: 201, 400, 403, 404, 408
+
+
+### GET `/assets/quantity/assset_id/{asset_id}/name/{name}`
+
+Retrieves the Quantity matching the specified `asset_id` and `name` from the database.
+
+Accepts: *Nothing*
+
+Returns:  `QuantityDto`
+
+Status codes: 201, 400, 403, 404, 408

@@ -23,10 +23,12 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 import za.co.imqs.coreservice.model.AssetFactory;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
+import za.co.imqs.coreservice.model.Quantity;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
@@ -587,6 +589,90 @@ public class AssetController {
             return mapException(e);
         }
     }
+
+
+    @RequestMapping(
+            method = RequestMethod.PUT, value = "/quantity",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity addQuantity(@RequestBody QuantityDto quantityDto) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", quantityDto.getAsset_id(), "name", quantityDto.getName())).setCorrelationId(quantityDto.getAsset_id()),
+                    () -> {
+                        perms.expectPermission(user.getUserUuid(), quantityDto.getAsset_id(), PERM_UPDATE);
+                        assetWriter.addQuantity(Quantity.of(quantityDto));
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PATCH, value = "/quantity",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity updateQuantity(@RequestBody QuantityDto quantityDto) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", quantityDto.getAsset_id(), "name", quantityDto.getName())).setCorrelationId(quantityDto.getAsset_id()),
+                    () -> {
+                        perms.expectPermission(user.getUserUuid(), quantityDto.getAsset_id(), PERM_UPDATE);
+                        assetWriter.updateQuantity(Quantity.of(quantityDto));
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.DELETE, value = "/quantity/asset_id/{asset_id}/name/{name}"
+    )
+    public ResponseEntity deleteQuantity(
+            @PathVariable UUID uuid,
+            @PathVariable String name
+    ) {
+        final UserContext user = ThreadLocalUser.get();
+        // Authorisation
+        try {
+            audit.tryIt(
+                    new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", uuid, "name", name)).setCorrelationId(uuid),
+                    () -> {
+                        perms.expectPermission(user.getUserUuid(), uuid, PERM_UPDATE);
+                        assetWriter.deleteQuantity(uuid, name);
+                        return null;
+                    }
+            );
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/quantity/asset_id/{uuid}/name/{name}"
+    )
+    public ResponseEntity getQuantity(
+            @PathVariable UUID uuid,
+            @PathVariable String name
+    ) {
+        try {
+            return new ResponseEntity(assetReader.getQuantity(uuid, name).toDto(), HttpStatus.OK);
+        } catch (Exception e) {
+            return mapException(e);
+        }
+    }
+
 
     private static <T extends CoreAssetDto, S extends CoreAsset> T asDto(S model) {
         try {

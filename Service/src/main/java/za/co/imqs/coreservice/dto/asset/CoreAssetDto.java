@@ -6,6 +6,8 @@ import com.opencsv.bean.processor.PreAssignmentProcessor;
 import com.opencsv.bean.validators.MustMatchRegexExpression;
 import com.opencsv.bean.validators.PreAssignmentValidator;
 import lombok.Data;
+import za.co.imqs.coreservice.dto.ErrorProvider;
+import za.co.imqs.coreservice.imports.ImporterTemplate;
 import za.co.imqs.coreservice.imports.Rules;
 
 import static za.co.imqs.coreservice.imports.Rules.VALID_FREE_TEXT;
@@ -34,10 +36,8 @@ import static za.co.imqs.coreservice.imports.Rules.VALID_PATH;
         @JsonSubTypes.Type(value = AssetComponentDto.class, name = "COMPONENT"),
         @JsonSubTypes.Type(value = AssetLandparcelDto.class, name = "LANDPARCEL")
 })
-
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CoreAssetDto {
+public class CoreAssetDto implements ErrorProvider {
 
     @CsvBindByName(required = false)
     @PreAssignmentProcessor(processor = Rules.Trim.class)

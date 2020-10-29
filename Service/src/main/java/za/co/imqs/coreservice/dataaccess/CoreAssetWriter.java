@@ -1,6 +1,8 @@
 package za.co.imqs.coreservice.dataaccess;
 
+import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.Quantity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,10 @@ public interface CoreAssetWriter {
     public void addLinkedData(String table, String field, UUID assetId, String value);
     public void updateLinkedData(String table, String field, UUID assetId, String value);
     public void deleteLinkedData(String table, String field, UUID assetId);
+
+    public void addQuantity(Quantity quantity);
+    public void updateQuantity(Quantity quantity);
+    public void deleteQuantity(UUID uuid, String name);
 
     //
     // Extra methods for *Testing*

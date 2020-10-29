@@ -66,6 +66,8 @@ public class SchemaManagement implements CliHandler{
         if (drop & !activeProfile.equals(PROFILE_TEST)) {
             drop = false;
             log.warn("DROPDB specified outside of TEST profile. Ignoring.");
+        } else {
+            log.warn("DROPPING DB!");
         }
 
         for (String schema : schemas) {

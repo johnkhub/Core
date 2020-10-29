@@ -43,7 +43,6 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
     private static final UUID THE_FACILITY = UUID.fromString("d9b8ee54-067b-4879-b4f1-58760b5d3ec1");
     private static final UUID THE_BUILDING = UUID.fromString("691bc006-d1c1-4f05-960b-c20bf22a0f55");
 
-    // TODO this must become programmatic
     private static final String CONFIG = TestUtils.resolveWorkingFolder() + "/src/test/resources/import_config.json";
 
     @Before
