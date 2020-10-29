@@ -442,11 +442,13 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
             final BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(quantity);
             final Set<String> exclude = new HashSet<>(Arrays.asList("asset_id","class","name"));
+            sql.append("\nSET ");
             for (String name : params.getParameterNames()) {
                 if (!exclude.contains(name) && params.getValue(name) != null) {
-                    sql.append("\nSET ").append(name).append(" = :").append(name);
+                    sql.append(name).append(" = :").append(name).append(",");
                 }
             }
+            sql.deleteCharAt(sql.length()-1);
 
             sql.append("\nWHERE asset_id = :asset_id AND name = :name");
             jdbc.update(sql.toString(), params);

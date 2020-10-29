@@ -27,6 +27,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.api.TestConfig.COMPOSE_FILE;
+import static za.co.imqs.api.TestConfig.DOCKER;
 
 
 /**
@@ -37,11 +39,6 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  */
 @Slf4j
 public class LookupControllerGetAPITest {
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = false;
-    private static String session;
-
-
     @ClassRule
     public static LoginRule login = new LoginRule().
             withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
@@ -59,8 +56,6 @@ public class LookupControllerGetAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = login.getSession();
-
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 25);
     }
 
@@ -171,7 +166,7 @@ public class LookupControllerGetAPITest {
 
     private ValidatableResponse verifyGet(String name, Map<String,String> vals) {
         return given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 params(vals).
                 get("/lookups/{name}",name).
                 then();

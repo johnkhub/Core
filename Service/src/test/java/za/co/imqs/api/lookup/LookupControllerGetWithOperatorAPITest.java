@@ -28,6 +28,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.api.TestConfig.COMPOSE_FILE;
+import static za.co.imqs.api.TestConfig.DOCKER;
 
 
 /**
@@ -38,9 +40,6 @@ import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
  */
 @Slf4j
 public class LookupControllerGetWithOperatorAPITest {
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = false;
-    private static String session;
 
     @ClassRule
     public static LoginRule login = new LoginRule().
@@ -59,8 +58,6 @@ public class LookupControllerGetWithOperatorAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = login.getSession();
-
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 25);
     }
 
@@ -127,7 +124,7 @@ public class LookupControllerGetWithOperatorAPITest {
 
     private ValidatableResponse verifyGetWithOperators(String name, final Map<String, LookupProvider.Field> ops) {
          return given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 params(ops).
                 get("/lookups/{view}/using_operators", name).
                 then();

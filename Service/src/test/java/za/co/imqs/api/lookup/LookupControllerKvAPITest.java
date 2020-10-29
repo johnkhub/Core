@@ -31,6 +31,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.api.TestConfig.COMPOSE_FILE;
+import static za.co.imqs.api.TestConfig.DOCKER;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.KvDef.def;
 import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
 
@@ -43,9 +45,6 @@ import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
  */
 @Slf4j
 public class LookupControllerKvAPITest {
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = false;
-    private static String session;
 
     @ClassRule
     public static LoginRule login = new LoginRule().
@@ -67,7 +66,6 @@ public class LookupControllerKvAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-        session = login.getSession();
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK), TimeUnit.SECONDS, 25);
     }
 
@@ -75,7 +73,7 @@ public class LookupControllerKvAPITest {
     public void testGetKvTypes() {
         final List<LookupProvider.KvDef> defs = Arrays.asList(
                given().
-                    header("Cookie", session).
+                    header("Cookie", login.getSession()).
                     get("/lookups/kv/").
                     then().
                        statusCode(200).
@@ -106,7 +104,7 @@ public class LookupControllerKvAPITest {
     @Test
     public void addKvSuccess() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/testing/lookups/{target}", "REGION").
                 then().statusCode(200);
 
@@ -118,7 +116,7 @@ public class LookupControllerKvAPITest {
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(kv).
                 put("/lookups/kv/{target}", "REGION").
                 then().statusCode(200);
@@ -150,12 +148,12 @@ public class LookupControllerKvAPITest {
         addKvSuccess();
 
         assertEquals("A", given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/lookups/v/{target}/{k}", "REGION", "a").
                 then().statusCode(200).extract().asString());
 
         final KvRegion result = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/lookups/kv/{target}/{k}","REGION", "b").
                 then().statusCode(200).extract().as(KvRegion.class);
 
@@ -166,7 +164,7 @@ public class LookupControllerKvAPITest {
     @Test
     public void getKvMissing() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/lookups/v/{target}/{k}", "REGION", "bbb").
                 then().statusCode(404);
     }

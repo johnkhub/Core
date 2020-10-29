@@ -21,7 +21,6 @@ import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.GroupDto;
 import za.co.imqs.coreservice.dto.UserDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
-import za.co.imqs.libimqs.auth.Permit;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -37,6 +36,8 @@ import static org.junit.Assert.assertThat;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
+import static za.co.imqs.api.TestConfig.COMPOSE_FILE;
+import static za.co.imqs.api.TestConfig.DOCKER;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
@@ -48,9 +49,6 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 @Slf4j
 public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
-
-    private static final String COMPOSE_FILE = TestUtils.resolveWorkingFolder()+"/Docker_Test_Env/docker-compose.yml";
-    private static final boolean DOCKER = false;
 
     @ClassRule
     public static LoginRule login = new LoginRule().

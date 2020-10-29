@@ -74,6 +74,7 @@ public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControlle
         quantity.setName("extent");
         quantity.setAsset_id(THE_ASSET);
         quantity.setNum_units("13.0");
+        quantity.setUnit_code("length_m");
 
 
         given().
