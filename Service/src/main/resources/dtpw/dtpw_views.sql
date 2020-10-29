@@ -276,7 +276,7 @@ SELECT * FROM dtpw.dtpw_core_report_view
 CREATE OR REPLACE VIEW dtpw.dtpw_hi_report_view_wrapper
 AS
 SELECT * FROM dtpw.dtpw_core_report_view
-                  JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_HI')
+                  JOIN dtpw.ref_client_department ON (responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_HI')
 ;
 
 -- IAM
