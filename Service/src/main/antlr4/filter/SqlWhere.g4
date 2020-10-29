@@ -47,8 +47,17 @@ expression [FilterBuilder query] returns [Expression value]
                                                                         if ($x != null) query.openScope();
                                                                     }
     (
-        TAGS c=element[query]                                       { query.expression(ExpressionFactory.of(null, null, $c.value, $c.type)); }
-        |a=field[query] b=relational_operator c=element[query]      { query.expression(ExpressionFactory.of($a.value, $b.value, $c.value, $c.type)); }
+        TAGS c=element[query]                                       {
+                                                                        final Expression e = ExpressionFactory.of(null, null, $c.value, $c.type);
+                                                                        query.expression(e);
+                                                                        $value = e;
+
+                                                                    }
+        |a=field[query] b=relational_operator c=element[query]      {
+                                                                        final Expression e = ExpressionFactory.of($a.value, $b.value, $c.value, $c.type);
+                                                                        query.expression(e);
+                                                                        $value = e;
+                                                                    }
     )
     y=RBRACKET?                                                     {
                                                                          if ($y != null) query.closeScope();

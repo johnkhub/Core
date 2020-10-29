@@ -112,5 +112,11 @@ public class FilterTest {
         FilterBuilder bob = addWhere("name LIKE 'Bob'");
         log.info(bob.build());
     }
+
+    @Test
+    public void notTag() {
+        FilterBuilder bob = addWhere("asset_type_code='FACILITY' and NOT TAGS['AT_RISK']");
+        log.info(bob.build());
+    }
 }
 
