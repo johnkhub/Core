@@ -2,11 +2,14 @@ Overview
 ==========
 This document will help you understand the code. It mostly follows the package structure of the java code.
 
-Start with DTO that is richly annotated
-Import code follows
-Imports call rest controllers so resuse all logic logging and validation
-Imports are column name based
-Naming conventions allows for simple pass through different layers
+Key to understanding things is understanding the relationship between the *richly annotated* DTOs how they are converted to/from Models and how the same is handled in the persistence layer.
+Data is imported via the ReST endpoints and uses the same DTOs to achieve this. Naming conventions on classes and field names allow for simple pass through different layers.
+
+The specific benefits of this approach are 
+* That there is only one set of logic that needs to be applied (instead of separate implementations for ReST and imports)
+* Adding a field to the automatically makes it importable from teh flat csv file
+
+
 
 
 Entity identifier and Access control
@@ -25,24 +28,36 @@ DB must habve a type field to manage mapping
 
 Controllers
 ===========
-Conversion between dto and model
-Audit logging proxy
-Permissions
-Exception mapping
-Look at the permission thing - how dynamic is it really since we have enum based on db values? ENUM VALUES MUST BE WRITTEN TO DB AT STARTUP!
+
+Responsibilities:
+1. Conversion between DTOs and Models -
+2. Audit logging proxy - 
+3. Permissions -
+4. Exception mapping -
+
+> Notes:
+> 1. Look at the permission thing - how dynamic is it really since we have enum based on db values? ENUM VALUES MUST BE WRITTEN TO DB AT STARTUP!
 
 
 Models
 ======
 
+
 Persistence
 ===========
 
-Schemas
-=======
+
+
+Schemas & static data
+=====================
+
+[Database Schema Management](Service/src/main/resources/README.md)
+
 
 ACL Policy
 ==========
+TODO
+
 
 Spring Configuration and Miscellaneous
 ======================================
@@ -72,7 +87,7 @@ Implementation Specific
 
 * PersistenceConfiguration
     + Mostly deals with data sources used by the actual application (as opposed to audit and authorisation that I regard as supporting functionality)
-    + **Reads the list of liquibase schema files included in the jar file** to feed to the SchemaManagement code (below)
+    + **Reads the list of liquibase schema files included in the jar file** to feed to the SchemaManagement code (below). Refer to [Database Schema Management](Service/src/main/resources/README.md).
 * WebMvcConfiguration
     + **Sets URL paths for Controllers**
 

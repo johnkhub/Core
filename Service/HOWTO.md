@@ -21,7 +21,7 @@ HOW TO
 1. Add KV table by copying other table in json schema
 2. Add entry in `kv_type` table
 3. Add check constraint in k column inside the appropriate `checkconstraint.sql` file
-4. Add KV type to importer code
+4. ~~Add KV type to importer code~~
 
 
 
