@@ -16,6 +16,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dto.ErrorProvider;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
 
 import java.io.Reader;
@@ -26,10 +27,14 @@ import java.util.*;
 
 @Slf4j
 public class ImporterTemplate {
+
+    //
+    // Import option flags
+    //
     public enum Flags {
-        FORCE_INSERT,
-        FORCE_CONTINUE,
-        FORCE_UPSERT
+        FORCE_INSERT,           // Performs an INSERT rather than an UPDATE when an Asset UUID is found
+        FORCE_CONTINUE,         // Writes to the exception file but does not terminate execution
+        FORCE_UPSERT            // If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT
     }
 
     public interface Before<T> {
@@ -44,16 +49,11 @@ public class ImporterTemplate {
         T perform(T t);
     }
 
-    public interface ErrorProvider {
-        public String getError();
-        public void setError();
-    }
+    protected final RestTemplate restTemplate;
+    protected final String baseUrl;
+    protected final String session;
 
-    private final RestTemplate restTemplate;
-    private final String baseUrl;
-    private final String session;
-
-    public ImporterTemplate(String baseUrl, String session, EnumSet<Importer.Flags> flags) {
+    public ImporterTemplate(String baseUrl, String session) {
         this.session = session;
         //this.restTemplate = new RestTemplate();  Else PATCH is not supported
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -102,17 +102,17 @@ public class ImporterTemplate {
     }
 
     public  <T extends CoreAssetDto> void importType(
-            Path path, T asset, String type, Writer exceptionFile, EnumSet<Importer.Flags> flags,
+            Path path, T asset, String type, Writer exceptionFile, EnumSet<Flags> flags,
             BeanVerifier<T> verifier
     ) throws Exception {
         importType(path, asset, type, exceptionFile, flags, verifier, (dto) -> dto, (dto) -> dto);
     }
 
     public  <T extends CoreAssetDto> void importType(
-            Path path, T asset, String type, Writer exceptionFile, EnumSet<Importer.Flags> flags,
+            Path path, T asset, String type, Writer exceptionFile, EnumSet<Flags> flags,
             BeanVerifier<T> verifier,
-            Before before,
-            After after
+            Before<T> before,
+            After<T> after
     ) throws Exception {
         importRunner(
                 path, asset, type, exceptionFile, flags,
@@ -120,9 +120,9 @@ public class ImporterTemplate {
                 before,
                 (d) -> {
                         T dto = (T)d;
-                        if (flags.contains(Importer.Flags.FORCE_INSERT)) {
+                        if (flags.contains(Flags.FORCE_INSERT)) {
                             restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
-                        } else if (flags.contains(Importer.Flags.FORCE_UPSERT)) {
+                        } else if (flags.contains(Flags.FORCE_UPSERT)) {
                             if (getAsset(dto.getFunc_loc_path()) == null) {
                                 restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
                             } else {
@@ -142,34 +142,60 @@ public class ImporterTemplate {
     }
 
 
-    private final <T extends CoreAssetDto> void importRunner(
+    public void deleteAssets(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
+        importRunner(
+                path, new CoreAssetDto(), null, exceptionFile, flags,
+                (dto) -> true,
+                (dto) -> dto,
+                (d) -> {
+                    final CoreAssetDto dto = (CoreAssetDto)d;
+                    restTemplate.exchange(
+                            baseUrl + "/assets/testing/{uuid}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            dto.getAsset_id()
+                    );
+                    return dto;
+                },
+                (dto) -> dto
+        );
+    }
+
+
+
+
+
+
+
+    protected final <T> void importRunner(
             Path path,
             T asset,
             String type, Writer exceptionFile,
-            EnumSet<Importer.Flags> flags,
+            EnumSet<Flags> flags,
             BeanVerifier<T> verifier,
             Before first,
             Handler handle,
             After then) throws Exception {
-        final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<T> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+        final CsvImporter<T> assetImporter = new CsvImporter<>();
+        final StatefulBeanToCsv<ErrorProvider> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
 
-
+        if (!(asset instanceof ErrorProvider)) throw new IllegalArgumentException("DTO type must be a subclass of ErrorProvider!");
         try (Reader reader = Files.newBufferedReader(path)) {
             assetImporter.stream(reader, asset, verifier, type).forEach(
-                    (dto) -> {
+                    (T dto) -> {
                         try {
                             first.perform(dto);
                             handle.perform(dto);
                             then.perform(dto);
 
                         } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            //processException(sbc, dto, flags);
+                            ((ErrorProvider)dto).setError(c.getResponseBodyAsString());
+                            processException(sbc, (ErrorProvider)dto, flags);
 
                         } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            //processException(sbc, dto, flags);
+                            ((ErrorProvider)dto).setError(e.getMessage());
+                            processException(sbc, (ErrorProvider)dto, flags);
                         }
                     }
             );
@@ -183,10 +209,10 @@ public class ImporterTemplate {
     //
     // Writes the dto to the csv output stream
     //
-    private  <T extends ErrorProvider> void processException(StatefulBeanToCsv<T> sbc, T dto,  EnumSet<Importer.Flags> flags) {
+    private  <T extends ErrorProvider> void processException(StatefulBeanToCsv<T> sbc, T dto,  EnumSet<Flags> flags) {
         log.error(dto.getError());
 
-        if (!flags.contains(Importer.Flags.FORCE_CONTINUE)) {
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
             throw new RuntimeException(dto.getError());
         }
 
@@ -200,7 +226,7 @@ public class ImporterTemplate {
         }
     }
 
-    private <T> HttpEntity<T> jsonEntity(T object) {
+    protected <T> HttpEntity<T> jsonEntity(T object) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", session);

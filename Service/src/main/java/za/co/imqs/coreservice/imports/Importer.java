@@ -1,11 +1,8 @@
 package za.co.imqs.coreservice.imports;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.BeanVerifier;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.bean.processor.PreAssignmentProcessor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,444 +11,270 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
+import za.co.imqs.coreservice.dto.ErrorProvider;
 import za.co.imqs.coreservice.dto.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.*;
-import za.co.imqs.coreservice.dto.lookup.*;
 import za.co.imqs.coreservice.model.DTPW;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class Importer { // TODO split this into utility classes and DTPW specific implementation
-    enum Flags {
-        FORCE_INSERT,
-        FORCE_CONTINUE,
-        FORCE_UPSERT
-    }
-
+public class Importer extends ImporterTemplate{
 
     //
     //  We make path and code the same value. Both dot delimited.
     //
+    private Map<String, Constructor> constructors = new HashMap<>();
 
-    private static final Predicate<org.springframework.http.HttpStatus> SUCCESS = org.springframework.http.HttpStatus::is2xxSuccessful;
-    private static final Predicate<org.springframework.http.HttpStatus> FAILURE = SUCCESS.negate();
+    public Importer(String baseUrl, String session) throws Exception {
+        super(baseUrl, session);
 
-    private final String session;
-    private final RestTemplate restTemplate;
-    private final String baseUrl;
-    private final EnumSet<Flags> flags;
-
-    public Importer(String baseUrl, String session, EnumSet<Flags> flags) {
-        this.session = session;
-
-        //this.restTemplate = new RestTemplate();  Else PATCH is not supported
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        this.restTemplate = new RestTemplate(requestFactory);
-        this.baseUrl = baseUrl;
-        this.flags = flags;
-    }
-
-    public <T extends LookupProvider.Kv> void importLookups(String lookupType, Path path, T kv) throws Exception  {
-        log.info("Importing Lookup {} from {}", lookupType, path.toString());
-        final CsvImporter<T> kvImporter = new CsvImporter<>();
-        try (Reader reader = Files.newBufferedReader(path)) {
-            kvImporter.stream(reader, kv).forEach(
-                    (dto) -> {
-                        if (kv.getClass() != LookupProvider.Kv.class) {
-                            dto.setType(lookupType);
-                        }
-
-                        dto.setCreation_date(null); // TODO must validate this in CSV import
-                        dto.setActivated_at(null); // TODO must validate this in CSV import
-
-                        restTemplate.exchange(baseUrl+"/lookups/kv/{target}", HttpMethod.PUT, jsonEntity(Collections.singleton(dto)), Void.class, lookupType);
-                    }
-            );
+        for (JsonSubTypes.Type t : LookupProvider.Kv.class.getAnnotation(JsonSubTypes.class).value()) {
+            constructors.put(t.name().toUpperCase(), t.value().getConstructor());
         }
-    }
-
-    public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type, Writer exceptionFile) throws Exception {
-        importType(path, asset, skipper, type, exceptionFile, (a) -> {});
-    }
-
-    public  <T extends CoreAssetDto> void importType(Path path, T asset, BeanVerifier<T> skipper, String type, Writer exceptionFile, After then) throws Exception {
-        final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<T> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
-
-
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, asset, skipper, type).forEach(
-                    (dto) -> {
-                        try {
-                            if (flags.contains(Flags.FORCE_INSERT)) {
-                                restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
-                            } else if (flags.contains(Flags.FORCE_UPSERT)) {
-                                if (getAsset(dto.getFunc_loc_path()) == null) {
-                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
-                                } else {
-                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
-                                }
-                            } else {
-                                if (dto.getAsset_id() == null) {
-                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
-                                } else {
-                                    restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
-                                }
-                            }
-
-                            then.perform(dto);
-
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
-                        }
-                    }
-            );
-        }
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
-    }
-
-    private <T> void processException(StatefulBeanToCsv<T> sbc, CoreAssetDto dto) {
-        log.error(dto.getError());
-
-        if (!flags.contains(Flags.FORCE_CONTINUE)) {
-            throw new RuntimeException(dto.getError());
-        }
-
-        if (sbc != null) {
-            try {
-                sbc.write((T) dto);
-
-            } catch (Exception w) {
-                log.error("Unable to update exceptions file:", w);
-            }
-        }
-    }
-
-    public interface After<T> {
-        void perform(T t);
-    }
-
-
-    public <T extends CoreAssetDto> T getAsset(String func_loc_path) throws Exception {
-        final CoreAssetDto asset = restTemplate.exchange(
-                baseUrl + "/assets/func_loc_path/{path}",
-                HttpMethod.GET,
-                jsonEntity(null),
-                CoreAssetDto.class,
-                func_loc_path.replace(".","+")
-        ).getBody();
-
-        return (T)asset;
     }
 
     //
     // Implementations for DTPW
     //
-    public void importLandParcelMappings(Path path, Writer exceptionFile) throws Exception {
+    public void importLandParcelMappings(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         log.info("Map Assets to Landparcels");
-        final CsvImporter<AssetToLandparcel> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<AssetToLandparcel> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
 
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, new AssetToLandparcel()).forEach(
-                    (dto) -> {
-                        try {
-                            restTemplate.put(
-                                    baseUrl+"/assets/landparcel/{landparcel_id}/asset/{asset_id}",
-                                    null,
-                                    dto.getLandparcel_asset_id(), dto.getAsset_id()
-                            );
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
-                        }
-                    }
-            );
-        }
-
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
+        importRunner(
+                path, new AssetToLandparcel(), null, exceptionFile, flags,
+                (dto)-> true,
+                (dto) -> dto,
+                (d) -> {
+                    final AssetToLandparcel dto = (AssetToLandparcel)d;
+                    restTemplate.put(
+                            baseUrl+"/assets/landparcel/{landparcel_id}/asset/{asset_id}",
+                            null,
+                            dto.getLandparcel_asset_id(), dto.getAsset_id()
+                    );
+                    return dto;
+                },
+                (dto) -> dto
+        );
     }
 
-    public void importEmis(Path path, Writer exceptionFile) throws Exception {
-        final CsvImporter<ExternalLinks> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<ExternalLinks> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+    public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, new ExternalLinks(), null, exceptionFile, flags,
+                (dto)-> true,
+                (dto) -> dto,
+                (d) -> {
+                    final ExternalLinks dto = (ExternalLinks)d;
+                    if (dto.getEmis() == null) {
+                        return dto;
+                    }
 
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, new ExternalLinks()).forEach(
-                    (dto) -> {
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            dto.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                    }
+
+                    final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
+                    );
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
+                            HttpMethod.PUT,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
+                    );
+                    return null;
+                },
+                (dto) -> dto
+        );
+    }
+
+    public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, new Extent(), null, exceptionFile, flags,
+                (dto)-> true,
+                (dto) -> dto,
+                (d) -> {
+                        final Extent dto = (Extent)d;
+                        if (dto.getExtent() == null) {
+                            return dto;
+                        }
+
+                        if (dto.getExtent_unit() == null) {
+                            throw new IllegalArgumentException("Extent_unit not set!");
+                        }
+
+                        final CoreAssetDto asset = restTemplate.exchange(
+                                baseUrl + "/assets/func_loc_path/{path}",
+                                HttpMethod.GET,
+                                jsonEntity(null),
+                                CoreAssetDto.class,
+                                dto.getFunc_loc_path().replace(".","+")
+                        ).getBody();
+
+                        if (asset == null) {
+                            throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                        }
+
+                        final UUID assetId = UUID.fromString(asset.getAsset_id());
+
                         try {
-                            if (dto.getEmis() == null) {
-                                return;
-                            }
-
-                            final CoreAssetDto asset = restTemplate.exchange(
-                                        baseUrl + "/assets/func_loc_path/{path}",
-                                        HttpMethod.GET,
-                                        jsonEntity(null),
-                                        CoreAssetDto.class,
-                                        dto.getFunc_loc_path().replace(".","+")
-                                ).getBody();
-
-                            if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                            }
-
-                            final UUID assetId = UUID.fromString(asset.getAsset_id());
-
                             restTemplate.exchange(
-                                    baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
+                                    baseUrl + "/assets/quantity/{uuid}/name/{name}",
                                     HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
-                                    assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
+                                    assetId, "extent"
                             );
+                        } catch (HttpClientErrorException e) {
 
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
-                                    HttpMethod.PUT,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
-                            );
-
-
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
                         }
-                    }
-            );
-        }
 
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
+                        final QuantityDto quantity = new QuantityDto();
+                        quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                        quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
+                        quantity.setName("extent");
+                        quantity.setNum_units(dto.getExtent());
+
+                        restTemplate.exchange(
+                                baseUrl + "/assets/quantity",
+                                HttpMethod.PUT,
+                                jsonEntity(quantity),
+                                Void.class
+                        );
+                        return dto;
+                },
+                (dto) -> dto
+        );
     }
 
-    public void importQuantity(Path path, Writer exceptionFile) throws Exception {
-        final CsvImporter<Extent> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<Extent> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
+    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
+        importRunner(
+                path, instance, null, exceptionFile, flags,
+                (dto) -> true,
+                (dto) -> dto,
+                (d) -> {
+                    T dto = (T)d;
 
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, new Extent()).forEach(
-                    (dto) -> {
-                        try {
-                            if (dto.getExtent() == null) {
-                                return;
-                            }
-
-                            if (dto.getExtent_unit() == null) {
-                                throw new IllegalArgumentException("Extent_unit not set!");
-                            }
-
-                            final CoreAssetDto asset = restTemplate.exchange(
-                                    baseUrl + "/assets/func_loc_path/{path}",
-                                    HttpMethod.GET,
-                                    jsonEntity(null),
-                                    CoreAssetDto.class,
-                                    dto.getFunc_loc_path().replace(".","+")
-                            ).getBody();
-
-                            if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                            }
-
-                            final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                            try {
-                                restTemplate.exchange(
-                                        baseUrl + "/assets/quantity/{uuid}/name/{name}",
-                                        HttpMethod.DELETE,
-                                        jsonEntity(null),
-                                        Void.class,
-                                        assetId, "extent"
-                                );
-                            } catch (HttpClientErrorException e) {
-
-                            }
-
-                            final QuantityDto quantity = new QuantityDto();
-                            quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
-                            quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
-                            quantity.setName("extent");
-                            quantity.setNum_units(dto.getExtent());
-
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/quantity",
-                                    HttpMethod.PUT,
-                                    jsonEntity(quantity),
-                                    Void.class
-                            );
-
-
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
+                    String value = null;
+                    try {
+                        value = (String) get.invoke(dto);
+                        if (value == null) {
+                            return dto;
                         }
+                    } catch(Exception e) {
+                        throw new RuntimeException(e);
                     }
-            );
-        }
 
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            dto.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                    }
+
+                    final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            table, field, assetId
+                    );
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
+                            HttpMethod.PUT,
+                            jsonEntity(null),
+                            Void.class,
+                            table, field, assetId, value
+                    );
+
+                    return null;
+                },
+                (dto) -> dto
+
+        );
     }
 
-
-    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field) throws Exception {
-        final CsvImporter<T> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<eiDistrict> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
-
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, instance).forEach(
-                    (dto) -> {
-                        try {
-                            final String value = (String)get.invoke(dto);
-                            if (value == null) {
-                                return;
-                            }
-
-                            final CoreAssetDto asset = restTemplate.exchange(
-                                    baseUrl + "/assets/func_loc_path/{path}",
-                                    HttpMethod.GET,
-                                    jsonEntity(null),
-                                    CoreAssetDto.class,
-                                    dto.getFunc_loc_path().replace(".","+")
-                            ).getBody();
-
-                            if (asset == null) {
-                                throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                            }
-
-                            final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
-                                    HttpMethod.DELETE,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    table, field, assetId
-                            );
-
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
-                                    HttpMethod.PUT,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    table, field, assetId, value
-                            );
-
-
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
-                        }
-                    }
-            );
-        }
-
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
-    }
-
-    public void importAssets(Path assets) throws Exception {
+    public void importAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
         long t0 = System.currentTimeMillis();
 
         log.info("Importing Envelopes...");
-        importType(assets, new AssetEnvelopeDto(), (dto)-> { remap(dto); return true; }, "ENVELOPE", new FileWriter("envelope_exceptions.csv"));
+        importType(assets, new AssetEnvelopeDto(), "ENVELOPE", new FileWriter("envelope_exceptions.csv"), flags, (dto)-> { remap(dto); return true; });
 
         log.info("Importing Facilities...");
-        importType(assets, new AssetFacilityDto(), (dto)->{ remap(dto); return true;},"FACILITY", new FileWriter("facility_exceptions.csv"));
+        importType(assets, new AssetFacilityDto(), "FACILITY", new FileWriter("facility_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Buildings...");
-        importType(assets, new AssetBuildingDto(), (dto)->{ remap(dto); return true;}, "BUILDING", new FileWriter("building_exceptions.csv"));
+        importType(assets, new AssetBuildingDto(),  "BUILDING", new FileWriter("building_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Sites...");
-        importType(assets, new AssetSiteDto(), (dto)->{ remap(dto); return true;}, "SITE", new FileWriter("site_exceptions.csv"));
+        importType(assets, new AssetSiteDto(), "SITE", new FileWriter("site_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Floors...");
-        importType(assets, new AssetFloorDto(), (dto)->{ remap(dto); return true;}, "FLOOR",new FileWriter("floor_exceptions.csv"));
+        importType(assets, new AssetFloorDto(), "FLOOR",new FileWriter("floor_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Rooms...");
-        importType(assets, new AssetRoomDto(), (dto)->{ remap(dto); return true;}, "ROOM", new FileWriter("room_exceptions.csv"));
+        importType(assets, new AssetRoomDto(),  "ROOM", new FileWriter("room_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Components...");
-        importType(assets, new AssetComponentDto(), (dto)->{ remap(dto); return true;}, "COMPONENT", new FileWriter("component_exceptions.csv"));
+        importType(assets, new AssetComponentDto(),  "COMPONENT", new FileWriter("component_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
 
         log.info("Importing Landparcels...");
-        importType(assets, new AssetLandparcelDto(), (dto)->{ remap(dto); return true;}, "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"));
+        importType(assets, new AssetLandparcelDto(), "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
         log.info("Import took {} seconds", (System.currentTimeMillis()-t0)/1000); //278 464 rows
 
         log.info("Importing EMIS...");
-        importEmis(assets, new FileWriter("emis_exceptions.csv"));
+        importEmis(assets, new FileWriter("emis_exceptions.csv"), flags);
 
         log.info("Importing Linked data...");
-        importLinkedData(assets, new FileWriter("linked_data_exceptions.csv"), new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"), "dtpw+ei_district_link", "k_education_district");
+        importLinkedData(
+                assets, new FileWriter("linked_data_exceptions.csv"),
+                new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"),
+                "dtpw+ei_district_link", "k_education_district",
+                flags
+        );
 
         log.info("Importing Extents");
-        importQuantity(assets, new FileWriter("extent_exceptions.csv"));
+        importExtent(assets, new FileWriter("extent_exceptions.csv"), flags);
     }
 
-    private void processException(StatefulBeanToCsv<AssetToLandparcel> sbc, AssetToLandparcel dto) {
-        log.error(dto.getError());
-
-        if (!flags.contains(Flags.FORCE_CONTINUE)) {
-            throw new RuntimeException(dto.getError());
-        }
-
-        if (sbc != null) {
-            try {
-                sbc.write(dto);
-
-            } catch (Exception w) {
-                log.error("Unable to update exceptions file:", w);
-            }
-        }
+    public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
+        deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
     }
 
     private static <T extends CoreAssetDto> T remap(T dto) {
@@ -459,7 +282,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         return dto;
     }
 
-    private static String getAuthSession(String authUrl, String username, String password)  {
+    public static String getAuthSession(String authUrl, String username, String password)  {
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
             PostMethod post = new PostMethod(authUrl);
@@ -473,56 +296,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         }
     }
 
-    private <T> HttpEntity<T> jsonEntity(T object) {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Cookie", session);
-        return new HttpEntity<>(object, headers);
-    }
-
-    public void deleteAssets(Path path, Writer exceptionFile) throws Exception {
-        final CsvImporter<CoreAssetDto> assetImporter = new CsvImporter<>();
-        final StatefulBeanToCsv<CoreAssetDto> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
-
-        try (Reader reader = Files.newBufferedReader(path)) {
-            assetImporter.stream(reader, new ExternalLinks()).forEach(
-                    (dto) -> {
-                        try {
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/{uuid}?permanent={permanent}",
-                                    HttpMethod.DELETE,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    dto.getAsset_id(), true
-                            );
-
-
-                        } catch (HttpClientErrorException c) {
-                            dto.setError(c.getResponseBodyAsString());
-                            processException(sbc, dto);
-
-                        } catch (Exception e) {
-                            dto.setError(e.getMessage());
-                            processException(sbc, dto);
-                        }
-                    }
-            );
-        }
-
-        if (exceptionFile != null) {
-            exceptionFile.close();
-        }
-    }
-
     public static void main(String[] args) throws Exception {
-
-        //
-        // 0 = config file
-        // 1 = command {lookups, assets, asset_to_landparcel, delete}
-        // 2 =  path of input file
-        // 3 = flags (optional)
-        //
-
         final ObjectMapper mapper = new ObjectMapper();
         Config config;
         try (InputStream is = new FileInputStream(args[0])) {
@@ -535,72 +309,47 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
         final Path file = Paths.get(args[2]);
         log.info("Processing {}", file);
 
+
         if (cmd.equalsIgnoreCase("lookups")) {
             final String lookupType = args[3];
-            Importer i = new Importer(config.getServiceUrl(), session, EnumSet.noneOf(Flags.class));
-            i.importLookups(lookupType, file, get(lookupType));
+            Importer i = new Importer(config.getServiceUrl(), session);
+            i.importLookups(lookupType, file, i.get(lookupType));
             return;
 
         } else if (cmd.equalsIgnoreCase("assets")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
-            i.importAssets(file);
+            final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).map((s)-> ImporterTemplate.Flags.valueOf(s.trim())).collect(Collectors.toList());
+            final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
+            flags.addAll(x);
+
+            final EnumSet<ImporterTemplate.Flags> mutuallyExclusive = EnumSet.of(ImporterTemplate.Flags.FORCE_INSERT, ImporterTemplate.Flags.FORCE_UPSERT);
+            mutuallyExclusive.retainAll(flags);
+            if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
+
+            final Importer i = new Importer(config.getServiceUrl(), session);
+            i.importAssets(file, flags);
             return;
 
         } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
             final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
-            i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"));
+            final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).map((s)-> ImporterTemplate.Flags.valueOf(s.trim())).collect(Collectors.toList());
+            EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
+            flags.addAll(x);
+
+            Importer i = new Importer(config.getServiceUrl(), session);
+            i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
             return;
         } else if (cmd.equalsIgnoreCase("delete")) {
-            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            Importer i = new Importer(config.getServiceUrl(), session, processFlags(flagsS));
-            i.deleteAssets(file, new FileWriter("delete_exceptions.csv"));
+            Importer i = new Importer(config.getServiceUrl(), session);
+            i.deleteAssets(file, EnumSet.noneOf(ImporterTemplate.Flags.class));
             return;
         }
 
         throw new IllegalArgumentException("Unknown command:" + cmd);
     }
 
-    private static EnumSet<Flags> processFlags(String[] flagsS) {
-        final List<Flags> x = Arrays.stream(flagsS).map((s)-> Flags.valueOf(s.trim())).collect(Collectors.toList());
-        final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
-        flags.addAll(x);
-
-        final EnumSet<Flags> mutuallyExclusive = EnumSet.of(Flags.FORCE_INSERT, Flags.FORCE_UPSERT);
-        mutuallyExclusive.retainAll(flags);
-        if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
-
-        return flags;
-    }
-
-    // TODO Find a way to handle this in LookupProvider since it knows this relationship
-    private static <T extends LookupProvider.Kv> T get(String s) {
-        switch(s) {
-            case "DISTRICT":
-                return (T) new KvDistrict();
-            case "MUNIC":
-                return (T) new KvMunicipality();
-            case "WARD":
-                return (T) new KvWard();
-            case "TOWN":
-                return (T) new KvTown();
-            case "SUBURB":
-                return (T) new KvSuburb();
-            case "FACIL_TYPE":
-                return (T) new LookupProvider.Kv();
-            case "BRANCH":
-                return (T) new LookupProvider.Kv();
-            case "CHIEF_DIR":
-                return (T) new LookupProvider.ChiefDirectorateKv();
-            case "CLIENT_DEP":
-                return (T) new LookupProvider.ClientDeptKv();
-
-            case "EI_DISTR":
-                return (T) new LookupProvider.Kv();
-
-        }
-        throw new IllegalArgumentException("UNKNOWN LOOKUP TYPE");
+    private <T extends LookupProvider.Kv> T get(String s) throws Exception {
+        return (T)constructors.getOrDefault(s, constructors.get("KV")).newInstance();
     }
 
 
@@ -627,7 +376,7 @@ public class Importer { // TODO split this into utility classes and DTPW specifi
     }
 
     @Data
-    public static class AssetToLandparcel  {
+    public static class AssetToLandparcel implements ErrorProvider {
         @CsvBindByName(required = true)
         @PreAssignmentProcessor(processor = Rules.Trim.class)
         private String asset_id;
