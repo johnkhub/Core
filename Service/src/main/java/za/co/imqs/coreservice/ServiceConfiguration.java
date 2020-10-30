@@ -83,8 +83,14 @@ public class ServiceConfiguration {
         public void run() {
             log.info("Executing {}", name);
             try(Connection c = ds.getConnection()) {
-                // TODO this must be made transactional - probably inject a transaction template rather than ds
-                c.prepareStatement(sql).execute();
+                c.setAutoCommit(false);
+
+                try {
+                    c.prepareStatement(sql).execute();
+                    c.commit();
+                } catch (Exception t) {
+                    c.rollback();
+                }
             } catch (Exception e) {
                 log.error("Task {}={} failed to execute: ", name, sql, e);
             }
