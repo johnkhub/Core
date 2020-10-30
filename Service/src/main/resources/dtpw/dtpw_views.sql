@@ -43,11 +43,10 @@ AS SELECT
 COMMENT ON VIEW dtpw.asset_core_dtpw_view IS 'DTPW view. Joins facility and envelope information onto core information.';
 
 CREATE OR REPLACE VIEW dtpw.asset_core_dtpw_view_with_lpi AS
-SELECT a.*, p.lpi
+SELECT a.*, l.lpi
 FROM
     dtpw.asset_core_dtpw_view a
-        JOIN asset.asset_landparcel l ON a.asset_id = l.asset_id
-        JOIN asset.landparcel_view p ON l.landparcel_asset_id = p.asset_id;
+        LEFT JOIN asset.a_tp_landparcel l ON l.asset_id = a.asset_id;
 COMMENT ON VIEW dtpw.asset_core_dtpw_view_with_lpi IS 'Adds lpi to asset_core_dtpw_view ';
 
 
@@ -321,15 +320,23 @@ SELECT
     core.municipality_code,
     core.town_code,
     core.suburb_code,
+
     core.facility_type_code,
+    core.lpi,
+
     core.responsible_dept_code,
     core.is_owned,
 
     ei."EMIS",
     ei.ei_district_code,
 
+    tags.tags,
+
     ST_asText(core.geom) AS geom
-FROM dtpw.asset_core_dtpw_view core LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id;
+FROM
+     dtpw.asset_core_dtpw_view_with_lpi core
+LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id
+LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id;
 
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
 
