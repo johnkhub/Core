@@ -87,7 +87,7 @@ public class LookupControllerKvAPITest {
                     def("WARD", "Ward", "public.ref_ward", null),
                     def("REGION", "Region", "public.ref_region", null),
                     def("TOWN", "Town", "public.ref_town", null),
-                    def("MUNIC", "Municiplaity", "public.ref_municipality", null),
+                    def("MUNIC", "Municipality", "public.ref_municipality", null),
                     def("DISTRICT", "District", "public.ref_district", null),
                     def("TAGS", "List of tags", "public.tags", null),
 
