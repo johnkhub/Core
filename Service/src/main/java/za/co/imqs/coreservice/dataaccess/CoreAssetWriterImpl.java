@@ -515,75 +515,33 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     }
 
     private RuntimeException exceptionMapperAsset(Exception e, UUID asset_id) {
-        if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Asset " + asset_id + " already exists! (" + e.getMessage() + ")");
-        } else if (e instanceof DataIntegrityViolationException) {
-            return new ValidationFailureException(e.getMessage());
-        } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
-            return (RuntimeException)e;
-        } else {
-            return new RuntimeException(e);
-        }
+        return exceptionMapper(e, "Asset " + asset_id + " already exists! (" + e.getMessage() + ")");
     }
 
     private RuntimeException exceptionMapperExternalLink(Exception e, UUID asset, String link) {
-        if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Asset Link " + asset + ":" + link + " already exists! (" + e.getMessage() + ")");
-        } else if (e instanceof DataIntegrityViolationException) {
-            return new ValidationFailureException(e.getMessage());
-        } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
-            return (RuntimeException)e;
-        } else {
-            return new RuntimeException(e);
-        }
+        return exceptionMapper(e, "Asset Link " + asset + ":" + link + " already exists! (" + e.getMessage() + ")");
     }
 
     private RuntimeException exceptionMapperLandparcelLink(Exception e) {
-        if (e instanceof DataIntegrityViolationException) {
-            return new ValidationFailureException(e.getMessage());
-        } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
-            return (RuntimeException)e;
-        } else {
-            return new RuntimeException(e);
-        }
+        return exceptionMapper(e, "");
     }
 
     private RuntimeException exceptionMapperGrouping(Exception e, UUID asset, String link) {
-        if (e instanceof DataIntegrityViolationException) {
-            return new ValidationFailureException(e.getMessage());
-        } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
-            return (RuntimeException)e;
-        } else {
-            return new RuntimeException(e);
-        }
+       return exceptionMapper(e, "");
     }
 
     private RuntimeException exceptionMapperLinkedData(Exception e, UUID asset, String field) {
-        if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Field " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
-        } else if (e instanceof DataIntegrityViolationException) {
-            return new ValidationFailureException(e.getMessage());
-        } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
-            return (RuntimeException)e;
-        } else {
-            return new RuntimeException(e);
-        }
+        return exceptionMapper(e, "Field " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
     }
 
     private RuntimeException exceptionMapperQuantity(Exception e, UUID asset, String field) {
+        return exceptionMapper(e, "Quantity " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
+    }
+
+    private RuntimeException exceptionMapper(Exception e, String msg) {
         if (e instanceof org.springframework.dao.DuplicateKeyException) {
-            return new AlreadyExistsException("Quantity " + field + " already exists for asset " + asset +"! (" + e.getMessage() + ")");
-        } else if (e instanceof DataIntegrityViolationException) {
+            return new AlreadyExistsException(msg);
+        } else  if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {
             throw new ResubmitException(e.getMessage());
@@ -599,32 +557,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         parameters.addValue("asset_id", assetId, Types.OTHER);
         return parameters;
     }
-
-    /*
-    private void linkLandParcelToAsset(AssetLandparcel parcel) {
-        String rootNode = null;
-        try {
-            rootNode = parcel.getFunc_loc_path().split("\\.")[0];
-            @SuppressWarnings("ConstantConditions") final UUID parent = UUID.fromString(
-                    jdbc.getJdbcOperations().queryForObject(
-                            "SELECT asset_id FROM public.asset WHERE code = ?",
-                            String.class,
-                            rootNode
-                    )
-            );
-            jdbc.getJdbcOperations().update("INSERT INTO asset.asset_landparcel (asset_id, landparcel_asset_id) VALUES (?,?) ON CONFLICT DO NOTHING;", parent, parcel.getAsset_id());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            final String msg = String.format(
-                    "No Envelope with code %s exists to link Land Parcel %s to. To link a Land Parcel to an Envelope, the Envelop must have " +
-                            "already been created or imported.",
-                    rootNode, parcel.toString());
-            log.warn(msg);
-            //throw new NotFoundException(msg);
-
-        }
-    }
-    */
-
+    
     private void assertValidLinkTable(String table) {
         final String[] fqn = table.split("\\.");
         if (!meta.userSchemas().contains(fqn[0])) throw new IllegalArgumentException(String.format("%s is not a valid user schema", fqn[0]));

@@ -25,7 +25,7 @@ public interface Rules {
     public static final String VALID_PATH = "^(\\w+([.]\\w+)*)$";
 
     public static final String VALID_FREE_TEXT = "^[A-zÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ|\\p{Digit}|\\p{Punct}|\\p{Blank}|\\u00B1\\`\\:]*$";
-    // Or in word:
+    // Or in words:
     //  all alpha characters including diacritics
     //  digits
     //  punctuation

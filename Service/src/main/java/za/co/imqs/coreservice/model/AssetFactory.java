@@ -106,7 +106,6 @@ public class AssetFactory {
         throw new IllegalArgumentException("Unknown type " + dto.getClass().getCanonicalName());
     }
 
-
     private <T extends CoreAsset, D extends CoreAssetDto> T create(UUID uuid, D dto, T asset) {
         handleMandatoryCreateFields(dto, asset);
         asset.setAsset_id(uuid);
