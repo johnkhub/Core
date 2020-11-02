@@ -11,7 +11,10 @@ import liquibase.diff.output.report.DiffToReport;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Options;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +27,10 @@ import za.co.imqs.libimqs.dbutils.DatabaseUtil;
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.Statement;
 
-import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.coreservice.Boot.Features.*;
+import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -74,6 +78,10 @@ public class SchemaManagement implements CliHandler {
         }
 
         for (String schema : schemas) {
+            final String schemaName = schema.substring(schema.indexOf("changelog")+10).split("\\.")[0];
+            if (!schemaName.equalsIgnoreCase("public")) {
+                createSchema(schemaName);
+            }
             DatabaseUtil.updateDb(ds, schema, true, drop);
             drop = false;
         }
@@ -160,6 +168,17 @@ public class SchemaManagement implements CliHandler {
     private String appendSchema(String url, String json) {
         String s = json.split("\\.")[0];
         return url + "?currentSchema=" + s.split("_")[1];
+    }
+
+    private void createSchema(String name)  {
+        try (
+                final Connection c = ds.getConnection();
+                final Statement createStatement = c.createStatement()
+        ) {
+            createStatement.executeUpdate("CREATE SCHEMA IF NOT EXISTS  " + name +";");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void runChecks() {
