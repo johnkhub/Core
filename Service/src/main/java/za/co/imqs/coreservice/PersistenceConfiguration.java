@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import za.co.imqs.configuration.client.ConfigClient;
@@ -34,6 +36,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Configuration
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST})
 @EnableTransactionManagement
+@EnableRetry
 public class PersistenceConfiguration {
     private final ConfigClient configClient;
 
@@ -78,5 +81,17 @@ public class PersistenceConfiguration {
             names.add(resource.getFilename());
         }
         return names.toArray(new String[]{});
+    }
+
+    @Bean
+    @Qualifier("core_retry")
+    public RetryTemplate getCoreRetry() {
+        return RetryConfigFactory.getSimpleFixedBackoffPolicy(3, 10000);
+    }
+
+    @Bean
+    @Qualifier("lookup_retry")
+    public RetryTemplate getLookupRetry() {
+        return RetryConfigFactory.getSimpleFixedBackoffPolicy(3, 10000);
     }
 }

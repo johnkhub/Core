@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
@@ -45,6 +47,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
+@Qualifier("core_writer")
 public class CoreAssetWriterImpl implements CoreAssetWriter {
     private static final Set<String> EXCLUDED_GETTERS = Collections.unmodifiableSet(ORM.getReadMethods(CoreAsset.class));
 
@@ -107,7 +110,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 if (!tAssetExt.getValues().isEmpty() && !tableName.equals("asset.a_tp_core")) {
                     jdbc.update(generateInsert(tableName, tAssetExt).toString(), tAssetExt);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw exceptionMapperAsset(e, a.getAsset_id());
             }
         }
@@ -141,8 +144,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 }
                 if (tGeoms.getValues().size() > 0) {
                     tGeoms.addValue("asset_id", tAsset.getValue("asset_id"), tAsset.getSqlType("asset_id"));
-                    final String sql = "INSERT INTO geoms (asset_id, geom) VALUES (:asset_id, ST_GeomFromText(:geom, 4326))"+
-                            " ON CONFLICT(asset_id) DO "+
+                    final String sql = "INSERT INTO geoms (asset_id, geom) VALUES (:asset_id, ST_GeomFromText(:geom, 4326))" +
+                            " ON CONFLICT(asset_id) DO " +
                             "UPDATE SET geom = EXCLUDED.geom";
                     count += jdbc.update(sql, tGeoms);
                 }
@@ -544,8 +547,20 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         } else  if (e instanceof DataIntegrityViolationException) {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {
-            throw new ResubmitException(e.getMessage());
-        } else if (e instanceof RuntimeException) {
+            return new ResubmitException(e.getMessage());
+
+        // Esoteric mappings
+        } if (e instanceof TransactionSystemException) {
+            final Throwable t = ((TransactionSystemException) e).getOriginalException();
+
+            // A socket write timeout communicating with the Postgres server
+            if (t instanceof PSQLException && t.getMessage().contains("An I/O error occurred while sending to the backend")) {
+                return new ResubmitException(e.getMessage());
+            }
+        }
+
+        // fall through
+        if (e instanceof RuntimeException) {
             return (RuntimeException)e;
         } else {
             return new RuntimeException(e);

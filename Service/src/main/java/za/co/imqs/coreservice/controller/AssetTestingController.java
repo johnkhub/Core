@@ -2,6 +2,7 @@ package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class AssetTestingController {
 
     @Autowired
     public AssetTestingController(
-            CoreAssetWriter assetWriter
+            @Qualifier("core_writer") CoreAssetWriter assetWriter
     ) {
         this.assetWriter = assetWriter;
     }

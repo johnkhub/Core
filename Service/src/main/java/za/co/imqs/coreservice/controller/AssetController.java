@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,7 @@ public class AssetController {
 
     @Autowired
     public AssetController(
-            CoreAssetWriter assetWriter,
+            @Qualifier("retrying_core_writer") CoreAssetWriter assetWriter,
             CoreAssetReader assetReader,
             AuditLogger auditLogger,
             PermissionRepository perms
