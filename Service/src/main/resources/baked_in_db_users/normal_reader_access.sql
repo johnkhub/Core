@@ -23,9 +23,11 @@ GRANT SELECT ON TABLE asset TO normal_reader;
 GRANT SELECT ON TABLE asset_classification TO normal_reader;
 GRANT SELECT ON TABLE asset_identification TO normal_reader;
 GRANT SELECT ON TABLE asset_link TO normal_reader;
+GRANT SELECT ON TABLE asset_grouping TO normal_reader;
 GRANT SELECT ON TABLE asset_tags TO normal_reader;
 GRANT SELECT ON TABLE assettype TO normal_reader;
 GRANT SELECT ON TABLE external_id_type TO normal_reader;
+GRANT SELECT ON TABLE grouping_id_type TO normal_reader;
 //
 GRANT SELECT ON TABLE finyear TO normal_reader;
 //
@@ -92,11 +94,35 @@ GRANT USAGE ON SCHEMA dtpw TO normal_reader;
 GRANT SELECT ON TABLE dtpw.ref_branch TO normal_reader;
 GRANT SELECT ON TABLE dtpw.ref_chief_directorate TO normal_reader;
 GRANT SELECT ON TABLE dtpw.ref_client_department TO normal_reader;
+GRANT SELECT ON TABLE dtpw.ref_ei_district TO normal_reader;
+GRANT SELECT ON TABLE dtpw.ei_district_link TO normal_reader;
 //
 GRANT SELECT ON  dtpw.dtpw_core_report_view TO normal_reader;
 GRANT SELECT ON  dtpw.asset_core_dtpw_view  TO normal_reader;
 GRANT SELECT ON  dtpw.asset_core_dtpw_view_with_lpi  TO normal_reader;
 //
+GRANT SELECT ON  dtpw.asset_core_dtpw_ei_view  TO normal_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_gi_view  TO normal_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_hi_view  TO normal_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_rnm_view  TO normal_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_iam_view  TO normal_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_ppp_view  TO normal_reader;
+
+GRANT SELECT ON  dtpw.dtpw_core_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_ei_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_gi_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_hi_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_iam_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_rnm_report_view_wrapper  TO normal_reader;
+GRANT SELECT ON  dtpw.dtpw_ppp_report_view_wrapper  TO normal_reader;
+
+GRANT SELECT ON  dtpw.dtpw_export_view  TO normal_reader;;
+
+
+
+
+
+
 
 --
 -- access control
@@ -113,3 +139,43 @@ GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO normal_reader
 -- NO! GRANT EXECUTE ON FUNCTION access_control.sp_remove_user TO importer;
 -- NO! GRANT EXECUTE ON FUNCTION access_control.sp_remove_user_from_group TO importer;
 -- NO! GRANT EXECUTE ON FUNCTION access_control.sp_revoke_access TO importer;
+
+
+-- Identify missed grants to query views
+
+SELECT all_views.* FROM
+    (
+        SELECT
+            grantee, table_schema, table_name
+        FROM INformation_schema.table_privileges
+        WHERE
+            privilege_type = 'SELECT' AND
+            grantee = 'postgres' AND
+            table_name IN
+            (
+                SELECT
+                    table_name AS view_name
+                FROM INformation_schema.views
+                WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                ORDER BY view_name
+            )
+    )  AS all_views -- User postgres owns all views
+LEFT JOIN
+    (
+        SELECT
+            grantee, table_schema, table_name
+        FROM INformation_schema.table_privileges
+        WHERE
+            privilege_type = 'SELECT' AND
+            grantee = 'normal_reader' AND
+            table_name IN
+            (
+                SELECT
+                    table_name AS view_name
+                FROM INformation_schema.views
+                WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                ORDER BY view_name
+            )
+    ) AS reader -- User normal_reader needs to be granted read access
+ON all_views.table_name = reader.table_name
+WHERE reader.table_name is null
