@@ -23,5 +23,9 @@ HOW TO
 3. Add check constraint in k column inside the appropriate `checkconstraint.sql` file
 4. ~~Add KV type to importer code~~
 
+# Adding a schema
+
+To add another schema look at at [this](src/main/resources/README.md).
+
 
 
