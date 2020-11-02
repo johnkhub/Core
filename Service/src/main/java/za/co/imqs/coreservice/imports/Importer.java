@@ -16,7 +16,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.ErrorProvider;
-import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.*;
 import za.co.imqs.coreservice.model.dtpw.DTPW;
 
@@ -37,7 +36,7 @@ public class Importer extends ImporterTemplate{
     //
     //  We make path and code the same value. Both dot delimited.
     //
-    private Map<String, Constructor> constructors = new HashMap<>();
+    private final Map<String, Constructor> constructors = new HashMap<>();
 
     public Importer(String baseUrl, String session) throws Exception {
         super(baseUrl, session);
@@ -153,7 +152,7 @@ public class Importer extends ImporterTemplate{
                                     Void.class,
                                     assetId, "extent"
                             );
-                        } catch (HttpClientErrorException e) {
+                        } catch (HttpClientErrorException ignored) {
 
                         }
 
@@ -183,7 +182,7 @@ public class Importer extends ImporterTemplate{
                 (d) -> {
                     T dto = (T)d;
 
-                    String value = null;
+                    String value;
                     try {
                         value = (String) get.invoke(dto);
                         if (value == null) {

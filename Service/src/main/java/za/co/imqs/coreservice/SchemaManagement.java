@@ -63,7 +63,7 @@ public class SchemaManagement implements CliHandler{
     }
 
     public void upgrade() {
-        boolean drop = Boolean.valueOf(System.getenv("DROPDB"));
+        boolean drop = Boolean.parseBoolean(System.getenv("DROPDB"));
         if (drop & !activeProfile.equals(PROFILE_TEST)) {
             drop = false;
             log.warn("DROPDB specified outside of TEST profile. Ignoring.");

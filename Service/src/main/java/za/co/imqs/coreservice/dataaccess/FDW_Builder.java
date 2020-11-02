@@ -7,32 +7,30 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FDW_Builder {
-    private String foreignServer;
-    private String foreignDb;
-    private String foreignPort;
+    private final String foreignServer;
+    private final String foreignDb;
 
     private String localServerAlias;
 
-    private String foreignUser;
-    private String foreignPassword;
+    private final String foreignUser;
+    private final String foreignPassword;
     private String localUser;
 
     private List<String> schemas;
     private String[] preamble;
 
-    private Meta meta;
+    private final Meta meta;
 
     public FDW_Builder(
             String foreignUser,
             String foreignPassword,
             Meta meta
-    ) throws Exception {
+    ) {
         this(meta.getServerIP(), "5432", foreignUser, foreignPassword, meta.getDbName(), meta);
     }
 
     public FDW_Builder(String host, String port, String foreignUser, String foreignPassword, String foreignDb, Meta meta) {
         this.foreignServer = host;
-        this.foreignPort = port;
         this.foreignPassword = foreignPassword;
         this.foreignUser = foreignUser;
         this.foreignDb = foreignDb;

@@ -435,7 +435,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateQuantity(Quantity quantity) {
         try {
-            final StringBuffer sql = new StringBuffer("UPDATE public.quantity ");
+            final StringBuilder sql = new StringBuilder("UPDATE public.quantity ");
             // TODO generateInsert and generateUpsert can be simplified by using the pattern below
             // Replace the sql.append with a lambda that manipulates the various StringBuffers
             // Also better to use SqlParameterSource interface as opposed to MapSqlParameterSource
@@ -557,7 +557,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         parameters.addValue("asset_id", assetId, Types.OTHER);
         return parameters;
     }
-    
+
     private void assertValidLinkTable(String table) {
         final String[] fqn = table.split("\\.");
         if (!meta.userSchemas().contains(fqn[0])) throw new IllegalArgumentException(String.format("%s is not a valid user schema", fqn[0]));

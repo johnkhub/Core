@@ -218,7 +218,7 @@ public class ImporterTemplate {
 
         if (sbc != null) {
             try {
-                sbc.write((T) dto);
+                sbc.write(dto);
 
             } catch (Exception w) {
                 log.error("Unable to update exceptions file:", w);

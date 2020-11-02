@@ -44,9 +44,7 @@ public class MetaImpl implements Meta {
     public List<String> getTablesAndViewsForUser(String userName) {
         return template.query(
                 "SELECT * FROM  information_schema.table_privileges WHERE grantee = ? AND privilege_type = 'SELECT'",
-                (rs,i)-> {
-                    return rs.getString("table_schema") + "." + rs.getString("table_name");
-                },
+                (rs,i)-> rs.getString("table_schema") + "." + rs.getString("table_name"),
                 userName
                 );
     }

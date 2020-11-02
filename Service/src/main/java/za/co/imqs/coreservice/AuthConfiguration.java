@@ -72,7 +72,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
 
     @Bean
     public AuthInterceptor handleAuthInterceptor() {
-        if (!AUTHENTICATION_GLOBAL.isActive() || (activeProfile.equals(PROFILE_TEST) && Boolean.valueOf(System.getenv("FAKEAUTH")))) {
+        if (!AUTHENTICATION_GLOBAL.isActive() || (activeProfile.equals(PROFILE_TEST) && Boolean.parseBoolean(System.getenv("FAKEAUTH")))) {
             log.warn("AUTHENTICATION HAS BEEN DISABLED!");
             return new AuthInterceptor() {
                 final UserContextFactory uCtxFact = new UserContextFactoryImpl();
@@ -80,7 +80,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
                 UUID user = null;
 
                 @Override
-                public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
                     if (user == null) {
                         user = new JdbcTemplate(ds).queryForObject("SELECT principal_id FROM access_control.principal WHERE name = 'System'", UUID.class);
                     }
@@ -142,7 +142,7 @@ public class AuthConfiguration extends BaseAuthConfiguration {
     @Qualifier("routerHost")
     @Override
     public String getRouterHost() {
-        return log("ROUTER=",Boolean.valueOf(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost());
+        return log("ROUTER=",Boolean.parseBoolean(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost());
     }
 
     @Override
