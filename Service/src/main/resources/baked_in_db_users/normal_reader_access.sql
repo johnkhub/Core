@@ -141,13 +141,12 @@ GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO normal_reader
 -- NO! GRANT EXECUTE ON FUNCTION access_control.sp_revoke_access TO importer;
 
 
--- Identify missed grants to query views
 
 SELECT all_views.* FROM
     (
         SELECT
             grantee, table_schema, table_name
-        FROM INformation_schema.table_privileges
+        FROM Information_schema.table_privileges
         WHERE
             privilege_type = 'SELECT' AND
             grantee = 'postgres' AND
@@ -156,7 +155,7 @@ SELECT all_views.* FROM
                 SELECT
                     table_name AS view_name
                 FROM INformation_schema.views
-                WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                WHERE table_schema NOT IN ('information_schema', 'pg_catalog','public')
                 ORDER BY view_name
             )
     )  AS all_views -- User postgres owns all views
@@ -173,7 +172,7 @@ LEFT JOIN
                 SELECT
                     table_name AS view_name
                 FROM INformation_schema.views
-                WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                WHERE table_schema NOT IN ('information_schema', 'pg_catalog', 'public')
                 ORDER BY view_name
             )
     ) AS reader -- User normal_reader needs to be granted read access

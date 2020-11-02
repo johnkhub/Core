@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import za.co.imqs.coreservice.sanitychecks.CheckReadOnlyGrants;
 import za.co.imqs.libimqs.dbutils.DatabaseUtil;
 
 import javax.sql.DataSource;
@@ -63,7 +65,7 @@ public class SchemaManagement implements CliHandler{
     }
 
     public void upgrade() {
-        boolean drop = Boolean.parseBoolean(System.getenv("DROPDB"));
+        boolean drop = Boolean.parseBoolean(System.getenv("DROP_DB"));
         if (drop & !activeProfile.equals(PROFILE_TEST)) {
             drop = false;
             log.warn("DROPDB specified outside of TEST profile. Ignoring.");
@@ -151,11 +153,16 @@ public class SchemaManagement implements CliHandler{
         }
 
         upgrade();
+        runChecks();
         return true;
     }
 
     private String appendSchema(String url, String json) {
         String s = json.split("\\.")[0];
         return url + "?currentSchema=" + s.split("_")[1];
+    }
+
+    private void runChecks() {
+        new CheckReadOnlyGrants(new JdbcTemplate(ds)).check();
     }
 }
