@@ -69,10 +69,10 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         scheduler.scheduleAtFixedRate(new ExecuteModTrackUpdate(), 3000);
     }
 
-    // TODO: Retry
     // TODO: More elegant mapping
     // TODO: This will be very, very sloooooow
     @Override
+    @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void createAssets(List<CoreAsset> assets) {
         for (CoreAsset a : assets) {
             try {

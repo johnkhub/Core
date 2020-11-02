@@ -33,7 +33,7 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
 @Slf4j
 @Component
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
-public class SchemaManagement implements CliHandler{
+public class SchemaManagement implements CliHandler {
 
     private final OptionGroup grp = new OptionGroup();
     private final HikariDataSource ds;
