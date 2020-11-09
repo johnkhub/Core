@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import filter.FilterBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
@@ -40,52 +41,40 @@ import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_T
  */
 @Profile({PROFILE_PRODUCTION, PROFILE_TEST, PROFILE_ADMIN})
 @Repository
+@Slf4j
 public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener<ContextRefreshedEvent> {
     // TODO: We probably need to base our repo layer on a view that is client specific?
+    public static final String ASSET_VIEW = "asset.asset_core_view_internal";
+    private static final String SELECT_ASSET = "SELECT " +
+            ASSET_VIEW+".*,"+
 
-    private static final String SELECT_ASSET = "SELECT asset.*, " +
-            "location.latitude, location.longitude, location.address," +
-            "location.region_code, location.district_code, location.municipality_code," +
-            "location.town_code, location.suburb_code, location.ward_code," +
-            "ST_AsText(geoms.geom) AS geom, " +
-            "asset_identification.barcode, " +
-            "asset_identification.serial_number, " +
-            "asset_classification.responsible_dept_code, " +
-            "asset_classification.is_owned " +
+            "public.asset_classification.responsible_dept_code, " +
+            "public.asset_classification.is_owned " +
+
             "FROM " +
-            "   asset " +
-            "LEFT JOIN location ON asset.asset_id = location.asset_id " +
-            "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
-            "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
-            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+            ASSET_VIEW + " "+
+            "LEFT JOIN asset_classification ON asset_core_view_internal.asset_id = asset_classification.asset_id " +
 
             (!AUTHORISATION_GLOBAL.isActive() ? "LEFT " : "") +
-            "JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) ";
+            "JOIN access_control.entity_access ON (entity_id = asset_core_view_internal.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) ";
 
-    private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT asset.*, " +
-            "location.latitude, location.longitude, location.address," +
-            "location.region_code, location.district_code, location.municipality_code," +
-            "location.town_code, location.suburb_code, location.ward_code," +
-            "ST_AsText(geoms.geom) AS geom, " +
-            "asset_identification.barcode, " +
-            "asset_identification.serial_number, " +
-            "asset_classification.responsible_dept_code, " +
-            "asset_classification.is_owned, " +
+    private static final String SELECT_ASSET_INCL_DEPT_TREE = "SELECT " +
+            ASSET_VIEW+".*,"+
+
+            "public.asset_classification.responsible_dept_code, " +
+            "public.asset_classification.is_owned, " +
             "dtpw.ref_client_department.responsible_dept_classif " +
+
             "FROM " +
-            "   asset " +
-            "LEFT JOIN location ON asset.asset_id = location.asset_id " +
-            "LEFT JOIN geoms ON asset.asset_id = geoms.asset_id " +
-            "LEFT JOIN asset_identification ON asset.asset_id = asset_identification.asset_id " +
-            "LEFT JOIN asset_classification ON asset.asset_id = asset_classification.asset_id " +
+                ASSET_VIEW + " " +
+            "LEFT JOIN asset_classification ON asset_core_view_internal.asset_id = asset_classification.asset_id " +
+            "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k " +
 
             // This is a delightfully evil hack to enable/disable ACL enforcement without having to change the queries much and not have to fiddle with the
             // argument lists supplied to the jdbctemplate queries
-            // Adding `LEFT` to the join makes teh query return all assets regardless of what the access control function returns
+            // Adding `LEFT` to the join makes the query return all assets regardless of what the access control function returns
             (!AUTHORISATION_GLOBAL.isActive() ? "LEFT " : "") +
-            "JOIN access_control.entity_access ON (entity_id = asset.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) " +
-
-            "JOIN dtpw.ref_client_department ON asset_classification.responsible_dept_code = dtpw.ref_client_department.k ";
+            "JOIN access_control.entity_access ON (entity_id = asset_core_view_internal.asset_id) AND (access_control.fn_get_effective_access(?, entity_id) & 2 = 2) ";
 
 
     private final JdbcTemplate jdbc;
@@ -102,7 +91,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
     @Override
     public CoreAsset getAsset(UUID uuid) {
         try {
-            return jdbc.queryForObject(SELECT_ASSET + "WHERE asset.asset_id = ?", MAPPER, ThreadLocalUser.get().getUserUuid(), uuid);
+            return jdbc.queryForObject(SELECT_ASSET + "WHERE asset_core_view_internal.asset_id = ?", MAPPER, ThreadLocalUser.get().getUserUuid(), uuid);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
@@ -120,7 +109,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
     public CoreAsset getAssetByXXPath(String pathName, String value) {
         try {
             return jdbc.queryForObject(
-                    String.format(SELECT_ASSET + "WHERE asset.%s = text2ltree(?)", pathName),
+                    String.format(SELECT_ASSET + "WHERE asset_core_view_internal.%s = text2ltree(?)", pathName),
                     MAPPER, ThreadLocalUser.get().getUserUuid(), value);
         } catch (TransientDataAccessException e) {
             throw new ResubmitException(e.getMessage());
@@ -134,7 +123,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
         try {
             return jdbc.queryForObject(
                     SELECT_ASSET+
-                        "JOIN asset_link ON asset_link.asset_id = asset.asset_id " +
+                        "JOIN asset_link ON asset_link.asset_id = asset_core_view_internal.asset_id " +
                         "WHERE asset_link.external_id_type = ? AND asset_link.external_id = ?",
                     MAPPER, ThreadLocalUser.get().getUserUuid(), externalType, externalId);
         } catch (TransientDataAccessException e) {
@@ -146,7 +135,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
 
     @Override
     public List<CoreAsset> getAssetByFilter(FilterBuilder filter) {
-        final String sql = filter.build().replace("asset_id", "asset.asset_id");
+        final String sql = filter.build();
 
 
         // TODO we obviously can't continue having logic based on explicit user specific field names
@@ -223,7 +212,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
         try {
             return jdbc.query(
                     SELECT_ASSET+
-                            "JOIN asset_grouping ON asset_grouping.asset_id = asset.asset_id " +
+                            "JOIN asset_grouping ON asset_grouping.asset_id = asset_core_view_internal.asset_id " +
                             "WHERE asset_grouping.grouping_id_type = ? AND asset_grouping.grouping_id = ?",
                     MAPPER, ThreadLocalUser.get().getUserUuid(), groupingType, groupingId);
         } catch (TransientDataAccessException e) {
@@ -277,8 +266,7 @@ public class CoreAssetReaderImpl implements CoreAssetReader, ApplicationListener
 
     private static final RowMapper<CoreAsset> MAPPER =
         (ResultSet rs, int i) -> {
-            //final CoreAsset asset = ORM.modelFactory(rs.getString("asset_type_code"));
-            final CoreAsset asset = new CoreAsset();
+            final CoreAsset asset = ORM.assetModelFactory(rs.getString("asset_type_code"));
             ORM.populateFromResultSet(rs, asset);
             return asset;
         };

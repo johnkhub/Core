@@ -36,6 +36,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    @Ignore
     public void testFull() throws Exception{
         loadLookups();
         loadEIlookups();

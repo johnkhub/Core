@@ -26,5 +26,6 @@ set -e
 # Assign current branch as tag (removing whitespace)
 tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')}
 
+sudo chown -R "$(whoami)" Docker_Test_Env/
 dockerise "asset-core-service" "$tag"
 sudo chown -R "$(whoami)" ./target

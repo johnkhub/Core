@@ -7,6 +7,8 @@ import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static za.co.imqs.coreservice.dataaccess.CoreAssetReaderImpl.ASSET_VIEW;
+
 public class ExpressionFactory {
 
     public static final String IS = "IS";
@@ -337,7 +339,7 @@ public class ExpressionFactory {
 
         @Override
         public String getValue() {
-            return "(asset_id, ARRAY[" + String.join(",", value) + "])";
+            return "("+ASSET_VIEW+".asset_id, ARRAY[" + String.join(",", value) + "])";
         }
     }
 
