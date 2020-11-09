@@ -1,4 +1,70 @@
 { "databaseChangeLog": [
+
+  {
+    "changeSet": {
+      "id": "50817ce1-ba6f-4b88-b03b-6bcbef318640",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": true
+                  },
+                  "name": "responsible_dept_code",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueBoolean": true,
+                  "name": "is_owned",
+                  "type": "boolean"
+                }
+              }
+            ]
+          ,
+            "tableName": "asset_classification"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "is_owned"
+                }
+              }],
+            "indexName": "asset_classif_owned",
+            "tableName": "asset_classification"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "responsible_dept_code"
+                }
+              }],
+            "indexName": "asset_classif_dept",
+            "tableName": "asset_classification"
+          }
+        }
+      ]
+    }
+  },
+
+
+
+
+
   {
     "changeSet": {
       "id": "1583403225361-1",
@@ -786,6 +852,24 @@
             "path": "dtpw/grouping_id_types.sql",
             "relativeToChangelogFile": false,
             "endDelimiter": ";"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "138885db-0c73-4a85-b9af-d68fb23e1976",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "dtpw/import_report.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
           }
         }
       ]

@@ -140,25 +140,6 @@
                   "name": "asset_id",
                   "type": "UUID"
                 }
-              },
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": true
-                  },
-                  "name": "responsible_dept_code",
-                  "type": "VARCHAR(10)"
-                }
-              },
-              {
-                "column": {
-                  "constraints": {
-                    "nullable": false
-                  },
-                  "defaultValueBoolean": true,
-                  "name": "is_owned",
-                  "type": "boolean"
-                }
               }
             ]
             ,
@@ -769,45 +750,6 @@
     }
   },
 
-
-
-
-  {
-    "changeSet": {
-      "id": "1581943138671-20",
-      "author": "frankvr (generated)",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "addPrimaryKey": {
-            "columnNames": "asset_id",
-            "constraintName": "asset_classification_pkey",
-            "tableName": "asset_classification"
-          }
-        },
-        {
-          "createIndex": {
-            "columns": [
-              {
-                "column": {
-                  "name": "asset_id"
-                }
-              },
-              {
-                "column": {
-                  "name": "is_owned"
-                }
-              }]
-          ,
-            "indexName": "asset_classif_owned",
-            "tableName": "asset_classification"
-          }
-        }
-      ]
-      
-    }
-  },
-  
   {
     "changeSet": {
       "id": "1581943138671-21",

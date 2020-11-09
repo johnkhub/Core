@@ -737,24 +737,6 @@
 
   {
     "changeSet": {
-      "id": "138885db-0c73-4a85-b9af-d68fb23e1976",
-      "author": "frankvr",
-      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "changes": [
-        {
-          "sqlFile": {
-            "dbms" : "postgresql",
-            "encoding" : "utf8",
-            "path": "asset/import_report.sql",
-            "relativeToChangelogFile": false,
-            "endDelimiter" : "//"
-          }
-        }
-      ]
-    }
-  },
-  {
-    "changeSet": {
       "id": "0000000000-1000000",
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
