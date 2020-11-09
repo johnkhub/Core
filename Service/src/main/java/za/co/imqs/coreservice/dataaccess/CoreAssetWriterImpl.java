@@ -110,6 +110,8 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 if (!tAssetExt.getValues().isEmpty() && !tableName.equals("asset.a_tp_core")) {
                     jdbc.update(generateInsert(tableName, tAssetExt).toString(), tAssetExt);
                 }
+
+                updateModTrack();
             } catch (Exception e) {
                 throw exceptionMapperAsset(e, a.getAsset_id());
             }
@@ -163,6 +165,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 if (count == 0)
                     throw new NotFoundException("Asset " + a.getAsset_id() + " does not exist");
 
+                updateModTrack();
             } catch (Exception e) {
                 throw exceptionMapperAsset(e, a.getAsset_id());
             }
@@ -179,6 +182,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                 throw exceptionMapperAsset(e, uuid);
             }
         }
+        updateModTrack();
     }
 
     @Override
@@ -201,6 +205,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     }
                 }
         );
+        updateModTrack();
     }
 
     @Override
@@ -208,6 +213,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, externalIdType, externalId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -218,6 +224,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?;", externalId, uuid, externalIdType);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -228,6 +235,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -239,6 +247,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void addToGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
             jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, groupingIdType, groupingId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -249,6 +258,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void updateGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
             jdbc.getJdbcTemplate().update("UPDATE asset_grouping SET grouping_Id = ? WHERE asset_id = ? AND grouping_Id_Type = ?;", groupingId, uuid, groupingIdType);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -259,6 +269,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void deleteFromGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset_grouping WHERE asset_id = ? AND grouping_Id_Type = ? AND grouping_Id = ?", uuid, groupingIdType, groupingId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -274,6 +285,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     "INSERT INTO asset.asset_landparcel (asset_id,landparcel_asset_id) VALUES (?,?) " +
                             "ON CONFLICT  (asset_id,landparcel_asset_id) DO NOTHING;",
                     asset, to);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperLandparcelLink(e);
         }
@@ -284,6 +296,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void unlinkAssetFromLandParcel(UUID asset, UUID from) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM asset.asset_landparcel WHERE asset_id = ? AND landparcel_asset_id = ?", asset, from);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperLandparcelLink(e);
         }
@@ -369,7 +382,6 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         if (asset.getDescription() != null) {
             tAsset.addValue("description", asset.getDescription(), Types.VARCHAR);
         }
-        updateModTrack();
     }
 
     @Override
@@ -384,6 +396,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                             table, field
                     ),
                     assetId, value);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -401,6 +414,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                             table, field
                     ),
                     value, assetId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -418,6 +432,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                             table
                     ),
                     assetId);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -429,6 +444,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void addQuantity(Quantity quantity) {
         try {
             jdbc.update("INSERT INTO public.quantity (asset_id,unit_code,num_units,name) VALUES (:asset_id,:unit_code,:num_units,:name)", new BeanPropertySqlParameterSource(quantity));
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
         }
@@ -456,7 +472,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
 
             sql.append("\nWHERE asset_id = :asset_id AND name = :name");
             jdbc.update(sql.toString(), params);
-
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
         }
@@ -467,6 +483,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     public void deleteQuantity(UUID uuid, String name) {
         try {
             jdbc.getJdbcTemplate().update("DELETE FROM public.quantity WHERE asset_id = ? and name = ?", uuid, name);
+            updateModTrack();
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, uuid, name);
         }
