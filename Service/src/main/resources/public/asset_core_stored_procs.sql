@@ -38,9 +38,9 @@ BEGIN
     DELETE FROM public.quantity WHERE asset_id = the_asset;
 
     DELETE FROM asset WHERE asset_id=the_asset;
-/*
+
     -- update audit trail
-    PERFORM audit.log(
+    PERFORM log_audit(
         (SELECT access_control.fn_get_system_user()),
         NOW()::timestamp without time zone,
         'DELETE_ASSET'::text,
@@ -48,7 +48,6 @@ BEGIN
         format('{"asset": "''%s''"}', the_asset)::jsonb,
         the_asset
     );
- */
 END; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
@@ -100,6 +99,21 @@ BEGIN
     --raise notice 'Number %', total;
     RETURN total = 0;
 END ; $$
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER
+;
+
+CREATE OR REPLACE FUNCTION log_audit(
+    principal_id uuid,
+    event_time timestamp without time zone,
+    action text,
+    status text,
+    parameters jsonb,
+    entity_id uuid
+) RETURNS void AS $$
+BEGIN
+    RAISE EXCEPTION 'Function public.log_audit should have been redefined upon loading of the audit schema!';
+END; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
 ;
