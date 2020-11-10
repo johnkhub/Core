@@ -108,7 +108,7 @@ services:
       # valid values are "test" and "production"
       # "test" exposes additional endpoints to aid integration testing
       - spring_profiles_active=test
-      - DROPDB=true
+      - DROP_DB=true
 
 
 

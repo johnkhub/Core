@@ -80,6 +80,7 @@ public class PersistenceConfiguration {
         for (Resource resource : new PathMatchingResourcePatternResolver().getResources("classpath:*changelog_**"))   {
             names.add(resource.getFilename());
         }
+        names.sort((a,b)-> a.charAt(0)-b.charAt(0));
         return names.toArray(new String[]{});
     }
 
