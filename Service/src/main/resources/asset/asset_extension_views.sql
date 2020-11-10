@@ -31,9 +31,9 @@ SELECT
 
 FROM
     public.asset
-        JOIN public.location ON asset.asset_id = location.asset_id
-        JOIN public.asset_identification ON asset_identification.asset_id = asset.asset_id
-        JOIN public.geoms ON geoms.asset_id = asset.asset_id
+        LEFT JOIN public.location ON asset.asset_id = location.asset_id
+        LEFT JOIN public.asset_identification ON asset_identification.asset_id = asset.asset_id
+        LEFT JOIN public.geoms ON geoms.asset_id = asset.asset_id
         --LEFT JOIN asset.a_tp_building ON asset.asset_id = a_tp_building.asset_id
 --LEFT JOIN asset.a_tp_component ON asset.asset_id = a_tp_component.asset_id
 --LEFT JOIN asset.a_tp_envelope ON asset.asset_id = a_tp_envelope.asset_id

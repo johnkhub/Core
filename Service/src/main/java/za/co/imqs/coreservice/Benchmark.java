@@ -22,7 +22,7 @@ public class Benchmark {
         long getAvg();
 
         void m(Task t);
-    };
+    }
 
     public static class SimpleMeasure implements Measure {
         private long total = 0;

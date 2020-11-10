@@ -18,7 +18,7 @@ public class CheckReadOnlyGrants {
             "                SELECT\n" +
             "                    table_name AS view_name\n" +
             "                FROM information_schema.views\n" +
-            "                WHERE table_schema NOT IN ('information_schema', 'pg_catalog', 'public')\n" +
+            "                WHERE table_schema NOT IN ('information_schema', 'pg_catalog', 'public') AND table_name != 'asset_core_view_internal'\n"+
             "                ORDER BY view_name\n" +
             "            )\n" +
             "    )  AS all_views -- User postgres owns all views\n" +

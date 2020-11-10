@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.ErrorProvider;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
@@ -34,7 +35,8 @@ public class ImporterTemplate {
     public enum Flags {
         FORCE_INSERT,           // Performs an INSERT rather than an UPDATE when an Asset UUID is found
         FORCE_CONTINUE,         // Writes to the exception file but does not terminate execution
-        FORCE_UPSERT            // If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT
+        FORCE_UPSERT,           // If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT
+        HARD_DELETE             // Erase record instead of marking inactive
     }
 
     public interface Before<T> {
@@ -143,6 +145,12 @@ public class ImporterTemplate {
 
 
     public void deleteAssets(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
+        final boolean permanent = flags.contains(Flags.HARD_DELETE);
+        final UriComponentsBuilder bob = UriComponentsBuilder.fromUriString(baseUrl + "/assets/testing/{uuid}");
+        if (permanent) {
+            bob.queryParam("permanent","true");
+        }
+
         importRunner(
                 path, new CoreAssetDto(), null, exceptionFile, flags,
                 (dto) -> true,
@@ -150,7 +158,7 @@ public class ImporterTemplate {
                 (d) -> {
                     final CoreAssetDto dto = (CoreAssetDto)d;
                     restTemplate.exchange(
-                            baseUrl + "/assets/testing/{uuid}",
+                            bob.toUriString(),
                             HttpMethod.DELETE,
                             jsonEntity(null),
                             Void.class,
