@@ -16,19 +16,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import za.co.imqs.coreservice.Benchmark;
 import za.co.imqs.coreservice.audit.AuditLogEntry;
 import za.co.imqs.coreservice.audit.AuditLogger;
 import za.co.imqs.coreservice.audit.AuditLoggingProxy;
 import za.co.imqs.coreservice.auth.authorization.AssetACLPolicy;
+import za.co.imqs.coreservice.auth.authorization.DtpwAclPolicy;
 import za.co.imqs.coreservice.dataaccess.CoreAssetReader;
 import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.exception.NotPermittedException;
 import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
-import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
-import za.co.imqs.coreservice.model.*;
-import za.co.imqs.coreservice.model.dtpw.DtpwAclPolicy;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
+import za.co.imqs.coreservice.model.AssetFactory;
+import za.co.imqs.coreservice.model.CoreAsset;
+import za.co.imqs.coreservice.model.Quantity;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
@@ -67,6 +70,8 @@ public class AssetController {
     private final PermissionRepository perms;
     private final AssetACLPolicy assetAclPolicy;
 
+    private int num = 0;
+
     @Value("${spring.profiles.active:}")
     private String activeProfile;
 
@@ -93,24 +98,36 @@ public class AssetController {
             @RequestBody CoreAssetDto asset,
             @RequestParam(required = false, defaultValue ="false", name="testRun") boolean testRun
     ) {
+        num++;
         final UserContext user = ThreadLocalUser.get();
         // Authorisation
         try {
             audit.tryIt(
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.ADD_ASSET, of("asset", uuid)).setCorrelationId(uuid),
                     () -> {
-                        expectAllowCreate(user.getUserUuid(), asset);
+                        Benchmark.get().get("checkAllowCreate").m(() -> expectAllowCreate(user.getUserUuid(), asset));
+
                         final CoreAsset assetModel = aFact.create(uuid, asset);
-                        assetWriter.createAssets(Collections.singletonList(assetModel));
+
+                        Benchmark.get().get("create").m(()-> assetWriter.createAssets(Collections.singletonList(assetModel)));
+
                         if (AUTHORISATION_GLOBAL.isActive()) {
-                            assetAclPolicy.onCreateEntity(user.getUserUuid(), user.getUserUuid(), assetModel);
+                            Benchmark.get().get("AClPolicy").m(()-> assetAclPolicy.onCreateEntity(user.getUserUuid(), user.getUserUuid(), assetModel));
                         }
                         return null;
                     }
             );
+
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e) {
             return mapException(e);
+        } finally {
+            if (num == 10000) {
+                for (Map.Entry<String, Benchmark.Measure> m : Benchmark.get().entrySet()) {
+                    log.info("{} {} ", m.getKey(), m.getValue());
+                }
+                num = 0;
+            }
         }
     }
 

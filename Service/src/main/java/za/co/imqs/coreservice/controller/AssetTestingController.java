@@ -14,7 +14,7 @@ import za.co.imqs.coreservice.dataaccess.CoreAssetWriter;
 import za.co.imqs.services.ThreadLocalUser;
 import za.co.imqs.services.UserContext;
 
-import static za.co.imqs.coreservice.Validation.asUUID;
+import static za.co.imqs.coreservice.model.Validation.asUUID;
 import static za.co.imqs.coreservice.WebMvcConfiguration.ASSET_TESTING_PATH;
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;

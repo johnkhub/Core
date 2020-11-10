@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.dataaccess;
 
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.imqs.configuration.client.ConfigClient;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
@@ -90,10 +92,10 @@ public class LookupProviderImpl implements LookupProvider {
             }
 
             return cFact.get(viewName).queryForList(query.toString(), values.toArray());
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -117,10 +119,10 @@ public class LookupProviderImpl implements LookupProvider {
             }
 
             return cFact.get(viewName).queryForList(query.toString(), values.toArray());
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -128,13 +130,13 @@ public class LookupProviderImpl implements LookupProvider {
     public List<KvDef> getKvTypes() {
         try {
             return cFact.get("kv").query("SELECT * FROM kv_type", KV_TYPE_MAPPER);
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         } catch (DataIntegrityViolationException d) { // TODO Can't remember why I did this?
             if (d.getMessage() != null && d.getMessage().contains("No results were returned by the query")) {
                 return Collections.emptyList();
             }
             throw d;
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -143,10 +145,10 @@ public class LookupProviderImpl implements LookupProvider {
         final String fqn = resolveTarget(target);
         try {
             return cFact.get("kv").queryForObject("SELECT v FROM " + fqn +" WHERE k = ?", String.class,  key);
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         }  catch (EmptyResultDataAccessException e) {
             return null;
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -177,10 +179,10 @@ public class LookupProviderImpl implements LookupProvider {
 
             if (list.isEmpty()) return null;
             return list.get(0);
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         }  catch (EmptyResultDataAccessException e) {
             return null;
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -200,10 +202,10 @@ public class LookupProviderImpl implements LookupProvider {
                             kv.setDeactivated_at(rs.getTimestamp("deactivated_at").toString());
                         return kv;
                     });
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
         }  catch (EmptyResultDataAccessException e) {
             return null;
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -216,13 +218,8 @@ public class LookupProviderImpl implements LookupProvider {
             final Mapper<T> mapper = new Mapper<>(kvs);
             final SqlParameterSource[] source = mapper.getParameters();
             new NamedParameterJdbcTemplate(cFact.get("kv")).batchUpdate(mapper.getStatement(fqn,source[0]), source);
-
-        } catch (TransientDataAccessException e) {
-            throw new ResubmitException(e.getMessage());
-        } catch (DataIntegrityViolationException d) {
-            throw new ValidationFailureException(d.getMessage());
-        } catch (Exception s) {
-            throw new RuntimeException(s);
+        } catch (Exception e) {
+            throw exceptionMapper(e, null);
         }
     }
 
@@ -235,6 +232,32 @@ public class LookupProviderImpl implements LookupProvider {
         // -- noinspection SqlWithoutWhere
         cFact.get("kv").update("DELETE FROM "+ resolveTarget(target));
     }
+
+
+    private RuntimeException exceptionMapper(Exception e, String msg) {
+        if (e instanceof DataIntegrityViolationException) {
+            return new ValidationFailureException(e.getMessage());
+        } else if (e instanceof TransientDataAccessException) {
+            return new ResubmitException(e.getMessage());
+
+            // Esoteric mappings
+        } if (e instanceof TransactionSystemException) {
+            final Throwable t = ((TransactionSystemException) e).getOriginalException();
+
+            // A socket write timeout communicating with the Postgres server
+            if (t instanceof PSQLException && t.getMessage().contains("An I/O error occurred while sending to the backend")) {
+                return new ResubmitException(e.getMessage());
+            }
+        }
+
+        // fall through
+        if (e instanceof RuntimeException) {
+            return (RuntimeException)e;
+        } else {
+            return new RuntimeException(e);
+        }
+    }
+
 
     private String resolveTarget(String target) {
         try {

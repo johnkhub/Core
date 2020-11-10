@@ -1,4 +1,4 @@
-package za.co.imqs.coreservice;
+package za.co.imqs.coreservice.model;
 
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;

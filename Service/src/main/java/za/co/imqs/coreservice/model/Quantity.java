@@ -6,7 +6,8 @@ import za.co.imqs.coreservice.dto.asset.QuantityDto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.Validation.assertSet;
+import static za.co.imqs.coreservice.model.Validation.assertSet;
+
 
 
 @Data

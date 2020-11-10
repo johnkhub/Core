@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static za.co.imqs.coreservice.Validation.*;
+import static za.co.imqs.coreservice.model.Validation.*;
 
 /**
  * (c) 2020 IMQS Software

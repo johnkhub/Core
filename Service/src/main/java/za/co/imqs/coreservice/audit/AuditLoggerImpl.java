@@ -1,6 +1,7 @@
 package za.co.imqs.coreservice.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import za.co.imqs.coreservice.Benchmark;
 import za.co.imqs.coreservice.dataaccess.AuditLogWriter;
 
 import java.util.List;
@@ -27,7 +28,9 @@ public class AuditLoggerImpl implements AuditLogger {
     @Override
     public void log(AuditLogEntry entry) {
         try {
-            writer.write(map(mapper, entry));
+            Benchmark.get().get("Log").m(
+                    ()-> writer.write(map(mapper, entry))
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -38,15 +41,19 @@ public class AuditLoggerImpl implements AuditLogger {
         entries.forEach((e) -> log(e));
     }
 
-    private static AuditLogWriter.AuditLogRow map(ObjectMapper mapper, AuditLogEntry entry) throws Exception {
-        final AuditLogWriter.AuditLogRow r = new AuditLogWriter.AuditLogRow();
-        r.setAudit_id(UUID.randomUUID());
-        r.setEvent_time(entry.getAt());
-        r.setPrincipal_id(entry.getUserId());
-        r.setAction(entry.getOperation().toString());
-        r.setStatus(entry.getResult().toString());
-        r.setParameters(mapper.writeValueAsString(entry.getParameters()));
-        r.setCorrelation(entry.getCorrelationId());
-        return r;
+    private static AuditLogWriter.AuditLogRow map(ObjectMapper mapper, AuditLogEntry entry)  {
+        try {
+            final AuditLogWriter.AuditLogRow r = new AuditLogWriter.AuditLogRow();
+            r.setAudit_id(UUID.randomUUID());
+            r.setEvent_time(entry.getAt());
+            r.setPrincipal_id(entry.getUserId());
+            r.setAction(entry.getOperation().toString());
+            r.setStatus(entry.getResult().toString());
+            r.setParameters(mapper.writeValueAsString(entry.getParameters()));
+            r.setCorrelation(entry.getCorrelationId());
+            return r;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
