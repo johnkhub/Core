@@ -43,7 +43,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -58,7 +58,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
         envelope.setSerial_number("1234");
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(update).
                 patch("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -79,7 +79,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -93,7 +93,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(update).
                 patch("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -117,7 +117,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -131,7 +131,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(update).
                 patch("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -165,7 +165,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
         envelope.setSerial_number("1234");
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(update).
                 patch("/assets/{uuid}", "33a47a2a-164b-4f72-a9c4-cad267b0e56a").
                 then().assertThat().

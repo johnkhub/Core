@@ -44,11 +44,11 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
     public void after() throws Exception{
         super.after();
         int code = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).statusCode();
         Assert.assertTrue(code == HttpStatus.SC_OK || code == HttpStatus.SC_FORBIDDEN);
         code = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).statusCode();
         Assert.assertTrue(code == HttpStatus.SC_OK || code == HttpStatus.SC_FORBIDDEN);
         deleteAssets(FACILITY1, FACILITY2, LANDPARCEL, ENVELOPE);
@@ -59,12 +59,12 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         //Assert.assertEquals(2, getLinkTotalLinked());
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -81,11 +81,11 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         createLinkSuccess();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY1).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -101,7 +101,7 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         createLinkSuccess();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, FACILITY2).
                 then().assertThat().statusCode(HttpStatus.SC_OK);
 
@@ -116,7 +116,7 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         createLinkSuccess();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/landparcel/{landparcel_id}/asset/{asset_id}", LANDPARCEL, UUID.randomUUID()).
                 then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
 
@@ -142,7 +142,7 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
     private Set<UUID> getLinkedTo(UUID landparcel) {
         final Set<UUID> values = new HashSet<>();
         for (UUID u : given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/landparcel/{uuid}/assets", landparcel).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -160,7 +160,7 @@ public class AssetControllerLandparcelLinkAPITest extends AbstractAssetControlle
         final List<LookupProvider.Kv> kv = new LinkedList<>();
         kv.add(pair("OFF","Office"));
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(kv).
                 put("/lookups/kv/{target}", "FACIL_TYPE").
                 then().statusCode(200);

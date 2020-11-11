@@ -25,7 +25,7 @@ public class AssetControllerGetLinkTypes extends AbstractAssetControllerAPITest 
     @Test
     public void getTypes() throws Exception  {
         AssetExternalLinkTypeDto[] result = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/link/types").
                 then().
                 assertThat().statusCode(HttpStatus.SC_OK).extract().as(AssetExternalLinkTypeDto[].class);

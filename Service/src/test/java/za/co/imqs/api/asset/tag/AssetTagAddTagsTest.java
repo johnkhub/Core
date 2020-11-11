@@ -16,7 +16,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
     public void clear() throws Exception {
         prepPermissions();
         deleteAssets(THE_ASSET);
-        Populate.populate(session, THE_ASSET);
+        Populate.populate(login.getSession(), THE_ASSET);
     }
 
     @After
@@ -27,7 +27,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
     @Test
     public void addOne() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
@@ -37,7 +37,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
     @Test
     public void addThree() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
@@ -49,7 +49,7 @@ public class AssetTagAddTagsTest extends AbstractAssetControllerAPITest {
     public void addDuplicate() {
         addOne();
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);

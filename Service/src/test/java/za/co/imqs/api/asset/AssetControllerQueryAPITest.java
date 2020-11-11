@@ -68,7 +68,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 dept("WCED").
                 get();
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -87,7 +87,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(facility).
                 put("/assets/{uuid}", THE_FACILITY).
                 then().assertThat().
@@ -95,7 +95,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
 
         CoreAssetDto asset = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/func_loc_path/{path}", "e1.f1".replace(".","+")).
                 then().
                 assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto.class);
@@ -115,14 +115,14 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/func_loc_path/{path}", "nat".replace(".","+")).
                 then().
                 assertThat().statusCode(HttpStatus.SC_NOT_FOUND);
@@ -143,21 +143,21 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
 
         CoreAssetDto asset = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/linked_to/{external_id_type}/{external_id}", "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto.class);
@@ -178,21 +178,21 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/linked_to/{external_id_type}/{external_id}", "c6a74a62-54f5-4f93-adf3-abebab3d3467", UUID.randomUUID()).
                 then().
                 assertThat().statusCode(HttpStatus.SC_NOT_FOUND);
@@ -204,7 +204,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name='Envelope 1'").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -222,7 +222,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name LIKE 'Envelope 1'").
                 get("/assets/query").
                 then().assertThat().
@@ -236,7 +236,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name LIKE 'Envelope %'").
                 get("/assets/query").
                 then().assertThat().
@@ -250,7 +250,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "LOWER(name)='envelope 1'").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -269,7 +269,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","name='Envelope 1' and is_owned = true").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -296,7 +296,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         putAsset(THE_ASSET2, envelope2);
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","name='Envelope 2' and is_owned = false").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -315,7 +315,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name='Envelope 1' and creation_date < '" + new DateTime() +  "'").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -333,7 +333,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name='Envelope 1' and creation_date > '" + new DateTime().plusDays(5) +  "'").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -351,7 +351,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name='Envelope 1' and (asset_type_code = 'ENVELOPE')").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -369,7 +369,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","name='Envelope 1' and (asset_type_code = 'KETTLE')").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -389,7 +389,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).code("e1").name("Envelope 1").type("ENVELOPE").funcloc("e1").serial("1234").get();
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(envelope).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -400,7 +400,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         new CoreAssetBuilder(facility).code("e1-f1").name("Facility 1").type("FACILITY").funcloc("e1.f1").serial("1235").get();
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(facility).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(facility).
                 put("/assets/{uuid}", THE_FACILITY).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -408,13 +408,13 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         new CoreAssetBuilder(building).code("e1-f1-b1").name("Building 1").type("BUILDING").funcloc("e1.f1.b1").serial("1236").get();
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(building).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(building).
                 put("/assets/{uuid}", THE_BUILDING).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam
                         ("filter", "func_loc_path > @('e1.f1.b1')"
                         ).
@@ -438,7 +438,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
                 (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).code("e1").name("Envelope 1").type("ENVELOPE").funcloc("e1").serial("1234").get();
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(envelope).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -450,7 +450,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(facility).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(facility).
                 put("/assets/{uuid}", THE_FACILITY).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
 
@@ -459,13 +459,13 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
 
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(building).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(building).
                 put("/assets/{uuid}", THE_BUILDING).
                 then().assertThat().
                 statusCode(HttpStatus.SC_CREATED);
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","func_loc_path < @('e1.f1')").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -488,7 +488,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         kv.add(pair("TAG3","TagO ThreeO"));
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(kv).
                 put("/lookups/kv/{target}", "TAGS").
                 then().statusCode(200);
@@ -496,12 +496,12 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         final AssetEnvelopeDto envelope = populate();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG1").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG2").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
@@ -513,13 +513,13 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         putAsset(THE_FACILITY, facility);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/{uuid}/tag/{tag}", THE_FACILITY, "TAG1").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","TAGS['TAG1']").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -533,7 +533,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         assertEquals(dtos[1], facility);
 
         dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter","TAGS['TAG1','TAG2']").
                 queryParam("offset", 0).
                 queryParam("limit", 10).
@@ -564,7 +564,7 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
         putAsset(THE_ASSET, envelope);
 
         CoreAssetDto[] dtos = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 queryParam("filter", "name='Envelope 1' and (responsible_dept_classif = @('B_PPW.CD_EI.WCED'))").
                 queryParam("offset", 0).
                 queryParam("limit", 10).

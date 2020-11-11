@@ -29,7 +29,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
         createAsset();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID);
     }
 
@@ -41,7 +41,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     @Test
     public void addAssetCreateLinkSuccess() throws Exception  {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -58,7 +58,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
     @Ignore("At the moment we ignore duplicates")
     public void addAssetCreateLinkDuplicate() throws Exception  {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -66,7 +66,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
         assertLinked();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/link/{uuid}/to/{external_id_type}/{external_id}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467", THE_EXTERNAL_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CONFLICT);
@@ -106,7 +106,7 @@ public class AssetControllerCreateLinkAPITest extends AbstractAssetControllerAPI
 
     private void assertLinked() {
         assertTrue(given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("assets/link/{uuid}/to/{external_id_type}", THE_ASSET, "c6a74a62-54f5-4f93-adf3-abebab3d3467").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().asString().equals(THE_EXTERNAL_ID));

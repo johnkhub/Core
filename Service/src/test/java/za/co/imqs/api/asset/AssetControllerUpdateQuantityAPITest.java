@@ -43,7 +43,7 @@ public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControlle
                 get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -59,7 +59,7 @@ public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControlle
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(quantity).
                 put("/assets/quantity").
                 then().assertThat().
@@ -78,14 +78,14 @@ public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControlle
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(quantity).
                 patch("/assets/quantity").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
 
         final QuantityDto result = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/quantity/asset_id/{asset_id}/name/{name}", THE_ASSET, "extent").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(QuantityDto.class);

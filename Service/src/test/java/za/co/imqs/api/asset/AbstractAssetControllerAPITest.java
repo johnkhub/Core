@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -50,19 +51,21 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 public class AbstractAssetControllerAPITest {
     protected static final boolean TEST_PERMISSIONS = false;
 
-    @ClassRule
-    public static LoginRule login = new LoginRule().
-            withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
-            withUsername(USERNAME).
-            withPassword(PASSWORD);
-
-    @ClassRule
-    public static TestRule compose = !DOCKER ? NULL_RULE :
+    public static DockerComposeContainer compose = !DOCKER ? NULL_RULE :
             new DockerComposeContainer(new File(COMPOSE_FILE)).
                     withServices("auth", "router", "db", "asset-core-service").
                     withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).
                     withEnv("BRANCH",TestUtils.getCurrentGitBranch());
 
+
+    public static LoginRule login = new LoginRule().
+            //withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
+                    withUrl("http://localhost/auth2/login").
+                    withUsername(USERNAME).
+                    withPassword(PASSWORD);
+
+    @ClassRule
+    public static TestRule chain = RuleChain.outerRule(compose).around(login);
 
     public static final UUID THE_ASSET = UUID.fromString("455ac960-8fc6-409f-b2ef-cd5be4ebe683");
     public static final String THE_EXTERNAL_ID = "c45036b1-a1fb-44f4-a254-a668c0d09eaa";
@@ -71,8 +74,6 @@ public class AbstractAssetControllerAPITest {
     public static final GroupDto GRP_WCED = GroupDto.of(UUID.fromString("20d93f56-294b-424a-8492-a8ba866d5c0c"), "WCED");
     public static final UserDto USR_DEV = UserDto.of(UUID.fromString("f6aefa3f-e1db-4ed9-bc65-4b3265b18ebc"), "dev");
 
-    public static String session;
-    public static UUID userId;
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -81,10 +82,6 @@ public class AbstractAssetControllerAPITest {
     public static void configure() {
         RestAssured.baseURI = "http://"+SERVICES.get(CORE);
         RestAssured.port = CORE_PORT;
-
-        session = login.getSession();
-        userId = UUID.fromString(login.getPermit().getInternalUUID());
-
         poll(()-> given().get("/assets/ping").then().assertThat().statusCode(HttpStatus.SC_OK),TimeUnit.SECONDS, 25);
     }
 
@@ -94,8 +91,11 @@ public class AbstractAssetControllerAPITest {
     }
 
 
-    protected void prepPermissions() {
+    public static  void prepPermissions() {
         // REMOVE USER PERMISSIONS HERE !
+
+        final String session = login.getSession();
+        final UUID userId = UUID.fromString(login.getPermit().getInternalUUID());
 
 
         deleteUserFromGroup(userId, GRP_WCED.getName());
@@ -127,7 +127,7 @@ public class AbstractAssetControllerAPITest {
 
     protected static CoreAssetDto getAsset(UUID uuid) {
         return given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}", uuid).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -136,7 +136,7 @@ public class AbstractAssetControllerAPITest {
 
     protected static void assertNotFound(UUID uuid) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}", uuid).
                 then().assertThat().
                 statusCode(HttpStatus.SC_NOT_FOUND);
@@ -283,7 +283,7 @@ public class AbstractAssetControllerAPITest {
 
     public static <T extends CoreAssetDto> void putAsset(UUID assetId, T asset) {
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(asset).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(asset).
                 put("/assets/{uuid}", assetId).
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
     }
@@ -291,7 +291,7 @@ public class AbstractAssetControllerAPITest {
     public static <T extends CoreAssetDto> void deleteAssets(UUID ...assets) {
         for (UUID u : assets) {
             given().
-                    header("Cookie", session).
+                    header("Cookie", login.getSession()).
                     delete("/assets/testing/{uuid}", u).
                     then().assertThat().statusCode(HttpStatus.SC_OK);
         }
@@ -299,56 +299,56 @@ public class AbstractAssetControllerAPITest {
 
     public static void addGroup(GroupDto group) {
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(group).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(group).
                 post( "/assets/access/group").
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
     }
 
     public static void addUser(UserDto user) {
         given().
-                header("Cookie", session).contentType(ContentType.JSON).body(user).
+                header("Cookie", login.getSession()).contentType(ContentType.JSON).body(user).
                 post( "/assets/access/user").
                 then().assertThat().statusCode(HttpStatus.SC_CREATED);
     }
 
     public static void addUserToGroup(UUID userId, String groupName) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 post("/assets/access/group/{groupname}/{user_id}", groupName, userId).
                 then().assertThat().statusCode(HttpStatus.SC_OK);
     }
 
-    public void grantPermissions(UUID entityId, UUID toUser, int perms) {
+    public static void grantPermissions(UUID entityId, UUID toUser, int perms) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 post("assets/access/testing/authorisation/entity/{entity_id}/user/{grantee}/permissions/{perms}", entityId, toUser, perms).
                 then().assertThat().statusCode(HttpStatus.SC_OK);
     }
 
-    public void deleteUserFromGroup(UUID userId, String groupName) {
+    public static void deleteUserFromGroup(UUID userId, String groupName) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/access/group/{groupname}/{user_id}", groupName, userId).
                 then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
     }
 
-    public void deleteGroup(String groupName) {
+    public static void deleteGroup(String groupName) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete( "/assets/access/group/{name}", groupName).
                 then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
     }
 
-    public void deleteUser(UUID uuid) {
+    public static void deleteUser(UUID uuid) {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete( "/assets/access/user/{uuid}", uuid).
                 then().assertThat().statusCode(Matchers.isOneOf(HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND));
     }
 
-    public GroupDto getGroupByName(String name) {
+    public static GroupDto getGroupByName(String name) {
         return given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/access/group/{name}", name).
                 then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(GroupDto.class);
     }

@@ -24,7 +24,7 @@ public class AssetTagHasTagsTest extends AbstractAssetControllerAPITest  {
     public void has() {
         List<Boolean> results = new LinkedList<>();
         results = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAG2").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -37,7 +37,7 @@ public class AssetTagHasTagsTest extends AbstractAssetControllerAPITest  {
     public void hasMultiple() {
         List<Boolean> results = new LinkedList<>();
         results = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag/{tag1}?{tag2}", THE_ASSET, "TAG1","TAG2").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -51,7 +51,7 @@ public class AssetTagHasTagsTest extends AbstractAssetControllerAPITest  {
     public void hasNot() {
         List<Boolean> results = new LinkedList<>();
         results = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag/{tag}", THE_ASSET, "TAGX").
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -67,8 +67,8 @@ public class AssetTagHasTagsTest extends AbstractAssetControllerAPITest  {
     @Before
     public void preconditions() throws Exception {
         prepPermissions();
-        Populate.populate(session, THE_ASSET);
-        given().header("Cookie", session).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
+        Populate.populate(login.getSession(), THE_ASSET);
+        given().header("Cookie", login.getSession()).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
 
     }
 }

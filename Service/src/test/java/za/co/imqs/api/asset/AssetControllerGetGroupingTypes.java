@@ -26,7 +26,7 @@ public class AssetControllerGetGroupingTypes extends AbstractAssetControllerAPIT
     @Test
     public void getTypes() {
         AssetExternalLinkTypeDto[] result = given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/group/types").
                 then().
                 assertThat().statusCode(HttpStatus.SC_OK).extract().as(AssetExternalLinkTypeDto[].class);

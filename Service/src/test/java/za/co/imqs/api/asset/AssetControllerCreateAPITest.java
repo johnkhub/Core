@@ -50,7 +50,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
 
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
         put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -72,7 +72,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 .get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
         put("/assets/{uuid}", uuid).
                 then().assertThat().
@@ -93,7 +93,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
                 .get();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
                 put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
@@ -102,7 +102,7 @@ public class AssetControllerCreateAPITest extends AbstractAssetControllerAPITest
         assertEquals(getAsset(THE_ASSET), envelope);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 contentType(ContentType.JSON).body(envelope).
         put("/assets/{uuid}", THE_ASSET).
                 then().assertThat().

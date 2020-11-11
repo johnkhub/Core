@@ -26,7 +26,7 @@ public class AssetTagGetTest extends AbstractAssetControllerAPITest {
     @Test
     public void getAll() {
         final List<String> results =  Arrays.asList(given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).
@@ -43,7 +43,7 @@ public class AssetTagGetTest extends AbstractAssetControllerAPITest {
     @Test
     public void getNonExistent() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag", THE_ASSET).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
@@ -53,7 +53,7 @@ public class AssetTagGetTest extends AbstractAssetControllerAPITest {
     @Test
     public void getFromNonExistentAsset() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 get("/assets/{uuid}/tag", UUID.randomUUID()).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK);
@@ -68,7 +68,7 @@ public class AssetTagGetTest extends AbstractAssetControllerAPITest {
     @Before
     public void preconditions() throws Exception {
         prepPermissions();
-        Populate.populate(session, THE_ASSET);
-        given().header("Cookie", session).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
+        Populate.populate(login.getSession(), THE_ASSET);
+        given().header("Cookie", login.getSession()).put("/assets/{uuid}/tag/{tag1}?{tag2}&{tag3}", THE_ASSET, "TAG1", "TAG2", "TAG3");
     }
 }

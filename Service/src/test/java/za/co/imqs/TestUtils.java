@@ -10,6 +10,7 @@ import org.junit.runners.model.Statement;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.containers.DockerComposeContainer;
 import za.co.imqs.coreservice.dataaccess.PermissionRepository;
 import za.co.imqs.coreservice.dataaccess.PermissionRepositoryImpl;
 import za.co.imqs.coreservice.dto.auth.GroupDto;
@@ -312,5 +313,5 @@ public class TestUtils {
         return null;
     }
 
-    public static final TestRule NULL_RULE = (Statement statement, Description description) -> statement;
+    public static final DockerComposeContainer NULL_RULE = new DockerComposeContainer();
 }

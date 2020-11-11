@@ -42,10 +42,10 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
         assets = createAssets();
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID);
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 delete("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID);
     }
 
@@ -57,7 +57,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     @Test
     public void addAssetCreateLinkSuccess() throws Exception  {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -73,7 +73,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     @Test
     public void addAssetCreateLinkTwice() throws Exception  {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -81,7 +81,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
         assertLinked(THE_ASSET);
 
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -92,12 +92,12 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     @Test
     public void addTwoAssetsCreateGrouping() {
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
         given().
-                header("Cookie", session).
+                header("Cookie", login.getSession()).
                 put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_OTHER_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
                 assertThat().statusCode(HttpStatus.SC_CREATED);
@@ -109,7 +109,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     @Test
     public void retrieveBasedOnGrouping() throws Exception {
         addTwoAssetsCreateGrouping();
-        CoreAssetDto[] result = given().header("Cookie", session).
+        CoreAssetDto[] result = given().header("Cookie", login.getSession()).
                 get("assets/grouped_by/{grouping_id_type}/{grouping_id}", DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().as(CoreAssetDto[].class);
@@ -155,7 +155,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
     }
 
     private void assertLinked(UUID id) {
-        Assert.assertEquals(THE_GROUPING_ID, given().header("Cookie", session).
+        Assert.assertEquals(THE_GROUPING_ID, given().header("Cookie", login.getSession()).
                 get("assets/group/{uuid}/to/{grouping_id_type}", id, DTPW.GROUPING_TYPE_EMIS).
                 then().assertThat().
                 statusCode(HttpStatus.SC_OK).extract().asString());
