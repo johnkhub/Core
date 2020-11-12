@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
@@ -316,11 +317,7 @@ public class Importer extends ImporterTemplate{
             return;
 
         } else if (cmd.equalsIgnoreCase("assets")) {
-            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).map((s)-> ImporterTemplate.Flags.valueOf(s.trim())).collect(Collectors.toList());
-            final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
-            flags.addAll(x);
-
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
             final EnumSet<ImporterTemplate.Flags> mutuallyExclusive = EnumSet.of(ImporterTemplate.Flags.FORCE_INSERT, ImporterTemplate.Flags.FORCE_UPSERT);
             mutuallyExclusive.retainAll(flags);
             if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
@@ -330,11 +327,7 @@ public class Importer extends ImporterTemplate{
             return;
 
         } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
-            final String[] flagsS = (args.length == 4) ? args[3].split(",") : new String[0];
-            final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).map((s)-> ImporterTemplate.Flags.valueOf(s.trim())).collect(Collectors.toList());
-            EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
-            flags.addAll(x);
-
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
             Importer i = new Importer(config.getServiceUrl(), session);
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
             return;
@@ -351,6 +344,16 @@ public class Importer extends ImporterTemplate{
         return (T)constructors.getOrDefault(s, constructors.get("KV")).newInstance();
     }
 
+    private static EnumSet<Flags> getFlags(String[] args) {
+        final String[] flagsS = (args.length >= 3) ? args[3].split(",") : new String[0];
+        final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).
+                map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s)).
+                filter((s) -> s != null).
+                collect(Collectors.toList());
+        final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
+        flags.addAll(x);
+        return flags;
+    }
 
     @Data
     @EqualsAndHashCode(callSuper=true)
