@@ -9,7 +9,7 @@
       "acquireIncrement": "5",
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
-      "jdbcUrl": "jdbc:postgresql://localhost:5432/core12feb_2",
+      "jdbcUrl": "jdbc:postgresql://localhost:5432/core",
       "username": "imqs",
       "password": "1mq5p@55w0rd"
     },

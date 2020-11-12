@@ -20,6 +20,12 @@ EXPOSE 80 12000
 #
 WORKDIR /usr/lib/imqs
 COPY /target/asset-core-service.jar .
+COPY /target/asset-core-service-jar-with-dependencies.jar .
+COPY /deploy/import.bat .
+COPY /deploy/import.sh .
+COPY /deploy/logback.groovy .
+COPY /deploy/index.html .
+
 RUN chmod -R 777 /usr/lib/imqs
 
 # Define the entry point. Note the use of exec. This causes the child process to replace the launching process - required for proper signal handling.

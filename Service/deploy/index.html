@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Welcome to the download page</h1>
+<img src="core_apple.jpg" alt="Core!">
+<br>
+Here you can download the necessary files to import data with configurations pre-configured to connect to this machine.
+<p>
+You need to download all 4 files for your OS and then run either <tt>import.bat</tt> or <tt>import.sh</tt>.
+</p>
+
+<h2>Commandline</h2>
+
+<tt>[import] [command] [config_file] ([flags] or [lookup type])</tt>
+where command is one of:
+<ul>
+<li>assets</li>
+<li>asset_to_landparcel</li>
+<li>lookups</li>
+</ul>
+
+<h3>Flags</h3>
+<li>FORCE_INSERT Performs an INSERT rather than an UPDATE when an Asset UUID is found</li>
+<li>FORCE_CONTINUE Writes to the exception file but does not terminate execution</li>
+<li>FORCE_UPSERT If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT</li>
+<li>HARD_DELETE Erase record instead of marking inactive</li>
+
+<h2>Windows</h2>
+<ul>
+    <li> <a href="import.bat">import.bat </a></li>
+    <li> <a href="import_config.json">import_config.json</a></li>
+    <li> <a href="logback.groovy">logback.groovy</a></li>
+    <li> <a href="asset-core-service-jar-with-dependencies.jar">asset-core-service-jar-with-dependencies.jar</a></li>
+</ul>
+Example  <tt>./install.bat import_config.json assets xxx.csv</tt>
+
+<h2>Linux</h2>
+<ul>
+    <li> <a href="import.sh">import.sh</a></li>
+    <li> <a href="import_config.json">import_config.json</a></li>
+    <li> <a href="logback.groovy">logback.groovy</a></li>
+    <li> <a href="asset-core-service-jar-with-dependencies.jar">asset-core-service-jar-with-dependencies.jar</a></li>
+</ul>
+Example  <tt>./install.sh import_config.json assets xxx.csv</tt>
+
+<h2>Exporting</h2>
+
+To export the data open PgAdmin and use
+<p>
+<tt>select * from dtpw.dtpw_export_view oder by func_loc_path asc;</tt>
+and the circled button to download a csv file. <img src="export.png" alt="Export!">
+<b>Note</b> that it does not include lookup tables or the landparcel / asset linking information. All other data is included though.
+
+</body>
+</html>

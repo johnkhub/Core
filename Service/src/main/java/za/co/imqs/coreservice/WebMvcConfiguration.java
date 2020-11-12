@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import za.co.imqs.formservicebase.interceptors.ServiceFailureInterceptor;
 import za.co.imqs.spring.service.auth.AuthInterceptor;
@@ -29,6 +30,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public static final String ACCESS_TESTING_ROOT_PATH =  ASSET_ROOT_PATH + "/access/testing";
 
     public static final String PING_PATH = ASSET_ROOT_PATH +"/ping";
+    public static final String DOWNLOAD_PATH = ASSET_ROOT_PATH +"/download";
+
     public static final String DIE_PATH = ASSET_ROOT_PATH +"/die";
     public static final String ASSET_TESTING_PATH = ASSET_ROOT_PATH +"/testing";
 
@@ -48,7 +51,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(healthInterceptor);
-        registry.addInterceptor(handleAuthInterceptor).addPathPatterns("/**").excludePathPatterns(PING_PATH);
+        registry.addInterceptor(handleAuthInterceptor).addPathPatterns("/**").excludePathPatterns(PING_PATH, DOWNLOAD_PATH+"/**");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(DOWNLOAD_PATH+"/importer/**").addResourceLocations("file:"+System.getProperty("user.dir")+"/");
     }
 }
 
