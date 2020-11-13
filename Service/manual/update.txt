@@ -1,7 +1,8 @@
-drop view if exists dtpw.import_report.sql
-asset/asset_extension_views.sql
-asset/import_report.sql
-audit/audit_stored_procs
-baked_in_db_users/normal_reader_access.sql
-public/000_init.sql
+
+REMOVE ALL //
 public/asset_core_stored_procs.sql
+audit/audit_stored_procs -- remove triggers at top
+asset/asset_extension_views.sql
+dtpw/import_report.sql
+dtpw/dtpw_views.sql
+baked_in_db_users/normal_reader_access.sql
