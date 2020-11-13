@@ -1,0 +1,7 @@
+drop view if exists dtpw.import_report.sql
+asset/asset_extension_views.sql
+asset/import_report.sql
+audit/audit_stored_procs
+baked_in_db_users/normal_reader_access.sql
+public/000_init.sql
+public/asset_core_stored_procs.sql
