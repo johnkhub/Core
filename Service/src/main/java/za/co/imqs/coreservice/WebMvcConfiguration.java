@@ -30,7 +30,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public static final String ACCESS_TESTING_ROOT_PATH =  ASSET_ROOT_PATH + "/access/testing";
 
     public static final String PING_PATH = ASSET_ROOT_PATH +"/ping";
-    public static final String DOWNLOAD_PATH = ASSET_ROOT_PATH +"/download";
+    public static final String DOWNLOAD_PATH = "/download";
 
     public static final String DIE_PATH = ASSET_ROOT_PATH +"/die";
     public static final String ASSET_TESTING_PATH = ASSET_ROOT_PATH +"/testing";
@@ -51,7 +51,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(healthInterceptor);
-        registry.addInterceptor(handleAuthInterceptor).addPathPatterns("/**").excludePathPatterns(PING_PATH, DOWNLOAD_PATH+"/**");
+        registry.addInterceptor(handleAuthInterceptor).
+                addPathPatterns(ASSET_ROOT_PATH+"/**").
+                addPathPatterns(LOOKUP_ROOT_PATH+"/**").
+                excludePathPatterns(PING_PATH).
+                excludePathPatterns(DOWNLOAD_PATH+"/importer/**");
     }
 
     @Override
