@@ -167,7 +167,8 @@ public class SchemaManagement implements CliHandler {
 
     private String appendSchema(String url, String json) {
         String s = json.split("\\.")[0];
-        return url + "?currentSchema=" + s.split("_")[1];
+        String[] q = s.split("_");
+        return url + "?currentSchema=" + q[q.length-1];
     }
 
     private void createSchema(String name)  {
