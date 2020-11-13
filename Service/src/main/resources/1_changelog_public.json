@@ -135,7 +135,8 @@
               {
                 "column": {
                   "constraints": {
-                    "nullable": false
+                    "nullable": false,
+                    "primaryKey": true
                   },
                   "name": "asset_id",
                   "type": "UUID"
@@ -1210,7 +1211,8 @@
               }]
             ,
             "indexName": "func_loc_path_idx",
-            "tableName": "asset"
+            "tableName": "asset",
+            "unique" : true
           }
         }]
       
