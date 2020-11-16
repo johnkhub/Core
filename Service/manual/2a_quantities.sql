@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS public.quantity CASCADE;
 CREATE TABLE public.quantity
 (
     asset_id uuid NOT NULL,
@@ -5,7 +6,6 @@ CREATE TABLE public.quantity
     num_units numeric NOT NULL,
     name text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT quantity_pkey PRIMARY KEY (asset_id, name),
-    CONSTRAINT quantity_name UNIQUE (asset_id, name),
     CONSTRAINT asset_id_fkey FOREIGN KEY (asset_id)
         REFERENCES public.asset (asset_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -31,6 +31,3 @@ FROM
     public.quantity q
         JOIN unit u ON q.unit_code = u.code
 ;
-
-ALTER TYPE public.unit_type ADD VALUE 'T_SCALAR' AFTER 'T_PRESSURE';
-INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('number', 'Units', false, '#', 'T_SCALAR') ON CONFLICT(code) DO NOTHING;

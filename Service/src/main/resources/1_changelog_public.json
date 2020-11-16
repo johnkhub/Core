@@ -3002,13 +3002,6 @@
             "referencedColumnNames": "code",
             "referencedTableName": "unit"
           }
-        },
-        {
-          "addUniqueConstraint": {
-            "columnNames": "asset_id,name",
-            "constraintName": "quantity_name",
-            "tableName": "quantity"
-          }
         }
       ]
     }
