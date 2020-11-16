@@ -345,7 +345,7 @@ public class Importer extends ImporterTemplate{
     }
 
     private static EnumSet<Flags> getFlags(String[] args) {
-        final String[] flagsS = (args.length >= 3) ? args[3].split(",") : new String[0];
+        final String[] flagsS = (args.length >= 4) ? args[3].split(",") : new String[0];
         final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).
                 map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s)).
                 filter((s) -> s != null).

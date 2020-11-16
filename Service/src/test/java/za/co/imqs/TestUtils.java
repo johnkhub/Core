@@ -312,6 +312,4 @@ public class TestUtils {
         }
         return null;
     }
-
-    public static final DockerComposeContainer NULL_RULE = new DockerComposeContainer();
 }

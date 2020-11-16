@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
+import org.junit.runners.model.Statement;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
@@ -49,9 +50,16 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
  */
 @Slf4j
 public class AbstractAssetControllerAPITest {
+    protected static final TestRule NULL_RULE = new TestRule() {
+        @Override
+        public Statement apply(Statement statement, org.junit.runner.Description description) {
+            return statement;
+        }
+    };
+
     protected static final boolean TEST_PERMISSIONS = false;
 
-    public static DockerComposeContainer compose = !DOCKER ? NULL_RULE :
+    public static TestRule compose = !DOCKER ? NULL_RULE :
             new DockerComposeContainer(new File(COMPOSE_FILE)).
                     withServices("auth", "router", "db", "asset-core-service").
                     withLogConsumer("asset-core-service", new Slf4jLogConsumer(log)).
@@ -352,5 +360,4 @@ public class AbstractAssetControllerAPITest {
                 get("/assets/access/group/{name}", name).
                 then().assertThat().statusCode(HttpStatus.SC_OK).extract().as(GroupDto.class);
     }
-
 }

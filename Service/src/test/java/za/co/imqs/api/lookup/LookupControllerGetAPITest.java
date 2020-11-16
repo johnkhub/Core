@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
+import org.junit.runners.model.Statement;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
@@ -39,6 +40,13 @@ import static za.co.imqs.api.TestConfig.DOCKER;
  */
 @Slf4j
 public class LookupControllerGetAPITest {
+    protected static final TestRule NULL_RULE = new TestRule() {
+        @Override
+        public Statement apply(Statement statement, org.junit.runner.Description description) {
+            return statement;
+        }
+    };
+
     @ClassRule
     public static LoginRule login = new LoginRule().
             withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
