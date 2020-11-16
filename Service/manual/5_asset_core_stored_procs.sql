@@ -53,7 +53,6 @@ END; $$
     SECURITY DEFINER
 ;
 
-
 CREATE OR REPLACE FUNCTION public.fn_is_valid_func_loc_path(path ltree) RETURNS boolean AS $$
 DECLARE
     asset uuid;
@@ -75,7 +74,6 @@ END; $$
 ;
 
 COMMENT ON FUNCTION public.fn_is_valid_func_loc_path IS 'Identifies if a segment of a path does not have a corresponding asset associated with it. E.g. select * from h(''11567.11567.BB.L1.09''::ltree) or select * into broken_paths from asset where fn_is_valid_func_loc_path(func_loc_path) = false';
-
 
 CREATE OR REPLACE FUNCTION public.fn_identify_no_subclasses(the_asset uuid) RETURNS boolean AS $$
 DECLARE

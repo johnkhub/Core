@@ -1,0 +1,1 @@
+ALTER TYPE public.unit_type ADD VALUE 'T_SCALAR' AFTER 'T_PRESSURE';

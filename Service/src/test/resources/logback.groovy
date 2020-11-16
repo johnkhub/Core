@@ -55,7 +55,7 @@ asyncAppender.start()
 logger("org.apache.commons", INFO)
 logger("org.eclipse.jetty", ERROR)
 logger("org.eclipse.jetty.annotations", ERROR)
-logger("org.springframework", DEBUG)
+logger("org.springframework", ERROR)
 
 logger("liquibase", OFF)
 logger("com.zaxxer.hikari", ERROR)
