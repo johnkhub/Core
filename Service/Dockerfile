@@ -25,6 +25,9 @@ COPY /deploy/import.bat .
 COPY /deploy/import.sh .
 COPY /deploy/logback.groovy .
 COPY /deploy/index.html .
+COPY /deploy/import_config.json .
+COPY /deploy/core_apple.jpg .
+COPY /deploy/export.png .
 
 RUN chmod -R 777 /usr/lib/imqs
 

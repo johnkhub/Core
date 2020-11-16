@@ -1,1 +1,1 @@
-C:\Users\frankvr\Downloads\openjdk-12.0.1_windows-x64_bin\jdk-12.0.1\bin\java -Dlogging.config=logback.groovy -Dspring.profiles.active=production -jar asset-core-service.jar --config=file:config.json
+java -Dlogging.config=logback.groovy -Dspring.profiles.active=production -jar asset-core-service.jar --server.port=8669 --manual-schemas --config=file:config.json
