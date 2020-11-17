@@ -55,8 +55,8 @@ public class Importer extends ImporterTemplate{
 
         importRunner(
                 path, new AssetToLandparcel(), null, exceptionFile, flags,
-                (dto)-> true,
-                (dto) -> dto,
+                PASS_ALL,
+                Before.IDENTITY,
                 (d) -> {
                     final AssetToLandparcel dto = (AssetToLandparcel)d;
                     restTemplate.put(
@@ -66,15 +66,15 @@ public class Importer extends ImporterTemplate{
                     );
                     return dto;
                 },
-                (dto) -> dto
+               After.IDENTITY
         );
     }
 
     public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importRunner(
                 path, new ExternalLinks(), null, exceptionFile, flags,
-                (dto)-> true,
-                (dto) -> dto,
+                PASS_ALL,
+                Before.IDENTITY,
                 (d) -> {
                     final ExternalLinks dto = (ExternalLinks)d;
                     if (dto.getEmis() == null) {
@@ -112,15 +112,15 @@ public class Importer extends ImporterTemplate{
                     );
                     return null;
                 },
-                (dto) -> dto
+                After.IDENTITY
         );
     }
 
     public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importRunner(
                 path, new Extent(), null, exceptionFile, flags,
-                (dto)-> true,
-                (dto) -> dto,
+                PASS_ALL,
+                Before.IDENTITY,
                 (d) -> {
                         final Extent dto = (Extent)d;
                         if (dto.getExtent() == null) {
@@ -171,7 +171,7 @@ public class Importer extends ImporterTemplate{
                         );
                         return dto;
                 },
-                (dto) -> dto
+                After.IDENTITY
         );
     }
 
@@ -179,7 +179,7 @@ public class Importer extends ImporterTemplate{
         importRunner(
                 path, instance, null, exceptionFile, flags,
                 (dto) -> true,
-                (dto) -> dto,
+                Before.IDENTITY,
                 (d) -> {
                     T dto = (T)d;
 
@@ -225,7 +225,7 @@ public class Importer extends ImporterTemplate{
 
                     return null;
                 },
-                (dto) -> dto
+                After.IDENTITY
 
         );
     }
