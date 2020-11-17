@@ -24,7 +24,7 @@ COPY /target/asset-core-service-jar-with-dependencies.jar .
 COPY /deploy/import.bat .
 COPY /deploy/import.sh .
 COPY /deploy/index.html .
-COPY /deploy/import_config.json .
+COPY /deploy/import_config_template.json .
 COPY /deploy/core_apple.jpg .
 COPY /deploy/export.png .
 COPY /deploy/logback-spring.xml .

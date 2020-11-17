@@ -60,6 +60,21 @@ public class ServiceConfiguration {
         return sched;
     }
 
+    @Bean
+    @Qualifier("visible_host_url")
+    public String getVisibleHostUrl() {
+        String host = System.getenv("IMQS_HOSTNAME_URL");
+        if (host == null) {
+            log.warn("IMQS_HOSTNAME_URL environment variable not set.");
+            host = System.getenv("COMPUTERNAME");
+            if (host != null) {
+                return "http://"+host+"/";
+            }
+            return "http://localhost:8669/";
+        }
+        return host;
+    }
+
     @Data
     public static class ScheduledSql {
         private String name;

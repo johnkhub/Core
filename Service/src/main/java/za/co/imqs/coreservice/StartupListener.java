@@ -3,12 +3,15 @@ package za.co.imqs.coreservice;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.spring.service.health.ServiceHealth;
+
+import java.io.*;
 
 
 /**
@@ -25,18 +28,22 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
     private final ServiceAuth serviceAuth;
     private final SchemaManagement schema;
     private final ApplicationArguments applicationArguments;
+    private final String visibleHost;
 
     @Autowired
     public StartupListener(
             ServiceHealth serviceHealth,
             ServiceAuth serviceAuth,
             SchemaManagement schema,
-            ApplicationArguments applicationArguments
+            ApplicationArguments applicationArguments,
+            @Qualifier("visible_host_url")
+            String visibleHost
     ) {
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
         this.schema = schema;
         this.applicationArguments = applicationArguments;
+        this.visibleHost = visibleHost;
     }
 
     @Override
@@ -54,6 +61,8 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                     new Boot.HttpPortHandler(),
                     new Boot.ConfigFileHandler()
             );
+
+            new WriteImporterConfig().write("import_config_template.json", "import_config.json", visibleHost);
 
         } finally {
             if(!serviceHealth.isAvailable()) {
@@ -104,6 +113,24 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                 return false;
             }
             return true;
+        }
+    }
+
+    private static class WriteImporterConfig {
+        public void write(String templateName, String targetName, String hostname)  {
+            try (
+                BufferedReader r = new BufferedReader(new FileReader(templateName));
+                FileWriter w = new FileWriter(targetName);
+            ) {
+                String line = r.readLine();
+                while (line != null) {
+                    line.replaceAll("\\{\\{http://localhost/\\}\\}", hostname);
+                    w.write(line);
+                    line = r.readLine();
+                }
+            } catch(IOException e) {
+                throw new RuntimeException("Could not create import config file.",e);
+            }
         }
     }
 }
