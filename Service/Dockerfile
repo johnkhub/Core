@@ -32,4 +32,4 @@ COPY /deploy/export.png .
 RUN chmod -R 777 /usr/lib/imqs
 
 # Define the entry point. Note the use of exec. This causes the child process to replace the launching process - required for proper signal handling.
-ENTRYPOINT exec java -agentlib:jdwp=transport=dt_socket,address=12000,server=y,suspend=n -Din.container=true -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy" -jar /usr/lib/imqs/asset-core-service.jar --server.port=80  --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json" 
+ENTRYPOINT exec java -agentlib:jdwp=transport=dt_socket,address=12000,server=y,suspend=n -Din.container=true -Dlogback.configurationFile="http://config/config-service/config/asset-core-service/1/logback-asset-core-service.groovy" -jar /usr/lib/imqs/asset-core-service.jar --manual-schemas --server.port=80  --config="http://config/config-service/config/asset-core-service/1/asset-core-service-config.json"

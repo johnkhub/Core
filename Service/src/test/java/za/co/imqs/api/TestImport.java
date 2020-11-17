@@ -77,6 +77,12 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
+    public void pwei160() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 18/PWEI-160/UPDATEs to EI Disticts_Envelopes1.csv"});
+    }
+
+    @Test
     public void loadSmallSet() throws Exception{
         loadLookups();
         loadEIlookups();
