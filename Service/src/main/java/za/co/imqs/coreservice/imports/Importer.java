@@ -283,6 +283,7 @@ public class Importer extends ImporterTemplate{
     }
 
     public static String getAuthSession(String authUrl, String username, String password)  {
+        if (password == "") return "hkgk";
         try {
             HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
             PostMethod post = new PostMethod(authUrl);
