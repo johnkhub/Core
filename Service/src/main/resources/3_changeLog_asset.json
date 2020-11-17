@@ -1,0 +1,709 @@
+{ "databaseChangeLog": [
+  {
+    "changeSet": {
+      "id": "1605621896272-1",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+            ,
+            "tableName": "ref_facility_type"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-2",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_facility_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "facility_type_code",
+                  "type": "VARCHAR(10)"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type FACILITY",
+            "tableName": "a_tp_facility"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-3",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_landparcel_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "name": "lpi",
+                  "remarks": "Land Parcel Identifier",
+                  "type": "VARCHAR(26)"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type LANDPARCEL",
+            "tableName": "a_tp_landparcel"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-4",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "asset_landparcel_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "asset_landparcel_pkey"
+                  },
+                  "name": "landparcel_asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Linking table between asset and landparcel",
+            "tableName": "asset_landparcel"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-5",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_building_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type BUILDING",
+            "tableName": "a_tp_building"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-6",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_component_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type COMPONENT",
+            "tableName": "a_tp_component"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-7",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_envelope_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type ENVELOPE",
+            "tableName": "a_tp_envelope"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-8",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_floor_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type FLOOR",
+            "tableName": "a_tp_floor"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-9",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_room_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type ROOM",
+            "tableName": "a_tp_room"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-10",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false,
+                    "primaryKey": true,
+                    "primaryKeyName": "a_tp_site_pkey"
+                  },
+                  "name": "asset_id",
+                  "type": "UUID"
+                }
+              }]
+            ,
+            "remarks": "Asset extension table for Asset Type SITE",
+            "tableName": "a_tp_site"
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-11",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+            ,
+            "indexName": "ref_facility_type_k_idx",
+            "tableName": "ref_facility_type",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-12",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+            ,
+            "indexName": "ref_facility_type_v_idx",
+            "tableName": "ref_facility_type",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  {
+    "changeSet": {
+      "id": "1605621896272-14",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "facility_type_code",
+            "baseTableName": "a_tp_facility",
+            "constraintName": "a_tp_facility_facility_type_code_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "k",
+            "referencedTableName": "ref_facility_type",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  {
+    "changeSet": {
+      "id": "1605621896272-16",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "lpi"
+                }
+              }]
+            ,
+            "indexName": "lpi_idx",
+            "tableName": "a_tp_landparcel",
+            "unique": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-17",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "asset_landparcel",
+            "constraintName": "asset_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-18",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "landparcel_asset_id",
+            "baseTableName": "asset_landparcel",
+            "constraintName": "asset_landparcel_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "a_tp_landparcel",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-19",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_building",
+            "constraintName": "a_tp_building_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-20",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_component",
+            "constraintName": "a_tp_component_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-21",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_envelope",
+            "constraintName": "a_tp_envelope_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-22",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_floor",
+            "constraintName": "a_tp_floor_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-23",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_room",
+            "constraintName": "a_tp_room_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-24",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_site",
+            "constraintName": "a_tp_site_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-25",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_facility",
+            "constraintName": "a_tp_facility_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+  
+  {
+    "changeSet": {
+      "id": "1605621896272-26",
+      "author": "frank (generated)",
+      "changes": [
+        {
+          "addForeignKeyConstraint": {
+            "baseColumnNames": "asset_id",
+            "baseTableName": "a_tp_landparcel",
+            "constraintName": "a_tp_landparcel_asset_id_fkey",
+            "deferrable": false,
+            "initiallyDeferred": false,
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "referencedColumnNames": "asset_id",
+            "referencedTableName": "asset",
+            "referencedTableSchemaName": "public",
+            "validate": true
+          }
+        }]
+      
+    }
+  },
+
+  {
+    "changeSet": {
+      "id": "f8f5de0f-e360-458a-af11-336e59d279f7",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "runAlways" : true,
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "asset/asset_extension_views.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : ";"
+          }
+        },{
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "asset/kv_types_master_data.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : ";"
+          }
+        },{
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "asset/checkconstraints.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : ";"
+          }
+        }
+      ]
+    }
+  }
+]}

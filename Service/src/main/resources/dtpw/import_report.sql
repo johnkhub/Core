@@ -100,6 +100,5 @@ FROM
     ) AS identification_serial_number
     ON totals."Asset Type" = identification_serial_number."Asset Type"
 ORDER BY  totals."Asset Type";
-//
+
 COMMENT ON VIEW import_report_view IS 'A view that shows the number of entities of each type that was IMPORTED as well as indication of how many attribute values are missing.';
-//

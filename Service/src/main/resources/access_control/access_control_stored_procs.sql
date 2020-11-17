@@ -30,6 +30,7 @@ END; $$ LANGUAGE PLPGSQL;
 COMMENT ON FUNCTION access_control.bit_or IS 'User defined aggregation to allow OR-ing access bits';
 //
 
+DROP AGGREGATE IF EXISTS b_or(int);
 CREATE AGGREGATE b_or(int)
 (
         INITCOND = 0,

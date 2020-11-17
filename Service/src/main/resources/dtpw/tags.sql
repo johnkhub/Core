@@ -1,1 +1,1 @@
-INSERT INTO public.tags (k,v) VALUES ('AT_RISK', 'Land at risk');
+INSERT INTO public.tags (k,v) VALUES ('AT_RISK', 'Land at risk') ON CONFLICT (k) DO NOTHING;

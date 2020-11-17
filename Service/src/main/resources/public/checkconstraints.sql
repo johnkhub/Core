@@ -1,4 +1,27 @@
 -- TODO The community edition of liquibase does not support adding CHECK constraints, this is why I am adding them here
+
+
+ALTER TABLE public.asset_identification DROP CONSTRAINT IF EXISTS asset_identification_barcode_check;
+ALTER TABLE public.asset_identification DROP CONSTRAINT IF EXISTS asset_identification_serial_number_check;
+ALTER TABLE public.kv_base DROP CONSTRAINT IF EXISTS kv_base_k_check;
+ALTER TABLE public.unit DROP CONSTRAINT IF EXISTS unit_code_check;
+ALTER TABLE public.unit DROP CONSTRAINT IF EXISTS unit_name_check;
+ALTER TABLE public.unit  DROP CONSTRAINT IF EXISTS unit_symbol_check;
+ALTER TABLE public.tags DROP CONSTRAINT IF EXISTS tags_k_check;
+
+ALTER TABLE kv_type DROP CONSTRAINT IF EXISTS kv_type_code_check;
+ALTER TABLE kv_type DROP CONSTRAINT IF EXISTS kv_type_name_check;
+ALTER TABLE kv_type DROP CONSTRAINT IF EXISTS kv_type_table_check;
+
+ALTER TABLE public.ref_district DROP CONSTRAINT IF EXISTS ref_district_k_check;
+ALTER TABLE public.ref_municipality DROP CONSTRAINT IF EXISTS ref_municipality_k_check;
+ALTER TABLE public.ref_region DROP CONSTRAINT IF EXISTS ref_region_k_check;
+ALTER TABLE public.ref_suburb DROP CONSTRAINT IF EXISTS ref_suburb_k_check;
+ALTER TABLE public.ref_town DROP CONSTRAINT IF EXISTS ref_town_k_check;
+ALTER TABLE public.ref_ward DROP CONSTRAINT IF EXISTS ref_ward_k_check;
+
+
+
 ALTER TABLE public.asset_identification ADD CONSTRAINT asset_identification_barcode_check CHECK (barcode::text <> ''::text);
 ALTER TABLE public.asset_identification ADD CONSTRAINT asset_identification_serial_number_check CHECK (serial_number::text <> ''::text);
 ALTER TABLE public.kv_base ADD CONSTRAINT kv_base_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
@@ -18,12 +41,10 @@ ALTER TABLE public.ref_suburb ADD CONSTRAINT ref_suburb_k_check CHECK (k::text <
 ALTER TABLE public.ref_town ADD CONSTRAINT ref_town_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 ALTER TABLE public.ref_ward ADD CONSTRAINT ref_ward_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 
-
+//
 CREATE OR REPLACE FUNCTION public.fn_check_valid_func_loc_path(path ltree)
     RETURNS boolean
-    LANGUAGE plpgsql
-    SECURITY DEFINER
-AS $function$
+AS $$
 DECLARE
     asset uuid;
     idx int;
@@ -61,14 +82,17 @@ BEGIN
             END IF;
         END LOOP;
     RETURN true;
-END; $function$
+END; $$
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER
 ;
 
 COMMENT ON FUNCTION public.fn_check_valid_func_loc_path IS 'Variation of fn_is_valid_func_loc_path, that is suitable fro CHECK constraint. It will only check if the path > 1 segment and only up to n-1 segments.';
-
+//
+ALTER TABLE public.asset DROP CONSTRAINT IF EXISTS asset_check_func_loc_path;
 ALTER TABLE public.asset ADD CONSTRAINT asset_check_func_loc_path CHECK ((public.fn_check_valid_func_loc_path(func_loc_path) = true));
 
-
+//
 CREATE OR REPLACE FUNCTION public.fn_identify_multiple_subclasses(the_asset uuid) RETURNS boolean AS $$
 DECLARE
     sub_classes  text[];
@@ -114,9 +138,9 @@ END ; $$
     LANGUAGE PLPGSQL
     SECURITY DEFINER
 ;
-//
+
 COMMENT ON FUNCTION public.fn_identify_multiple_subclasses IS 'Identifies if the same asset has multiple subclasses e.g. same uuid in say envelope and facility. This is an invalid state but at the moment there is nothing in the database constraints that stops you from doing this.';
 
-
-
+ALTER TABLE public.asset DROP CONSTRAINT IF EXISTS asset_subclass;
 ALTER TABLE public.asset ADD CONSTRAINT asset_subclass CHECK (public.fn_identify_multiple_subclasses(asset_id) = false);
+//
