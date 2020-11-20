@@ -544,7 +544,7 @@ Returns:  *Nothing*
 Status codes: 201, 400, 403, 408, 409
 
 
-### DELETE `/assets/quantity/assset_id/{asset_id}/name/{name}`
+### DELETE `/assets/quantity/asset_id/{asset_id}/name/{name}`
 
 Deletes the Quantity matching the specified `asset_id` and `name` from the database.
 
