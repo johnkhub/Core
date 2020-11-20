@@ -16,9 +16,9 @@
             <fileNamePattern>${PATH}.%d{yyyy-MM-dd-HH-mm}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>25MB</maxFileSize>
-                <maxHistory>100</maxHistory>
-                <totalSizeCap>80GB</totalSizeCap>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>100</maxHistory>
+            <totalSizeCap>80GB</totalSizeCap>
         </rollingPolicy>
 
         <encoder>

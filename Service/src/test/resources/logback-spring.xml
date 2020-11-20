@@ -17,7 +17,6 @@
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>25MB</maxFileSize>
                 <maxHistory>100</maxHistory>
-                <totalSizeCap>80GB</totalSizeCap>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
 
@@ -38,4 +37,304 @@
         <appender-ref ref="STDOUT" />
         <appender-ref ref="ASYNC_FILE" />
     </root>
-</configuration>
+</configuration>2020-11-20 15:13:59.608  INFO 1158149 --- [main] za.co.imqs.coreservice.Boot              : Starting Boot on frank-OptiPlex-9020 with PID 1158149 (/home/frank/Development/Core/Service/target/classes started by frank in /home/frank/Development/Core/Service)
+2020-11-20 15:13:59.616  INFO 1158149 --- [main] za.co.imqs.coreservice.Boot              : The following profiles are active: admin
+2020-11-20 15:14:00.362  INFO 1158149 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.retry.annotation.RetryConfiguration' of type [org.springframework.retry.annotation.RetryConfiguration$$EnhancerBySpringCGLIB$$70fe66ca] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:14:00.384  INFO 1158149 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$7b3acea5] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:14:00.503  INFO 1158149 --- [main] org.eclipse.jetty.util.log               : Logging initialized @2016ms to org.eclipse.jetty.util.log.Slf4jLog
+2020-11-20 15:14:00.545  INFO 1158149 --- [main] o.s.b.w.e.j.JettyServletWebServerFactory : Server initialized with port: 8669
+2020-11-20 15:14:00.546  INFO 1158149 --- [main] org.eclipse.jetty.server.Server          : jetty-9.4.18.v20190429; built: 2019-04-29T20:42:08.989Z; git: e1bc35120a6617ee3df052294e433f3a25ce7097; jvm 11.0.9.1+1-Ubuntu-0ubuntu1.20.04
+2020-11-20 15:14:00.564  INFO 1158149 --- [main] o.e.j.s.h.ContextHandler.application     : Initializing Spring embedded WebApplicationContext
+2020-11-20 15:14:00.564  INFO 1158149 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 791 ms
+2020-11-20 15:14:00.643  INFO 1158149 --- [main] org.eclipse.jetty.server.session         : DefaultSessionIdManager workerName=node0
+2020-11-20 15:14:00.643  INFO 1158149 --- [main] org.eclipse.jetty.server.session         : No SessionScavenger set, using defaults
+2020-11-20 15:14:00.644  INFO 1158149 --- [main] org.eclipse.jetty.server.session         : node0 Scavenging every 600000ms
+2020-11-20 15:14:00.648  INFO 1158149 --- [main] o.e.jetty.server.handler.ContextHandler  : Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@451e2fa9{application,/,[file:///tmp/jetty-docbase.7413889339407292084.8669/],AVAILABLE}
+2020-11-20 15:14:00.648  INFO 1158149 --- [main] org.eclipse.jetty.server.Server          : Started @2162ms
+2020-11-20 15:15:15.588  INFO 1158711 --- [main] za.co.imqs.coreservice.Boot              : Starting Boot on frank-OptiPlex-9020 with PID 1158711 (/home/frank/Development/Core/Service/target/classes started by frank in /home/frank/Development/Core/Service)
+2020-11-20 15:15:15.597  INFO 1158711 --- [main] za.co.imqs.coreservice.Boot              : The following profiles are active: admin
+2020-11-20 15:15:16.305  INFO 1158711 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.retry.annotation.RetryConfiguration' of type [org.springframework.retry.annotation.RetryConfiguration$$EnhancerBySpringCGLIB$$f7450b4f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:15:16.326  INFO 1158711 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$181732a] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:15:16.437  INFO 1158711 --- [main] org.eclipse.jetty.util.log               : Logging initialized @1962ms to org.eclipse.jetty.util.log.Slf4jLog
+2020-11-20 15:15:16.482  INFO 1158711 --- [main] o.s.b.w.e.j.JettyServletWebServerFactory : Server initialized with port: 8669
+2020-11-20 15:15:16.484  INFO 1158711 --- [main] org.eclipse.jetty.server.Server          : jetty-9.4.18.v20190429; built: 2019-04-29T20:42:08.989Z; git: e1bc35120a6617ee3df052294e433f3a25ce7097; jvm 11.0.9.1+1-Ubuntu-0ubuntu1.20.04
+2020-11-20 15:15:16.501  INFO 1158711 --- [main] o.e.j.s.h.ContextHandler.application     : Initializing Spring embedded WebApplicationContext
+2020-11-20 15:15:16.502  INFO 1158711 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 772 ms
+2020-11-20 15:15:16.557  INFO 1158711 --- [main] org.eclipse.jetty.server.session         : DefaultSessionIdManager workerName=node0
+2020-11-20 15:15:16.557  INFO 1158711 --- [main] org.eclipse.jetty.server.session         : No SessionScavenger set, using defaults
+2020-11-20 15:15:16.558  INFO 1158711 --- [main] org.eclipse.jetty.server.session         : node0 Scavenging every 660000ms
+2020-11-20 15:15:16.562  INFO 1158711 --- [main] o.e.jetty.server.handler.ContextHandler  : Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@69a5c6be{application,/,[file:///tmp/jetty-docbase.5591114563915725366.8669/],AVAILABLE}
+2020-11-20 15:15:16.563  INFO 1158711 --- [main] org.eclipse.jetty.server.Server          : Started @2088ms
+2020-11-20 15:15:16.883  INFO 1158711 --- [main] z.c.i.s.s.f.BaseAuthConfiguration        : Could not fetch the configuration variable router_http_host, using default value localhost
+2020-11-20 15:15:16.883  INFO 1158711 --- [main] z.co.imqs.coreservice.AuthConfiguration  : ROUTER= localhost
+2020-11-20 15:15:16.886  INFO 1158711 --- [main] z.c.i.s.s.f.BaseAuthConfiguration        : Could not fetch the configuration variable router_http_port, using default value 80
+2020-11-20 15:15:16.887  INFO 1158711 --- [main] z.co.imqs.coreservice.AuthConfiguration  : AUTH= http://localhost:80/auth2
+2020-11-20 15:15:16.895  INFO 1158711 --- [main] z.co.imqs.coreservice.AuthConfiguration  : AUTH= http://localhost:80/auth2
+2020-11-20 15:15:16.912  INFO 1158711 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService
+2020-11-20 15:15:16.966  INFO 1158711 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-11-20 15:15:17.356  WARN 1158711 --- [main] za.co.imqs.coreservice.SchemaManagement  : DROPDB specified outside of TEST profile. Ignoring.
+2020-11-20 15:15:17.358  INFO 1158711 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-11-20 15:15:18.392 ERROR 1158711 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Exception during pool initialization.
+
+org.postgresql.util.PSQLException: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:280) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:49) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:195) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:454) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.connect(Driver.java:256) ~[postgresql-42.2.5.jar:42.2.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:136) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:369) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:198) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:467) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:541) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:115) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:112) ~[HikariCP-3.2.0.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:135) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:128) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.getMain(DatabaseUtil.java:97) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.createDBIfNotExist(DatabaseUtil.java:40) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.updateDb(DatabaseUtil.java:108) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.coreservice.SchemaManagement.upgrade(SchemaManagement.java:85) ~[classes/:na]
+	at za.co.imqs.coreservice.SchemaManagement.handle(SchemaManagement.java:163) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.processCommandline(StartupListener.java:84) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:50) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:20) ~[classes/:na]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:402) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:359) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:896) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:163) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at za.co.imqs.coreservice.Boot.start(Boot.java:92) ~[classes/:na]
+	at za.co.imqs.coreservice.Boot.main(Boot.java:79) ~[classes/:na]
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+	at org.postgresql.core.PGStream.<init>(PGStream.java:70) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:91) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:192) ~[postgresql-42.2.5.jar:42.2.5]
+	... 37 common frames omitted
+
+2020-11-20 15:15:18.393 ERROR 1158711 --- [main] za.co.imqs.libimqs.dbutils.DatabaseUtil  : Exception while trying to get connection from pool
+
+org.postgresql.util.PSQLException: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:280) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:49) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:195) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:454) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.connect(Driver.java:256) ~[postgresql-42.2.5.jar:42.2.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:136) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:369) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:198) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:467) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:541) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:115) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:112) ~[HikariCP-3.2.0.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:135) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:128) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.getMain(DatabaseUtil.java:97) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.createDBIfNotExist(DatabaseUtil.java:40) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.updateDb(DatabaseUtil.java:108) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.coreservice.SchemaManagement.upgrade(SchemaManagement.java:85) ~[classes/:na]
+	at za.co.imqs.coreservice.SchemaManagement.handle(SchemaManagement.java:163) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.processCommandline(StartupListener.java:84) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:50) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:20) ~[classes/:na]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:402) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:359) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:896) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:163) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at za.co.imqs.coreservice.Boot.start(Boot.java:92) ~[classes/:na]
+	at za.co.imqs.coreservice.Boot.main(Boot.java:79) ~[classes/:na]
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+	at org.postgresql.core.PGStream.<init>(PGStream.java:70) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:91) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:192) ~[postgresql-42.2.5.jar:42.2.5]
+	... 37 common frames omitted
+
+2020-11-20 15:15:23.394  INFO 1158711 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-11-20 15:15:24.397 ERROR 1158711 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Exception during pool initialization.
+
+org.postgresql.util.PSQLException: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:280) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:49) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:195) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:454) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.connect(Driver.java:256) ~[postgresql-42.2.5.jar:42.2.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:136) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:369) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:198) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:467) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:541) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:115) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:112) ~[HikariCP-3.2.0.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:135) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:128) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.getMain(DatabaseUtil.java:97) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.createDBIfNotExist(DatabaseUtil.java:40) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.updateDb(DatabaseUtil.java:108) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.coreservice.SchemaManagement.upgrade(SchemaManagement.java:85) ~[classes/:na]
+	at za.co.imqs.coreservice.SchemaManagement.handle(SchemaManagement.java:163) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.processCommandline(StartupListener.java:84) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:50) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:20) ~[classes/:na]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:402) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:359) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:896) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:163) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at za.co.imqs.coreservice.Boot.start(Boot.java:92) ~[classes/:na]
+	at za.co.imqs.coreservice.Boot.main(Boot.java:79) ~[classes/:na]
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+	at org.postgresql.core.PGStream.<init>(PGStream.java:70) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:91) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:192) ~[postgresql-42.2.5.jar:42.2.5]
+	... 37 common frames omitted
+
+2020-11-20 15:15:24.398 ERROR 1158711 --- [main] za.co.imqs.libimqs.dbutils.DatabaseUtil  : Exception while trying to get connection from pool
+
+org.postgresql.util.PSQLException: Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:280) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:49) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:195) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.makeConnection(Driver.java:454) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.Driver.connect(Driver.java:256) ~[postgresql-42.2.5.jar:42.2.5]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:136) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:369) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:198) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:467) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:541) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:115) ~[HikariCP-3.2.0.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:112) ~[HikariCP-3.2.0.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:135) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.testConnectionBlocking(DatabaseUtil.java:128) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.getMain(DatabaseUtil.java:97) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.createDBIfNotExist(DatabaseUtil.java:40) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.libimqs.dbutils.DatabaseUtil.updateDb(DatabaseUtil.java:108) ~[libimqs-1.0.70-SNAPSHOT.jar:na]
+	at za.co.imqs.coreservice.SchemaManagement.upgrade(SchemaManagement.java:85) ~[classes/:na]
+	at za.co.imqs.coreservice.SchemaManagement.handle(SchemaManagement.java:163) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.processCommandline(StartupListener.java:84) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:50) ~[classes/:na]
+	at za.co.imqs.coreservice.StartupListener.onApplicationEvent(StartupListener.java:20) ~[classes/:na]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:402) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:359) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:896) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:163) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552) ~[spring-context-5.1.7.RELEASE.jar:5.1.7.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248) ~[spring-boot-2.1.5.RELEASE.jar:2.1.5.RELEASE]
+	at za.co.imqs.coreservice.Boot.start(Boot.java:92) ~[classes/:na]
+	at za.co.imqs.coreservice.Boot.main(Boot.java:79) ~[classes/:na]
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+	at org.postgresql.core.PGStream.<init>(PGStream.java:70) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:91) ~[postgresql-42.2.5.jar:42.2.5]
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:192) ~[postgresql-42.2.5.jar:42.2.5]
+	... 37 common frames omitted
+
+2020-11-20 15:53:02.270  INFO 1172992 --- [main] za.co.imqs.coreservice.Boot              : Starting Boot on frank-OptiPlex-9020 with PID 1172992 (/home/frank/Development/Core/Service/target/classes started by frank in /home/frank/Development/Core/Service)
+2020-11-20 15:53:02.271  INFO 1172992 --- [main] za.co.imqs.coreservice.Boot              : The following profiles are active: admin
+2020-11-20 15:53:02.965  INFO 1172992 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.retry.annotation.RetryConfiguration' of type [org.springframework.retry.annotation.RetryConfiguration$$EnhancerBySpringCGLIB$$a6a96764] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:53:02.987  INFO 1172992 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$b0e5cf3f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-11-20 15:53:03.103  INFO 1172992 --- [main] org.eclipse.jetty.util.log               : Logging initialized @1822ms to org.eclipse.jetty.util.log.Slf4jLog
+2020-11-20 15:53:03.143  INFO 1172992 --- [main] o.s.b.w.e.j.JettyServletWebServerFactory : Server initialized with port: 8669
+2020-11-20 15:53:03.145  INFO 1172992 --- [main] org.eclipse.jetty.server.Server          : jetty-9.4.18.v20190429; built: 2019-04-29T20:42:08.989Z; git: e1bc35120a6617ee3df052294e433f3a25ce7097; jvm 11.0.9.1+1-Ubuntu-0ubuntu1.20.04
+2020-11-20 15:53:03.161  INFO 1172992 --- [main] o.e.j.s.h.ContextHandler.application     : Initializing Spring embedded WebApplicationContext
+2020-11-20 15:53:03.162  INFO 1172992 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 764 ms
+2020-11-20 15:53:03.217  INFO 1172992 --- [main] org.eclipse.jetty.server.session         : DefaultSessionIdManager workerName=node0
+2020-11-20 15:53:03.217  INFO 1172992 --- [main] org.eclipse.jetty.server.session         : No SessionScavenger set, using defaults
+2020-11-20 15:53:03.218  INFO 1172992 --- [main] org.eclipse.jetty.server.session         : node0 Scavenging every 660000ms
+2020-11-20 15:53:03.222  INFO 1172992 --- [main] o.e.jetty.server.handler.ContextHandler  : Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@4fb64a52{application,/,[file:///tmp/jetty-docbase.3282494099187973870.8669/],AVAILABLE}
+2020-11-20 15:53:03.223  INFO 1172992 --- [main] org.eclipse.jetty.server.Server          : Started @1943ms
+2020-11-20 15:53:07.956  INFO 1172992 --- [main] z.c.i.s.s.f.BaseAuthConfiguration        : Could not fetch the configuration variable router_http_host, using default value localhost
+2020-11-20 15:53:07.956  INFO 1172992 --- [main] z.co.imqs.coreservice.AuthConfiguration  : ROUTER= localhost
+2020-11-20 15:53:12.338  INFO 1172992 --- [main] z.c.i.s.s.f.BaseAuthConfiguration        : Could not fetch the configuration variable router_http_port, using default value 80
+2020-11-20 15:53:12.343  INFO 1172992 --- [main] z.co.imqs.coreservice.AuthConfiguration  : AUTH= http://localhost:80/auth2
+2020-11-20 15:53:12.351  INFO 1172992 --- [main] z.co.imqs.coreservice.AuthConfiguration  : AUTH= http://localhost:80/auth2
+2020-11-20 15:53:12.370  INFO 1172992 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService
+2020-11-20 15:53:12.425  INFO 1172992 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-11-20 15:53:12.821  WARN 1172992 --- [main] za.co.imqs.coreservice.SchemaManagement  : DROPDB specified outside of TEST profile. Ignoring.
+2020-11-20 15:53:12.823  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2020-11-20 15:53:12.886  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2020-11-20 15:53:12.893  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-11-20 15:53:12.895  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2020-11-20 15:53:12.896  WARN 1172992 --- [main] com.zaxxer.hikari.HikariConfig           : {} - idleTimeout has been set but has no effect because the pool is operating as a fixed size pool.
+2020-11-20 15:53:12.896  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2020-11-20 15:53:12.902  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2020-11-20 15:53:13.921  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2020-11-20 15:53:13.925  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2020-11-20 15:53:13.926  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2020-11-20 15:53:13.927  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2020-11-20 15:53:13.953  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2020-11-20 15:53:13.957  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2020-11-20 15:53:13.957  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2020-11-20 15:53:13.958  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2020-11-20 15:53:13.989  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2020-11-20 15:53:13.993  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2020-11-20 15:53:13.993  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2020-11-20 15:53:13.994  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
+2020-11-20 15:53:14.028  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2020-11-20 15:53:14.033  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2020-11-20 15:53:14.033  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2020-11-20 15:53:14.034  INFO 1172992 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+2020-11-20 15:53:14.184  INFO 1172992 --- [main] o.e.j.s.h.ContextHandler.application     : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-11-20 15:53:14.184  INFO 1172992 --- [main] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-11-20 15:53:14.188  INFO 1172992 --- [main] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2020-11-20 15:53:14.198  INFO 1172992 --- [main] o.e.jetty.server.AbstractConnector       : Started ServerConnector@668cc9a2{HTTP/1.1,[http/1.1]}{0.0.0.0:8669}
+2020-11-20 15:53:14.200  INFO 1172992 --- [main] o.s.b.web.embedded.jetty.JettyWebServer  : Jetty started on port(s) 8669 (http/1.1) with context path '/'
+2020-11-20 15:53:14.203  INFO 1172992 --- [main] za.co.imqs.coreservice.Boot              : Started Boot in 12.528 seconds (JVM running for 12.923)
