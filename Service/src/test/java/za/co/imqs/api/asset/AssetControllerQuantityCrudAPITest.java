@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
  * We have a method for every possible return code.
  * Consider a test case for each field as well to test validation.
  */
-public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControllerAPITest {
+public class AssetControllerQuantityCrudAPITest extends AbstractAssetControllerAPITest {
 
     @Before
     public void clearAsset() {
@@ -92,6 +92,17 @@ public class AssetControllerUpdateQuantityAPITest extends AbstractAssetControlle
         quantity.setUnit_code("length_m");
         Assert.assertEquals(quantity, result);
 
+    }
+
+    @Test
+    public void deleteQantity() throws Exception {
+        assetAddQuantitySuccess();
+        given().
+                header("Cookie", login.getSession()).
+                contentType(ContentType.JSON).
+                delete("/assets/quantity/asset_id/{asset_id}/name/{name}", THE_ASSET, "extent").
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK);
     }
 
     @Test

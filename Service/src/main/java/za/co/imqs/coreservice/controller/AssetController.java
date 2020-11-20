@@ -664,7 +664,7 @@ public class AssetController {
     }
 
     @RequestMapping(
-            method = RequestMethod.DELETE, value = "/quantity/asset_id/{asset_id}/name/{name}"
+            method = RequestMethod.DELETE, value = "/quantity/asset_id/{uuid}/name/{name}"
     )
     public ResponseEntity deleteQuantity(
             @PathVariable UUID uuid,
