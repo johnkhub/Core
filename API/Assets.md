@@ -401,7 +401,7 @@ Status codes: 200, 400, 403, 404, 408
 
 
 
-#### PUT `/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
+### PUT `/group/{uuid}/to/{grouping_id_type}/{grouping_id}`
 
 Accepts: *Nothing*
 
@@ -555,7 +555,7 @@ Returns:  *Nothing*
 Status codes: 201, 400, 403, 404, 408
 
 
-### GET `/assets/quantity/assset_id/{asset_id}/name/{name}`
+### GET `/assets/quantity/asset_id/{asset_id}/name/{name}`
 
 Retrieves the Quantity matching the specified `asset_id` and `name` from the database.
 
