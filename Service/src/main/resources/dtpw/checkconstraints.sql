@@ -12,3 +12,6 @@ ALTER TABLE dtpw.ref_ei_district DROP CONSTRAINT IF EXISTS ref_ei_district_k_che
 ALTER TABLE dtpw.ref_ei_district ADD CONSTRAINT ref_ei_district_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 
 
+ALTER TABLE dtpw.ref_deed_office ADD CONSTRAINT ref_deed_office_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE dtpw.ref_land_use_class ADD CONSTRAINT ref_land_use_class_k_check  CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE dtpw.ref_accommodation_type ADD CONSTRAINT ref_accommodation_type_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);

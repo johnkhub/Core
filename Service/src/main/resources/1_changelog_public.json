@@ -788,7 +788,7 @@
                     "primaryKeyName": "kv_type_pkey"
                   },
                   "name": "code",
-                  "type": "VARCHAR(10)"
+                  "type": "VARCHAR(30)"
                 }
               },
               {
@@ -2740,6 +2740,715 @@
         }]
     }
   },
+
+
+
+
+  {
+    "changeSet": {
+      "id": "5f01bf22-d381-4685-8f1f-670f57825ff8",
+      "author": "frank",
+      "comment": "New lookups added",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+          ,
+            "tableName": "ref_asset_class",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_asset_class_k_idx",
+            "tableName": "ref_asset_class",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_asset_class_v_idx",
+            "tableName": "ref_asset_class",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+          ,
+            "tableName": "ref_asset_nature",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_asset_nature_k_idx",
+            "tableName": "ref_asset_nature",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_asset_nature_v_idx",
+            "tableName": "ref_asset_nature",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+          ,
+            "tableName": "ref_criticality_rating",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_criticality_rating_k_idx",
+            "tableName": "ref_criticality_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_criticality_rating_v_idx",
+            "tableName": "ref_criticality_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }]
+          ,
+            "tableName": "ref_utilisation_rating",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_utilisation_rating_k_idx",
+            "tableName": "ref_utilisation_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_utilisation_rating_v_idx",
+            "tableName": "ref_utilisation_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }
+            ],
+            "tableName": "ref_accessibility_rating",
+            "schemaName": "public"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }
+            ],
+            "indexName": "ref_accessibility_rating_k_idx",
+            "tableName": "ref_accessibility_rating",
+            "schemaName": "public",
+            "unique": true
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }
+            ],
+            "indexName": "ref_accessibility_rating_v_idx",
+            "tableName": "ref_accessibility_rating",
+            "schemaName": "public",
+            "unique": true
+          }
+        },
+
+
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }, {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "accuracy",
+                  "type": "float"
+                }
+              }]
+          ,
+            "tableName": "ref_confidence_rating",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_confidence_rating_k_idx",
+            "tableName": "ref_confidence_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_confidence_rating_v_idx",
+            "tableName": "ref_confidence_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }, {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "asset_info",
+                  "type": "text"
+                }
+              }]
+          ,
+            "tableName": "ref_condition_rating",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_condition_rating_k_idx",
+            "tableName": "ref_condition_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_condition_rating_v_idx",
+            "tableName": "ref_condition_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }, {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "asset_info",
+                  "type": "text"
+                }
+              }]
+          ,
+            "tableName": "ref_performance_rating",
+            "schemaName": "public"
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }]
+          ,
+            "indexName": "ref_performance_rating_k_idx",
+            "tableName": "ref_performance_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        },{
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }]
+          ,
+            "indexName": "ref_performance_rating_v_idx",
+            "tableName": "ref_performance_rating",
+            "schemaName" : "public",
+            "unique": true
+          }
+        }]
+    }
+  },
+
+
 
 
   {

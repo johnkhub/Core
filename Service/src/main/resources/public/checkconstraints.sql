@@ -41,6 +41,19 @@ ALTER TABLE public.ref_suburb ADD CONSTRAINT ref_suburb_k_check CHECK (k::text <
 ALTER TABLE public.ref_town ADD CONSTRAINT ref_town_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 ALTER TABLE public.ref_ward ADD CONSTRAINT ref_ward_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
 
+
+
+ALTER TABLE public.ref_accessibility_rating ADD CONSTRAINT ref_accessibility_rating_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_asset_class ADD CONSTRAINT ref_asset_class_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_asset_nature ADD CONSTRAINT ref_asset_nature_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_condition_rating ADD CONSTRAINT ref_condition_rating_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_confidence_rating ADD CONSTRAINT ref_confidence_rating_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_criticality_rating ADD CONSTRAINT ref_criticality_rating_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+ALTER TABLE public.ref_utilisation_rating ADD CONSTRAINT ref_utilisation_rating_k_check  CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
+
+
+
+
 //
 CREATE OR REPLACE FUNCTION public.fn_check_valid_func_loc_path(path ltree)
     RETURNS boolean

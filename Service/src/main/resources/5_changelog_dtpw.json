@@ -671,9 +671,276 @@
 
   {
     "changeSet": {
+      "id": "e0cd1a12-4b4b-4e12-b718-5a496c189af6",
+      "author": "frank",
+      "comment": "New lookups added",
+      "changes": [
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }
+            ],
+            "tableName": "ref_deed_office",
+            "schemaName": "dtpw"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }
+            ],
+            "indexName": "ref_deed_office_k_idx",
+            "tableName": "ref_deed_office",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }
+            ],
+            "indexName": "ref_deed_office_v_idx",
+            "tableName": "ref_deed_office",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        },
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }
+            ],
+            "tableName": "ref_land_use_class",
+            "schemaName": "dtpw"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }
+            ],
+            "indexName": "ref_land_use_class_k_idx",
+            "tableName": "ref_land_use_class",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }
+            ],
+            "indexName": "ref_land_use_class_v_idx",
+            "tableName": "ref_land_use_class",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        },
+        {
+          "createTable": {
+            "columns": [
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "k",
+                  "type": "VARCHAR(10)"
+                }
+              },
+              {
+                "column": {
+                  "name": "v",
+                  "type": "VARCHAR"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "creation_date",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "name": "deactivated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              },
+              {
+                "column": {
+                  "defaultValueBoolean": false,
+                  "name": "allow_delete",
+                  "type": "BOOLEAN"
+                }
+              },
+              {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "defaultValueComputed": "now()",
+                  "name": "activated_at",
+                  "type": "TIMESTAMP WITHOUT TIME ZONE"
+                }
+              }
+            ],
+            "tableName": "ref_accommodation_type",
+            "schemaName": "dtpw"
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "k"
+                }
+              }
+            ],
+            "indexName": "ref_accommodation_type_k_idx",
+            "tableName": "ref_accommodation_type",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        },
+        {
+          "createIndex": {
+            "columns": [
+              {
+                "column": {
+                  "name": "v"
+                }
+              }
+            ],
+            "indexName": "ref_accommodation_type_v_idx",
+            "tableName": "ref_accommodation_type",
+            "schemaName": "dtpw",
+            "unique": true
+          }
+        }
+      ]
+    }
+  },
+
+  {
+    "changeSet": {
       "id": "0bd5c466-9743-4b85-a10b-c12e50039273",
       "author": "frankvr",
-      "comment" : "Add support for tags",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
       "runAlways" : true,
       "changes": [
@@ -737,6 +1004,8 @@
       ]
     }
   },
+
+
   {
     "changeSet": {
       "id": "668ca1e7-bfb5-4b7e-afad-513cd6516538",
