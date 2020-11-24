@@ -2,21 +2,13 @@
 -- SQL to add all changesets to database history table
 -- *********************************************************************
 -- Change Log: 1_changelog_public.json
--- Ran at: 11/17/20, 8:16 PM
--- Against: postgres@jdbc:postgresql://localhost/virgin
+-- Ran at: 11/24/20, 4:01 PM
+-- Against: postgres@jdbc:postgresql://localhost/qa1
 -- Liquibase version: 3.4.1
 -- *********************************************************************
 
 -- Create Database Lock Table
 CREATE TABLE public.databasechangeloglock (ID INT NOT NULL, LOCKED BOOLEAN NOT NULL, LOCKGRANTED TIMESTAMP WITHOUT TIME ZONE, LOCKEDBY VARCHAR(255), CONSTRAINT PK_DATABASECHANGELOGLOCK PRIMARY KEY (ID));
-
--- Initialize Database Lock Table
-DELETE FROM public.databasechangeloglock;
-
-INSERT INTO public.databasechangeloglock (ID, LOCKED) VALUES (1, FALSE);
-
--- Lock Database
-UPDATE public.databasechangeloglock SET LOCKED = TRUE, LOCKEDBY = 'fe80:0:0:0:949c:e9ff:fe43:3c5d%veth52add40 (fe80:0:0:0:949c:e9ff:fe43:3c5d%veth52add40)', LOCKGRANTED = '2020-11-17 20:16:27.029' WHERE ID = 1 AND LOCKED = FALSE;
 
 -- Create Database Change Log Table
 CREATE TABLE public.databasechangelog (ID VARCHAR(255) NOT NULL, AUTHOR VARCHAR(255) NOT NULL, FILENAME VARCHAR(255) NOT NULL, DATEEXECUTED TIMESTAMP WITHOUT TIME ZONE NOT NULL, ORDEREXECUTED INT NOT NULL, EXECTYPE VARCHAR(10) NOT NULL, MD5SUM VARCHAR(35), DESCRIPTION VARCHAR(255), COMMENTS VARCHAR(255), TAG VARCHAR(255), LIQUIBASE VARCHAR(20), CONTEXTS VARCHAR(255), LABELS VARCHAR(255));
@@ -51,7 +43,7 @@ INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDERE
 
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('1605621892882-14', 'frank (generated)', '1_changelog_public.json', NOW(), 15, '7:b6af839dc580e350061f7ed969c6db38', 'createTable', '', 'EXECUTED', NULL, NULL, '3.4.1');
 
-INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('1605621892882-15', 'frank (generated)', '1_changelog_public.json', NOW(), 16, '7:10d6f195ae57285972ee5e72fe194680', 'createTable', '', 'EXECUTED', NULL, NULL, '3.4.1');
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('1605621892882-15', 'frank (generated)', '1_changelog_public.json', NOW(), 16, '7:c21d5c2f3d610e5d8b7cf8366a49345b', 'createTable', '', 'EXECUTED', NULL, NULL, '3.4.1');
 
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('1605621892882-20', 'frank (generated)', '1_changelog_public.json', NOW(), 17, '7:fa64b756a4c9f07bf63f8ff6f06b0579', 'createIndex', '', 'EXECUTED', NULL, NULL, '3.4.1');
 
@@ -177,8 +169,9 @@ INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDERE
 
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('0000000000-2', 'frankvr', '1_changelog_public.json', NOW(), 78, '7:06e999239d587e0496329e09126ab539', 'sqlFile', 'Modtrack', 'EXECUTED', NULL, NULL, '3.4.1');
 
-INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('0000000000-1', 'frankvr', '1_changelog_public.json', NOW(), 79, '7:5b598eef0e2bbc23b71fe8a908c5ccfc', 'sqlFile (x8)', '', 'EXECUTED', NULL, NULL, '3.4.1');
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('5f01bf22-d381-4685-8f1f-670f57825ff8', 'frank', '1_changelog_public.json', NOW(), 79, '7:e356aa1c1c79edeb58bece38cd74149d', 'createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2)', 'New lookups added', 'EXECUTED', NULL, NULL, '3.4.1');
 
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('0000000000-1', 'frankvr', '1_changelog_public.json', NOW(), 80, '7:cfc2fcbe674f57f4675addec9feca59d', 'sqlFile (x8)', '', 'EXECUTED', NULL, NULL, '3.4.1');
 
 
 
@@ -203,7 +196,6 @@ INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDERE
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('ae2cd1ab-78b8-4fda-8577-58cf76ce705d', 'frankvr', '2_changelog_audit.json', NOW(), 10, '7:ed0be11aae4776fd388634123c1609f5', 'dropForeignKeyConstraint, renameColumn, createTable, createIndex, addForeignKeyConstraint', 'Rename asset to entity and change management of audit types', 'EXECUTED', NULL, NULL, '3.4.1');
 
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('136e1f96-4e14-4a0e-be0f-864ed6c31f72', 'frankvr', '2_changelog_audit.json', NOW(), 11, '7:411aa4104fa9a300f86d36c4aa65b65d', 'sqlFile', 'Audit types', 'EXECUTED', NULL, NULL, '3.4.1');
-
 
 
 
@@ -325,10 +317,8 @@ INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDERE
 
 INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('1605621892882-19', 'frank (generated)', '5_changelog_dtpw.json', NOW(), 19, '7:3f2d5bfe9dd2e3fa3e109d2753ec2b81', 'addForeignKeyConstraint', 'THIS IS A CLIENT SPECIFIC CONSTRAINT EVEN IF IT IS BEING APPLIED ON PUBLIC SCHEMA', 'EXECUTED', NULL, NULL, '3.4.1');
 
-INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('0bd5c466-9743-4b85-a10b-c12e50039273', 'frankvr', '5_changelog_dtpw.json', NOW(), 20, '7:acade1647217520c0fde16c5bbc1bc24', 'sqlFile (x7)', 'Add support for tags', 'EXECUTED', NULL, NULL, '3.4.1');
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('e0cd1a12-4b4b-4e12-b718-5a496c189af6', 'frank', '5_changelog_dtpw.json', NOW(), 20, '7:4d6aa948dba7883b58c23ceb266d11d5', 'createTable, createIndex (x2), createTable, createIndex (x2), createTable, createIndex (x2)', 'New lookups added', 'EXECUTED', NULL, NULL, '3.4.1');
 
-INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('668ca1e7-bfb5-4b7e-afad-513cd6516538', 'frankvr', '5_changelog_dtpw.json', NOW(), 21, '7:b98bf4153fa8e251c7bf600f2ef79dfc', 'sqlFile (x3)', 'Apply baked in db users', 'EXECUTED', NULL, NULL, '3.4.1');
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('0bd5c466-9743-4b85-a10b-c12e50039273', 'frankvr', '5_changelog_dtpw.json', NOW(), 21, '7:893273249c58ca462e76ac4938caafbc', 'sqlFile (x7)', '', 'EXECUTED', NULL, NULL, '3.4.1');
 
--- Release Database Lock
-UPDATE public.databasechangeloglock SET LOCKED = FALSE, LOCKEDBY = NULL, LOCKGRANTED = NULL WHERE ID = 1;
-
+INSERT INTO public.databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, MD5SUM, DESCRIPTION, COMMENTS, EXECTYPE, CONTEXTS, LABELS, LIQUIBASE) VALUES ('668ca1e7-bfb5-4b7e-afad-513cd6516538', 'frankvr', '5_changelog_dtpw.json', NOW(), 22, '7:b98bf4153fa8e251c7bf600f2ef79dfc', 'sqlFile (x3)', 'Apply baked in db users', 'EXECUTED', NULL, NULL, '3.4.1');

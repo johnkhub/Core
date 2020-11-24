@@ -942,7 +942,6 @@
       "id": "0bd5c466-9743-4b85-a10b-c12e50039273",
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "runAlways" : true,
       "changes": [
         {
           "sqlFile": {
@@ -1012,7 +1011,6 @@
       "author": "frankvr",
       "comment" : "Apply baked in db users",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "runAlways" : true,
       "changes": [
         {
           "sqlFile": {

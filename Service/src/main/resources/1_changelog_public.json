@@ -3456,7 +3456,6 @@
       "id": "0000000000-1",
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
-      "runAlways" : true,
       "changes": [
         {
           "sqlFile": {
