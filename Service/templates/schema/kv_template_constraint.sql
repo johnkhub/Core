@@ -1,0 +1,1 @@
+ALTER TABLE public.ref_xxxx ADD CONSTRAINT ref_xxxx_k_check  CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);
