@@ -128,6 +128,7 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                     w.write(line);
                     line = r.readLine();
                 }
+                w.flush();
             } catch(IOException e) {
                 throw new RuntimeException("Could not create import config file.",e);
             }

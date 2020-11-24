@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,9 @@ public class ServiceConfiguration {
     private final ConfigClient configClient;
     private final DataSource ds;
 
+    @Value("${server.port}")
+    private int serverPort;
+
     @Autowired
     public ServiceConfiguration(
             ConfigClient configClient,
@@ -63,14 +67,20 @@ public class ServiceConfiguration {
     @Bean
     @Qualifier("visible_host_url")
     public String getVisibleHostUrl() {
+        // 1. For Docker we need to set the IMQS_HOSTNAME_URL there is no alternative
+        //    as the host exposed to the outside word is not this one.
+        // 2. On Windows we allow fallback to the COMPUTERNAME variable as it is mostly set
+        //    and a handy thing for the sandpit scenario
+        // 3. Is a last resort that will mostly be the right thing on a native
+        //    development instance
         String host = System.getenv("IMQS_HOSTNAME_URL");
         if (host == null) {
             log.warn("IMQS_HOSTNAME_URL environment variable not set.");
             host = System.getenv("COMPUTERNAME");
             if (host != null) {
-                return "http://"+host+"/";
+                return "http://" + host + ":" + serverPort + "/";
             }
-            return "http://localhost:8669/";
+            return "http://localhost:" + serverPort + "/";
         }
         return host;
     }
