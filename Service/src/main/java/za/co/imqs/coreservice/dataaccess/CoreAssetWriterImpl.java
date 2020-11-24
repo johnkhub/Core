@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,10 +17,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
-import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
-import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
-import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
-import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.coreservice.model.Quantity;
@@ -586,9 +584,15 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {
             return new ResubmitException(e.getMessage());
+        } else if (e instanceof UncategorizedSQLException) {
+            if (e.getMessage().contains("RAISE")) {
+                // Assume that RAISES are all business rule - check constraints etc.
+                return new BusinessRuleViolationException(e.getCause().getMessage());
+            }
+        }
 
         // Esoteric mappings
-        } if (e instanceof TransactionSystemException) {
+        if (e instanceof TransactionSystemException) {
             final Throwable t = ((TransactionSystemException) e).getOriginalException();
 
             // A socket write timeout communicating with the Postgres server

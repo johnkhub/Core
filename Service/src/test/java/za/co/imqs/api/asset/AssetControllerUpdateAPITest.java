@@ -69,6 +69,46 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
     }
 
     @Test
+    public void assetUpdateChangeType() throws Exception {
+        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                code("e1").
+                name("Envelope 1").
+                type("ENVELOPE").
+                funcloc("at").
+                dept("WCED").
+                serial("1234").
+                get();
+
+        given().
+                header("Cookie", login.getSession()).
+                contentType(ContentType.JSON).body(envelope).
+                put("/assets/{uuid}", THE_ASSET).
+                then().assertThat().
+                statusCode(HttpStatus.SC_CREATED);
+
+        assertEquals(getAsset(THE_ASSET), envelope);
+
+
+
+        final  AssetEnvelopeDto update = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                type("BUILDING").
+                serial("1234").
+                get();
+        envelope.setSerial_number("1234");
+
+        given().
+                header("Cookie", login.getSession()).
+                contentType(ContentType.JSON).body(update).
+                patch("/assets/{uuid}", THE_ASSET).
+                then().assertThat().
+                statusCode(HttpStatus.SC_OK);
+
+
+        assertEquals(getAsset(THE_ASSET), envelope);
+    }
+
+
+    @Test
     public void assetUpdateValidationFailure() throws Exception {
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").

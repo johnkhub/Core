@@ -116,6 +116,8 @@ Status codes: 201, 400, 403, 408, 409, 412
 ### `PATCH assets/{uuid}`
 Updates an existing Asset.
 
+> **RULE:** Changing the Asset Type is not allowed.
+
 Accepts:  `CoreAssetDto`
 ```
 e.g.
