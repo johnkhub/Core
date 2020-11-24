@@ -1,0 +1,6 @@
+k,v,accuracy
+1,"Accurate (visual inspection, scientific assessment)",0.95
+2,Minor inaccuracies (limited inspection),0.9
+3,"Some estimation (as-built data, informed judgement, aerial photography)",0.75
+4,"Significant data estimated (proxies, informed by user staff familiar with asset)",0.6
+5,"All data estimated (higher level judgement only)",0.45
