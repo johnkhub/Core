@@ -81,17 +81,17 @@ See the [Template](import_template.csv)
 |geom					|In wellknown text format|o|ALL|
 
 
-## Associating Land Parcels to Envelopes
+## Associating Assets to Landparcels
 
-This is imported separately from the asset data as there is 1:many relationship between ENVELOPES and LANDPARCELS.
+This is imported separately from the asset data as there is 1:many relationship between the Assets living on LANDPARCELS and the parcels.
 
 * This is the `csv` format that we will use to import and export data  
 * The ordering of fields is not important
 * It is **case sensitive**
 
-> Both the ENVELOPES and LANDPARCELS must already exist.
+> Both the Asset and LANDPARCELS must already exist.
 
-|Field           |Description                            |M/O|
-|----------------|---------------------------------------|---|
-|envelope_path	 |Functional location path of ENVELOPE   |m  |
-|landparcel_path |Functional location path of LANDPARCEL |m  |
+|Field               |Description                                   |M/O|
+|--------------------|----------------------------------------------|---|
+|asset_id	         |Asset identifier of the asset e.g. Building   |m  |
+|landparcel_asset_id |Asset identifier of LANDPARCEL                |m  |
