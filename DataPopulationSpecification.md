@@ -75,10 +75,15 @@ See the [Template](import_template.csv)
 |suburb_code			|Master data (k)|o|`ENVELOPE`|
 |facility_type_code		|Master data (k)|m|`FACILITY`|
 |responsible_dept_code	|Master data (k)|o|ALL|
-|is_owned				|TRUE=owned|o|ALL|
-|EMIS					|EI EMIS number |o|ALL|
-|LPI					|Land Parcel Identifier |o|`LANDPARCEL`|
-|geom					|In wellknown text format|o|ALL|
+|is_owned			|TRUE=owned|o|ALL|
+|EMIS					  |EI EMIS number (Text) |o|ALL|
+|LPI					   |Land Parcel Identifier (Text) |o|`LANDPARCEL`|
+|ei_district_code |Master data (k) |o|ALL|
+|tags       |Asset Tags|o|ALL|
+|extent     |Number|o|ALL|
+|extent_unit|Master data (k)|o but must be specified if extent is specified |ALL|
+|geom					  |In wellknown text format|o|ALL|
+
 
 
 ## Associating Land Parcels to Envelopes
