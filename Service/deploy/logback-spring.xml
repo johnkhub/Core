@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
-    <property name="PATH" value="/var/log/imqs/asset-core-service.log" />
+    <property name="PATH" value="asset-core-service.log" />
 
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
