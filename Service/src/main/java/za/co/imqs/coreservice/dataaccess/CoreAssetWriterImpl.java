@@ -213,7 +213,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, externalIdType, externalId) > 0) {
+            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?);", uuid, externalIdType, externalId) > 0) {
                 updateModTrack();
             }
         } catch (Exception e) {
@@ -250,7 +250,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addToGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
-            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, groupingIdType, groupingId) > 0) {
+            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?)", uuid, groupingIdType, groupingId) > 0) {
                 updateModTrack();
             }
         } catch (Exception e) {

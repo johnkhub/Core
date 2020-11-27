@@ -84,7 +84,7 @@ public class AssetControllerCreateGroupingAPITest extends AbstractAssetControlle
                 header("Cookie", login.getSession()).
                 put("assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}", THE_ASSET, DTPW.GROUPING_TYPE_EMIS, THE_GROUPING_ID).
                 then().
-                assertThat().statusCode(HttpStatus.SC_CREATED);
+                assertThat().statusCode(HttpStatus.SC_CONFLICT);
 
         assertLinked(THE_ASSET);
     }
