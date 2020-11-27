@@ -101,7 +101,7 @@ public class AssetControllerUpdateAPITest extends AbstractAssetControllerAPITest
                 contentType(ContentType.JSON).body(update).
                 patch("/assets/{uuid}", THE_ASSET).
                 then().assertThat().
-                statusCode(HttpStatus.SC_OK);
+                statusCode(HttpStatus.SC_PRECONDITION_FAILED);
 
 
         assertEquals(getAsset(THE_ASSET), envelope);

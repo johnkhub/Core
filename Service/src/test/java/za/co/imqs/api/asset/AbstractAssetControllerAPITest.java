@@ -1,5 +1,6 @@
 package za.co.imqs.api.asset;
 
+import ch.qos.logback.classic.Level;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
@@ -50,6 +52,10 @@ import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
  */
 @Slf4j
 public class AbstractAssetControllerAPITest {
+    static {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)).setLevel(Level.INFO);
+    }
+
     protected static final TestRule NULL_RULE = new TestRule() {
         @Override
         public Statement apply(Statement statement, org.junit.runner.Description description) {
