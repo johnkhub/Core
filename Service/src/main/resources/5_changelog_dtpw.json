@@ -1041,5 +1041,23 @@
         }
       ]
     }
+  }, {
+    "changeSet": {
+      "id": "1350f17e-09f0-455c-abde-de70dca9be8c",
+      "author": "frankvr",
+      "comment" : "Apply baked in db users",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "dbms" : "postgresql",
+            "encoding" : "utf8",
+            "path": "baked_in_db_users/report_reader_access.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter" : "//"
+          }
+        }
+      ]
+    }
   }
 ]}

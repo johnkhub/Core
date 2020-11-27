@@ -46,4 +46,4 @@ GRANT USAGE ON SCHEMA access_control TO report_reader;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_access TO report_reader;
 GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO report_reader;
 
-GRANT ROLE report_reader TO <your role here>;
+-- GRANT ROLE report_reader TO <your role here>;
