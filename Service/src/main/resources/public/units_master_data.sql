@@ -4,7 +4,7 @@ INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('current_a', 'Ampere', tr
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('voltage_v', 'Volt', true,'V', 'T_VOLTAGE') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('power_w', 'Watt', true,'W', 'T_POWER') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('volume_m', 'Cubic Meter', true, '㎥', 'T_VOLUME') ON CONFLICT(code) DO NOTHING;
-INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('area_m', 'Square Meter', true, '㎡', 'T_AREA') ON CONFLICT(code) DO NOTHING;
+INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('area_m2', 'Square Meter', true, '㎡', 'T_AREA') ON CONFLICT(code) DO NOTHING;
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('temp_c', 'Celsius', true, '℃', 'T_TEMPERATURE') ON CONFLICT(code) DO NOTHING;
 
 INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('zar', 'Rand', true, 'R', 'T_CURRENCY') ON CONFLICT(code) DO NOTHING;

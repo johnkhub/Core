@@ -1,3 +1,5 @@
+DELETE FROM unit WHERE code = area_m;
+
 ALTER TABLE public.kv_type ALTER COLUMN code SET DATA TYPE varchar(30);
 
 -- Table: dtpw.ref_accommodation_type
