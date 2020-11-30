@@ -543,7 +543,7 @@ Accepts: `QuantityDto`
 
 Returns:  *Nothing*
 
-Status codes: 201, 400, 403, 408, 409
+Status codes: 200, 400, 403, 408, 409
 
 
 ### DELETE `/assets/quantity/asset_id/{asset_id}/name/{name}`
@@ -554,7 +554,7 @@ Accepts: *Nothing*
 
 Returns:  *Nothing*
 
-Status codes: 201, 400, 403, 404, 408
+Status codes: 200, 400, 403, 404, 408
 
 
 ### GET `/assets/quantity/asset_id/{asset_id}/name/{name}`
@@ -565,4 +565,4 @@ Accepts: *Nothing*
 
 Returns:  `QuantityDto`
 
-Status codes: 201, 400, 403, 404, 408
+Status codes: 200, 400, 403, 404, 408
