@@ -147,7 +147,7 @@ public class Importer extends ImporterTemplate{
 
                         try {
                             restTemplate.exchange(
-                                    baseUrl + "/assets/quantity/{uuid}/name/{name}",
+                                    baseUrl + "/assets/quantity/asset_id/{uuid}/name/{name}",
                                     HttpMethod.DELETE,
                                     jsonEntity(null),
                                     Void.class,
