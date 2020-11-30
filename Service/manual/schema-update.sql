@@ -206,6 +206,7 @@ CREATE TABLE public.ref_condition_rating
     allow_delete boolean DEFAULT false,
     activated_at timestamp without time zone NOT NULL DEFAULT now(),
     asset_info text COLLATE pg_catalog."default" NOT NULL,
+    risk text NOT NULL,
     CONSTRAINT ref_condition_rating_k_check CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text)
 )
     WITH (

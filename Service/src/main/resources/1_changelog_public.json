@@ -3169,8 +3169,6 @@
             "unique": true
           }
         },
-
-
         {
           "createTable": {
             "columns": [
@@ -3318,6 +3316,14 @@
                     "nullable": false
                   },
                   "name": "asset_info",
+                  "type": "text"
+                }
+              }, {
+                "column": {
+                  "constraints": {
+                    "nullable": false
+                  },
+                  "name": "risk",
                   "type": "text"
                 }
               }]
