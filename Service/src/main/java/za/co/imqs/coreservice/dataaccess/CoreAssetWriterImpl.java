@@ -194,7 +194,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             throw new RuntimeException("No way!");
         }
 
-        jdbc.getJdbcTemplate().batchUpdate(
+        int[] counts = jdbc.getJdbcTemplate().batchUpdate(
                 "select public.fn_delete_asset(?)",
                 new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -206,7 +206,12 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     }
                 }
         );
-        updateModTrack();
+        for (int i : counts) {
+            if (i > 0) {
+                updateModTrack();
+                return;
+            }
+        }
     }
 
     @Override
