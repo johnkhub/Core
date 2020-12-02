@@ -1,3 +1,16 @@
+DROP INDEX IF EXISTS asset_func_loc_path_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS asset_func_loc_path_idx ON public.asset USING gist (func_loc_path);
+
+DROP INDEX IF EXISTS asset_adm_path_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS asset_adm_path_idx ON public.asset USING gist (adm_path);
+
+DROP INDEX IF EXISTS asset_grap_path_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS asset_grap_path_idx ON public.asset USING gist (grap_path);
+
+DROP INDEX IF EXISTS dtpw_organogram_path_idx;
+CREATE INDEX IF NOT EXISTS dtpw_organogram_path_idx ON dtpw.ei_district_link USING gist (organogram_path);
+
+
 DELETE FROM unit WHERE code = area_m;
 
 ALTER TABLE public.kv_type ALTER COLUMN code SET DATA TYPE varchar(30);

@@ -1059,5 +1059,25 @@
         }
       ]
     }
+  }, {
+    "changeSet": {
+      "id": "bde0a017-74e5-41c1-9b9b-ef8848a8f72c",
+      "author": "frank (manual)",
+      "changes": [
+        {
+          "sql": {
+            "comment" : "Add gist index for ltree",
+            "endDelimeter" : ";",
+            "sql" : "CREATE INDEX IF NOT EXISTS dtpw_organogram_path_idx ON dtpw.ei_district_link USING gist (organogram_path);"
+          }
+        }, {
+          "sql": {
+            "comment" : "Add gist index for ltree",
+            "endDelimeter" : ";",
+            "sql" : "CREATE INDEX IF NOT EXISTS dtpw_responsible_dept_classif_idx ON dtpw.ref_client_department USING gist (responsible_dept_classif);"
+          }
+        }]
+
+    }
   }
 ]}

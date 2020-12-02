@@ -1975,16 +1975,10 @@
       "author": "frank (generated)",
       "changes": [
         {
-          "createIndex": {
-            "columns": [
-              {
-                "column": {
-                  "name": "adm_path"
-                }
-              }]
-            ,
-            "indexName": "asset_adm_path_idx",
-            "tableName": "asset"
+          "sql": {
+            "comment" : "Add gist index for ltree",
+            "endDelimeter" : ";",
+            "sql" : "CREATE INDEX IF NOT EXISTS asset_adm_path_idx ON public.asset USING gist (adm_path);"
           }
         }]
       
@@ -2041,16 +2035,10 @@
       "author": "frank (generated)",
       "changes": [
         {
-          "createIndex": {
-            "columns": [
-              {
-                "column": {
-                  "name": "grap_path"
-                }
-              }]
-            ,
-            "indexName": "asset_grap_path_idx",
-            "tableName": "asset"
+          "sql": {
+            "comment" : "Add gist index for ltree",
+            "endDelimeter" : ";",
+            "sql" : "CREATE INDEX IF NOT EXISTS asset_grap_path_idx ON public.asset USING gist (grap_path);"
           }
         }]
       
@@ -2105,20 +2093,13 @@
   {
     "changeSet": {
       "id": "1605621892882-59",
-      "author": "frank (generated)",
+      "author": "frank (manual)",
       "changes": [
         {
-          "createIndex": {
-            "columns": [
-              {
-                "column": {
-                  "name": "func_loc_path"
-                }
-              }]
-            ,
-            "indexName": "func_loc_path_idx",
-            "tableName": "asset",
-            "unique": true
+          "sql": {
+             "comment" : "Add gist index for ltree",
+              "endDelimeter" : ";",
+              "sql" : "CREATE INDEX IF NOT EXISTS asset_func_loc_path_idx ON public.asset USING gist (func_loc_path);"
           }
         }]
       
