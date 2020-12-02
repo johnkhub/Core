@@ -55,6 +55,7 @@ public class MetaController {
         try {
             final FDW_Builder bob = new FDW_Builder("normal_reader", "*******",  meta);
             bob.preamble(PREAMBLE).createServer(serveralias).asUser(username);
+            bob.excludeFrom("public", "geometry_columns");
             return new ResponseEntity(bob.get(), HttpStatus.OK);
         } catch (Exception e) {
             return mapException(e);

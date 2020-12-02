@@ -250,6 +250,22 @@ public class ImporterTemplate {
 
     }
 
+    public boolean ping() {
+        try {
+            final Object response = restTemplate.exchange(
+                    baseUrl + "/assets/ping",
+                    HttpMethod.GET,
+                    jsonEntity(null),
+                    Object.class,
+                    Void.class
+            ).getBody();
+
+            return true;
+        } catch (Exception e) {
+           return false;
+        }
+    }
+
     protected Map<String,String> getReverseLookups(String lookupType) {
         final Map<String,String> valueToKey = new HashMap<>();
         final LookupProvider.Kv[] results = restTemplate.getForEntity(baseUrl+"/lookups/kv/{lookupType}", LookupProvider.Kv[].class, lookupType).getBody();

@@ -2,9 +2,7 @@ package za.co.imqs.coreservice.dataaccess;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class FDW_Builder {
     private final String foreignServer;
@@ -18,6 +16,7 @@ public class FDW_Builder {
 
     private List<String> schemas;
     private String[] preamble;
+    private Map<String,List<String>> excludes = new HashMap<>();
 
     private final Meta meta;
 
@@ -49,6 +48,13 @@ public class FDW_Builder {
         return this;
     }
 
+    public FDW_Builder excludeFrom(String schema, String ...tables) {
+        final List<String> x = this.excludes.getOrDefault(schema, new LinkedList());
+        x.addAll(Arrays.asList(tables));
+        excludes.put(schema, x);
+        return this;
+    }
+
     public FDW_Builder asUser(String localUser) {
         this.localUser = localUser;
         return this;
@@ -61,7 +67,7 @@ public class FDW_Builder {
 
     public String get() {
         final StringBuilder bob = new StringBuilder("\n\r");
-        bob.append(String.join("\n\r", preamble));
+        bob.append(preamble == null ?  "" : String.join("\n\r", preamble));
         bob.append("\n\r");
         bob.append("\n\r");
 
@@ -71,12 +77,20 @@ public class FDW_Builder {
         }
         bob.append("CREATE EXTENSION IF NOT EXISTS postgres_fdw;").append("\n\r");
 
+
+
+        bob.append("\n\r-- Add user types.\n\r");
+        for (String t : meta.getUserTypes()) {
+            bob.append(t).append(";\n\r");
+        }
+        bob.append("\n\r");
+
         bob.
             append("DROP SERVER IF EXISTS ").append(localServerAlias).append(" CASCADE;").append("\n\r").
             append("CREATE SERVER IF NOT EXISTS ").append(localServerAlias).append(" FOREIGN DATA WRAPPER postgres_fdw ").append("\n\r\t").
             append("OPTIONS (host '").append(foreignServer).append("' ,dbname '").append(foreignDb).append("');").
             append("\n\r").
-            append("-- NOTE: Needs to be retrieved via another channel.\n\r").
+            append("-- NOTE: Password needs to be retrieved via another channel.\n\r").
             append("CREATE USER MAPPING IF NOT EXISTS FOR ").append(localUser).append(" SERVER ").append(localServerAlias).append("\n\r\t").
             append("OPTIONS (user '").append(foreignUser).append("', password '").append(foreignPassword).append("');\n\r");
 
@@ -87,7 +101,12 @@ public class FDW_Builder {
 
         bob.append("\n\r");
         for (String s : schemas) {
-            bob.append("IMPORT FOREIGN SCHEMA ").append(s).append(" FROM SERVER ").append(localServerAlias).append(" INTO ").append("public").append(";\n\r");
+            bob.append("IMPORT FOREIGN SCHEMA ").append(s);
+            if (excludes.containsKey(s))
+                bob.append("\n\r EXCEPT (").append(String.join(",", excludes.get(s))).append(")\n");
+            else
+                bob.append(" ");
+            bob.append("FROM SERVER ").append(localServerAlias).append(" INTO ").append("public").append(";\n\r");
         }
 
         return bob.toString();
