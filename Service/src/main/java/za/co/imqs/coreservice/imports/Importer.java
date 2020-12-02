@@ -45,6 +45,9 @@ public class Importer extends ImporterTemplate{
         for (JsonSubTypes.Type t : LookupProvider.Kv.class.getAnnotation(JsonSubTypes.class).value()) {
             constructors.put(t.name().toUpperCase(), t.value().getConstructor());
         }
+        if (!ping()) {
+            log.error("Core service unavailable!");
+        }
     }
 
     //
