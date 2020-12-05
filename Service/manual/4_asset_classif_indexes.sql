@@ -1,4 +1,4 @@
-DROP INDEX IF EXISTS public.func_loc_path_idx;
+DROP INDEX IF EXISTS asset_classif_dept;
 
 CREATE INDEX asset_classif_dept
     ON public.asset_classification USING btree
