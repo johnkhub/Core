@@ -3514,5 +3514,62 @@
         }
       ]
     }
+  },
+
+
+
+  {
+    "changeSet": {
+      "id": "1549b7af-53b7-4f2c-b34d-6e8558410152",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "sqlFile": {
+            "comment": "added missed check constraint",
+            "dbms": "postgresql",
+            "encoding": "utf8",
+            "path": "public/checkconstraints2.sql",
+            "relativeToChangelogFile": false,
+            "endDelimiter": ";"
+          }
+        }
+      ]
+    }
+  }, {
+    "changeSet": {
+      "id": "87d80c1e-3e22-4cf5-8fc9-ded367ef6aa2",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "dropColumn":  {
+            "columns":  [
+                {
+                  "column": {
+                    "name":  "asset_info"
+                  }
+                }],
+            "schemaName":  "public",
+            "tableName":  "ref_performance_rating"
+          }
+        }, {
+          "addColumn":  {
+            "columns":  [
+              {
+                "column": {
+                  "name":  "condition_standard",
+                  "type" : "text",
+                  "constraints" : {
+                    "nullable" : false
+                  }
+                }
+              }],
+            "schemaName":  "public",
+            "tableName":  "ref_performance_rating"
+          }
+        }
+      ]
+    }
   }
 ]}

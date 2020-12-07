@@ -74,7 +74,8 @@ public interface LookupProvider {
             @JsonSubTypes.Type(value = ChiefDirectorateKv.class, name = "CHIEF_DIR"),
 
             @JsonSubTypes.Type(value = KvConditionRating.class, name = "CONDITION_RATING"),
-            @JsonSubTypes.Type(value = KvConfidenceRating.class, name = "CONFIDENCE_RATING")
+            @JsonSubTypes.Type(value = KvConfidenceRating.class, name = "CONFIDENCE_RATING"),
+            @JsonSubTypes.Type(value = KvPerformanceRating.class, name = "PERFORMANCE_RATING")
     })
     public static class Kv {
         @CsvBindByName(required = true)
