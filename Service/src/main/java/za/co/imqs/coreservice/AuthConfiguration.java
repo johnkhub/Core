@@ -145,8 +145,17 @@ public class AuthConfiguration extends BaseAuthConfiguration {
         return log("ROUTER=",Boolean.parseBoolean(System.getProperty("in.container", "false")) ? "router" : super.getRouterHost());
     }
 
+    @Bean
+    @Qualifier("routerPort")
     @Override
-    protected URL getAuthURL() {
+    public int getRouterPort() {
+        return super.getRouterPort();
+    }
+
+    @Override
+    @Bean
+    @Qualifier("authUrl")
+    public URL getAuthURL() {
         return log("AUTH=", applyOverride("authService", super.getAuthURL()));
     }
 

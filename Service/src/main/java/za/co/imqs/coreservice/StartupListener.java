@@ -12,6 +12,7 @@ import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.spring.service.health.ServiceHealth;
 
 import java.io.*;
+import java.net.URL;
 
 
 /**
@@ -29,6 +30,7 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
     private final SchemaManagement schema;
     private final ApplicationArguments applicationArguments;
     private final String visibleHost;
+    private final String authUrl;
 
     @Autowired
     public StartupListener(
@@ -37,13 +39,16 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
             SchemaManagement schema,
             ApplicationArguments applicationArguments,
             @Qualifier("visible_host_url")
-            String visibleHost
+            String visibleHost,
+            @Qualifier("authUrl")
+                    URL authUrl
     ) {
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
         this.schema = schema;
         this.applicationArguments = applicationArguments;
         this.visibleHost = visibleHost;
+        this.authUrl = authUrl.toString();
     }
 
     @Override
@@ -116,15 +121,16 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
         }
     }
 
-    private static class WriteImporterConfig {
-        public void write(String templateName, String targetName, String hostname)  {
+    private class WriteImporterConfig {
+        public void write(String templateName, String targetName, String hostUrl)  {
             try (
                 BufferedReader r = new BufferedReader(new FileReader(templateName));
                 FileWriter w = new FileWriter(targetName);
             ) {
                 String line = r.readLine();
                 while (line != null) {
-                    line.replaceAll("\\{\\{http://localhost/\\}\\}", hostname);
+                    line = line.replace("{{SERVER}}", hostUrl);
+                    line = line.replace("{{AUTH}}", authUrl);
                     w.write(line);
                     line = r.readLine();
                 }

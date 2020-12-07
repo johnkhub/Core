@@ -1,6 +1,6 @@
 {
-  "authUrl" : "http://localhost/auth2/login",
-  "serviceUrl": "http://localhost/",
+  "authUrl" : "{{AUTH}}",
+  "serviceUrl": "{{SERVER}}",
   "loginUsername" : "dev",
   "loginPassword": ""
 }

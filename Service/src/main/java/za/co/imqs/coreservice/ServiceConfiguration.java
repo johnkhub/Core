@@ -42,13 +42,17 @@ public class ServiceConfiguration {
     @Value("${server.port}")
     private int serverPort;
 
+    private final int routerPort;
+
     @Autowired
     public ServiceConfiguration(
             ConfigClient configClient,
-            @Qualifier("core_ds") DataSource ds
+            @Qualifier("core_ds") DataSource ds,
+            @Qualifier("routerPort") int routerPort
     ) {
         this.configClient = configClient;
         this.ds = ds;
+        this.routerPort = routerPort;
     }
 
     @Bean
@@ -78,9 +82,10 @@ public class ServiceConfiguration {
             log.warn("IMQS_HOSTNAME_URL environment variable not set.");
             host = System.getenv("COMPUTERNAME");
             if (host != null) {
-                return "http://" + host + ":" + serverPort + "/";
+                return "http://" + host + ":" + routerPort + "/";
             }
-            return "http://localhost:" + serverPort + "/";
+            log.warn("COMPUTERNAME environment variable not set");
+            return "http://localhost:" +serverPort + "/";
         }
         return host;
     }
