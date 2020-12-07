@@ -1,17 +1,17 @@
 DROP INDEX IF EXISTS asset_func_loc_path_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS asset_func_loc_path_idx ON public.asset USING gist (func_loc_path);
+CREATE INDEX IF NOT EXISTS asset_func_loc_path_idx ON public.asset USING gist (func_loc_path);
 
 DROP INDEX IF EXISTS asset_adm_path_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS asset_adm_path_idx ON public.asset USING gist (adm_path);
+CREATE INDEX IF NOT EXISTS asset_adm_path_idx ON public.asset USING gist (adm_path);
 
 DROP INDEX IF EXISTS asset_grap_path_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS asset_grap_path_idx ON public.asset USING gist (grap_path);
+CREATE INDEX IF NOT EXISTS asset_grap_path_idx ON public.asset USING gist (grap_path);
 
 DROP INDEX IF EXISTS dtpw_organogram_path_idx;
 CREATE INDEX IF NOT EXISTS dtpw_organogram_path_idx ON dtpw.ei_district_link USING gist (organogram_path);
 
 
-DELETE FROM unit WHERE code = area_m;
+DELETE FROM unit WHERE code = 'area_m';
 
 ALTER TABLE public.kv_type ALTER COLUMN code SET DATA TYPE varchar(30);
 
@@ -441,3 +441,65 @@ CREATE UNIQUE INDEX ref_deed_office_v_idx
     ON dtpw.ref_deed_office USING btree
         (v COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
+
+
+
+
+DO
+$do$
+    BEGIN
+        IF NOT EXISTS (
+                SELECT *
+                FROM   pg_catalog.pg_roles
+                WHERE  rolname = 'report_reader') THEN
+
+            CREATE ROLE report_reader LOGIN PASSWORD 'report_reader';
+        END IF;
+    END
+$do$;
+
+
+GRANT USAGE ON SCHEMA dtpw TO report_reader;
+
+GRANT SELECT ON  dtpw.dtpw_core_report_view TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_view_with_lpi  TO report_reader;
+
+GRANT SELECT ON  dtpw.asset_core_dtpw_ei_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_gi_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_hi_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_rnm_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_iam_view  TO report_reader;
+GRANT SELECT ON  dtpw.asset_core_dtpw_ppp_view  TO report_reader;
+
+GRANT SELECT ON  dtpw.dtpw_core_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_ei_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_gi_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_hi_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_iam_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_rnm_report_view_wrapper  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_ppp_report_view_wrapper  TO report_reader;
+
+GRANT SELECT ON  dtpw.dtpw_export_view  TO report_reader;
+
+--
+-- access control
+--
+GRANT USAGE ON SCHEMA access_control TO report_reader;
+
+GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_access TO report_reader;
+GRANT EXECUTE ON FUNCTION access_control.fn_get_effective_grant TO report_reader;
+
+
+
+INSERT INTO kv_type (code,name,"table") VALUES ('ASSET_CLASS', 'Asset Class', 'public.ref_asset_class') ON CONFLICT (code) DO NOTHING;
+INSERT INTO kv_type (code,name,"table") VALUES ('ASSET_NATURE', 'Asset Nature', 'public.ref_asset_nature') ON CONFLICT (code) DO NOTHING;
+
+INSERT INTO kv_type (code,name,"table") VALUES ('CRITICALITY_RATING', 'Criticality Rating', 'public.ref_criticality_rating') ON CONFLICT (code) DO NOTHING;
+INSERT INTO kv_type (code,name,"table") VALUES ('UTILISATION_RATING', 'Utilisation Rating', 'public.ref_utilisation_rating') ON CONFLICT (code) DO NOTHING;
+INSERT INTO kv_type (code,name,"table") VALUES ('ACCESSIBILITY_RATING', 'Accessibility Rating', 'public.ref_accessibility_rating') ON CONFLICT (code) DO NOTHING;
+
+-- Non-standard KV
+INSERT INTO kv_type (code,name,"table") VALUES ('CONFIDENCE_RATING', 'Data Confidence Rating', 'public.ref_confidence_rating') ON CONFLICT (code) DO NOTHING;
+INSERT INTO kv_type (code,name,"table") VALUES ('CONDITION_RATING', 'Condition Rating', 'public.ref_condition_rating') ON CONFLICT (code) DO NOTHING;
+INSERT INTO kv_type (code,name,"table") VALUES ('PERFORMANCE_RATING', 'Performance Rating', 'public.ref_performance_rating') ON CONFLICT (code) DO NOTHING;
