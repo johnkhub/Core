@@ -12,6 +12,7 @@ CREATE INDEX IF NOT EXISTS dtpw_organogram_path_idx ON dtpw.ei_district_link USI
 
 
 DELETE FROM unit WHERE code = 'area_m';
+INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('area_m2', 'Square Meter', true, '㎡', 'T_AREA') ON CONFLICT(code) DO NOTHING;
 
 ALTER TABLE public.kv_type ALTER COLUMN code SET DATA TYPE varchar(30);
 
@@ -442,6 +443,50 @@ CREATE UNIQUE INDEX ref_deed_office_v_idx
         (v COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
 
+--
+-- Export view
+--
+DROP VIEW dtpw.dtpw_export_view;
+CREATE OR REPLACE VIEW dtpw.dtpw_export_view AS
+SELECT
+    core.asset_id,
+    core.asset_type_code,
+    core.name,
+    replace(ltree2text(core.func_loc_path),'.', '-') AS func_loc_path,
+    core.active,
+    core.latitude,
+    core.longitude,
+    core.address,
+    core.barcode,
+    core.serial_number,
+    core.district_code,
+    core.municipality_code,
+    core.town_code,
+    core.suburb_code,
+
+    core.facility_type_code,
+    core.lpi,
+
+    core.responsible_dept_code,
+    core.is_owned,
+
+    ei."EMIS",
+    ei.ei_district_code,
+
+    tags.tags,
+
+    quantity.num_units,
+    quantity.unit_code,
+
+    ST_asText(core.geom) AS geom
+FROM
+    dtpw.asset_core_dtpw_view_with_lpi core
+        LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id
+        LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id
+        LEFT JOIN public.quantity quantity ON core.asset_id = quantity.asset_id AND quantity.name = 'extent';
+
+COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
+
 
 
 
@@ -460,6 +505,7 @@ $do$;
 
 
 GRANT USAGE ON SCHEMA dtpw TO report_reader;
+
 
 GRANT SELECT ON  dtpw.dtpw_core_report_view TO report_reader;
 GRANT SELECT ON  dtpw.asset_core_dtpw_view  TO report_reader;
@@ -481,6 +527,7 @@ GRANT SELECT ON  dtpw.dtpw_rnm_report_view_wrapper  TO report_reader;
 GRANT SELECT ON  dtpw.dtpw_ppp_report_view_wrapper  TO report_reader;
 
 GRANT SELECT ON  dtpw.dtpw_export_view  TO report_reader;
+GRANT SELECT ON  dtpw.dtpw_export_view  TO normal_reader;
 
 --
 -- access control
