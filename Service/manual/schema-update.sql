@@ -339,7 +339,7 @@ CREATE TABLE public.ref_performance_rating
     deactivated_at timestamp without time zone,
     allow_delete boolean DEFAULT false,
     activated_at timestamp without time zone NOT NULL DEFAULT now(),
-    asset_info text COLLATE pg_catalog."default" NOT NULL
+    condition_standard text COLLATE pg_catalog."default" NOT NULL
 )
     WITH (
         OIDS = FALSE
