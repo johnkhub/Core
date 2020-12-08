@@ -74,8 +74,11 @@ GRANT SELECT ON TABLE public.ref_suburb TO normal_reader;
 GRANT SELECT ON TABLE public.ref_town TO normal_reader;
 GRANT SELECT ON TABLE public.ref_ward TO normal_reader;
 
-GRANT SELECT ON  asset.landparcel_view TO normal_reader;
+GRANT SELECT ON asset.landparcel_view TO normal_reader;
 
+
+GRANT SELECT ON asset.asset_core_view_internal TO normal_reader;
+GRANT SELECT ON dtpw.import_report_view TO normal_reader;
 
 --
 -- audit
