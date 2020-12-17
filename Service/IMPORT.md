@@ -9,6 +9,17 @@ Import
  The server may be stopped though and run using the `admin` profile. This makes it possible to delete assets via the importer.
  Refer to the [configuration documentation](CONFIG.md).
 
+Download page
+-------------
+
+The service provides a mechanism to download the version of the importer appropriate to the current version of the service.
+In a browser, navigate to http://<host>[:port]/download/importer/index.html.
+
+E.g. `https://pprd1.assetworld.co.za/download/importer/index.html`
+
+This page provides download links to the files required by the importer. 
+>**NOTE** that some details in the configuration files must be updated to match the configuration of your server before running the importer.
+
 
 Data format
 -----------
