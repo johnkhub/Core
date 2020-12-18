@@ -3571,5 +3571,21 @@
         }
       ]
     }
+  }, {
+    "changeSet": {
+      "id": "6cb02b4c-c060-409e-8968-5f9d22f3d530",
+      "author": "frankvr",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "dropNotNullConstraint":  {
+            "columnDataType":  "numeric",
+            "columnName":  "num_units",
+            "schemaName":  "public",
+            "tableName":  "quantity"
+          }
+        }
+      ]
+    }
   }
 ]}

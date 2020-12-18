@@ -27,8 +27,8 @@ public class Quantity {
         final Quantity q = new Quantity();
         q.setAsset_id(dto.getAsset_id());
         q.setName(dto.name);
-        if (dto.getUnit_code() != null) q.setNum_units(new BigDecimal(dto.getNum_units()));
-        if (dto.getNum_units() != null) q.setUnit_code(dto.getUnit_code());
+        if (dto.getUnit_code() != null) q.setUnit_code(dto.getUnit_code());
+        if (dto.getNum_units() != null) q.setNum_units(new BigDecimal(dto.getNum_units()));
         return q;
     }
 
