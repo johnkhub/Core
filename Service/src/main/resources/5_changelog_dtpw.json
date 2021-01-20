@@ -1079,5 +1079,213 @@
         }]
 
     }
+  },
+
+
+  {
+    "changeSet": {
+      "preConditions" : [
+        {
+          "primaryKeyExists": {
+            "schemaName" : "dtpw",
+            "tableName" : "ref_accommodation_type",
+            "column" : "k"
+          },
+          "onFail" : "MARK_RAN"
+        }
+      ],
+
+      "id": "a1226da8-b779-40d2-8944-b86a7a360f65",
+      "author": "frankvr",
+      "comment": "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_accommodation_type"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_branch"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_chief_directorate"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_deed_office"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_ei_district"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_land_use_class"
+          }
+        },
+        {
+          "dropPrimaryKey": {
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "2bdacbce-fa3b-4240-a7d4-bb233409b624",
+      "author": "frankvr",
+      "comment": "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_accommodation_type"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_branch"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_chief_directorate"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_client_department"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_deed_office"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_ei_district"
+          }
+        },
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "dtpw",
+            "tableName": "ref_land_use_class"
+          }
+        }
+      ]
+    }
   }
 ]}

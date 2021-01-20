@@ -3587,5 +3587,122 @@
         }
       ]
     }
+  },
+
+
+  {
+    "changeSet": {
+      "preConditions" : [
+        {
+          "primaryKeyExists": {
+            "schemaName" : "public",
+            "tableName" : "ref_accessibility_rating",
+            "column" : "k"
+          },
+          "onFail" : "MARK_RAN"
+        }
+      ],
+
+      "id": "a6f5169f-66ff-4841-ae0e-ed93dfcf2eac",
+      "author": "frankvr",
+      "comment": "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_accessibility_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_asset_class"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_asset_nature"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_condition_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_confidence_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_criticality_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_district"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_municipality"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_performance_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_region"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_suburb"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_town"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_utilisation_rating"}},
+        {"dropPrimaryKey" : { "schemaName" : "public", "tableName" : "ref_ward"}}
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "a7547bb4-1056-461c-94d3-c35db4f39ea9",
+      "author": "frankvr",
+      "comment" : "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        { "addColumn":  {
+              "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+              "schemaName":  "public",  "tableName":  "ref_accessibility_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_asset_class"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_asset_nature"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_condition_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_confidence_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_criticality_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_district"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_municipality"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_performance_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_region"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_suburb"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_town"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_utilisation_rating"
+          }
+        },
+        {"addColumn":  {
+            "columns":  [{"column": {"name": "guid","type": "uuid","constraints": {"nullable": false,"defaultValueComputed" : "uuid_generate_v4()", "primaryKey" : true}}}],
+            "schemaName":  "public",  "tableName":  "ref_ward"
+          }
+        }
+      ]
+    }
   }
 ]}

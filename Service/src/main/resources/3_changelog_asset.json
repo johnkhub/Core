@@ -752,5 +752,62 @@
         }]
 
     }
-  }
-]}
+  },
+
+  {
+    "changeSet": {
+      "preConditions" : [
+        {
+          "primaryKeyExists": {
+            "schemaName" : "public",
+            "tableName" : "ref_facility_type",
+            "column" : "k"
+          },
+          "onFail" : "MARK_RAN"
+        }
+      ],
+
+      "id": "62151145-1e4c-4e9d-a266-655e570729b7",
+      "author": "frankvr",
+      "comment": "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "dropPrimaryKey": {
+            "schemaName": "asset",
+            "tableName": "ref_facility_type"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "changeSet": {
+      "id": "587387c5-4b7d-479f-b5c2-75b337802983",
+      "author": "frankvr",
+      "comment": "Add uuid to k/v tables",
+      "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "changes": [
+        {
+          "addColumn": {
+            "columns": [
+              {
+                "column": {
+                  "name": "guid",
+                  "type": "uuid",
+                  "constraints": {
+                    "nullable": false,
+                    "defaultValueComputed": "uuid_generate_v4()",
+                    "primaryKey": true
+                  }
+                }
+              }
+            ],
+            "schemaName": "asset",
+            "tableName": "ref_facility_type"
+          }
+        }
+      ]
+    }
+  }]
+}
