@@ -41,7 +41,7 @@ The current implementation of this API:
 #### Lookup type
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
-|`code`|`string`|m||
+|`code`|`string`|m|Cannot be modified.|
 |`name`|`string`|m||
 |`description`|`string`|o||
 |`owner`|`string`|o||
@@ -50,7 +50,8 @@ The current implementation of this API:
 #### Lookup value
 |Field  |Type  |o/m  |Description|
 |-------|------|-----|-----------|
-|`k`|``|m||
+|`guid`|`uuid`  |o|Default value assigned by server. Cannot be modified.|
+|`k`|``|o||
 |`v`|``|m||
 |`creation_date`|``|o||
 |`activated_at`|``|o||
@@ -80,6 +81,15 @@ Status codes: 200, 400, 403, 408
 
 ### `GET /lookups/kv/{code}/{k}`
 Returns the lookup row from the kv table with the specified code, using the specified key (`k`).
+
+Accepts: *Nothing*
+
+Returns: `Lookup value`
+
+Status codes: 200, 400, 403, 408
+
+### `GET /lookups/kv/{code}/uuid/{guid}` (NOT IMPLEMENTED)
+Returns the lookup row from the kv table with the specified code, using the specified uuid (`guid`).
 
 Accepts: *Nothing*
 
@@ -133,6 +143,15 @@ Returns: *Nothing*
 
 Status codes: 201, 400, 403, 408, 409, 412
 
+### `DELETE /lookups/kv/{code}/guid/{guid}` (NOT IMPLEMENTED)
+Delete the lookup value with the uuid (`guid`) from the kv table with the specified code.
+
+
+Accepts: *Nothing*
+
+Returns: *Nothing*
+
+Status codes: 201, 400, 403, 408, 409, 412
 
 ### `POST /lookups/kv/{code}?k="..."&v="..."&description="..."` (NOT IMPLEMENTED)
 Upserts a lookup value to the kv table with the specified code.
