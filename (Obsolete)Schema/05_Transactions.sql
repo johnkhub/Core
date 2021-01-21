@@ -26,7 +26,8 @@ CREATE TABLE "transactions"."transaction" (
   "amount" decimal(19,6),
   "delta_T_STRING" varchar,
   "delta_T_BOOLEAN" boolean,
-  "delta_T_POLYGON" varchar,
+  "delta_T_POLYGON" text,
+  "delta_T_DATETIME" timestamp,
 
   "correlation_id" uuid
 );
@@ -67,3 +68,20 @@ COMMENT ON COLUMN "transactions"."transaction"."delta_T_ULONG" IS 'Add checked c
 COMMENT ON COLUMN "transactions"."transaction"."correlation_id" IS 'Correlate to messages within the system';
 
 COMMENT ON COLUMN "transactions"."field"."fqn" IS '<schema>.<table>.<column> used to map values into snapshot tables';
+
+
+CREATE VIEW transactions.transaction_view AS
+SELECT
+	transaction_id, asset_id, batch_id, transaction_type_code, transaction_type.name,  
+	insert_date, submit_date, effective_date, 
+	reason, 
+	field, 
+	field.type as "field_type",
+	"delta_T_SLONG", "delta_T_ULONG", amount, "delta_T_STRING", "delta_T_BOOLEAN", "delta_T_POLYGON",
+	correlation_id
+FROM 
+	transactions.transaction 
+	JOIN transactions.transaction_type ON transaction.transaction_type_code = transaction_type.code
+	JOIN transactions.field ON field.name = transaction.field;
+
+  
