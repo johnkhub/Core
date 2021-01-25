@@ -48,38 +48,12 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
     }
 
-    @Test
-    @Ignore
-    public void pwei136() throws Exception{
-        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        // select fn_delete_asset('43ff9429-58d5-467a-a06f-9f6f2a113c4e');
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-136/TO be deleted - Extra Envelope for Durbanville HS.csv"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-136/Update of the FUNC LOc PAth for Hostel Facility at Durbanville HS.csv"});
-    }
 
     @Test
     @Ignore
-    public void pwei145() throws Exception{
+    public void pwei164() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-145/Update of Geometries for Switched Lat Longs.csv"});
-    }
-
-    @Test
-    @Ignore
-    public void pwei140() throws Exception{
-        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "delete","/home/frank/Downloads/Updates/PWEI-140/TO be deleted - Extra Envelope and FAcility for Blue Downs PS.csv"});
-        //select fn_delete_asset('fd2b6d63-494c-4243-8e44-8864650b7479');
-        //select fn_delete_asset('cb4d7eaf-fe25-47b7-8025-d3f6f7ef62f2');
-
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-140/Update of the FUNC LOc PAth for Blue Downs PS.csv"});
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/PWEI-140/Update of the FUNC LOc PAth for Blue Downs PS (8e52522d-f008-45e3-88db-e9a1ffdd49b0).csv"});
-    }
-
-    @Test
-    public void pwei160() throws Exception{
-        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 18/PWEI-160/UPDATEs to EI Disticts_Envelopes1.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 18/PWEI-164/Tygersig PS and Uitzig SS update.csv"});
     }
 
     @Test
@@ -120,4 +94,22 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "assets", TestUtils.resolveWorkingFolder()+"/src/test/resources/empty.csv", "FORCE_UPSERT,FORCE_INSERT"});
     }
 
+
+    @Test
+    public void addNewLookups() throws Exception {
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_accessibility_rating.csv","ACCESSIBILITY_RATING"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_accomodation_type.csv","ACCOMODATION_TYPE"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_asset_class.csv","ASSET_CLASS"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_asset_nature.csv","ASSET_NATURE"});
+
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_condition_rating.csv","CONDITION_RATING"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_confidence_rating.csv","CONFIDENCE_RATING"});
+
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_criticality_rating.csv","CRITICALITY_RATING"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_deed_office.csv","DEED_OFFICE"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_land_use_class.csv","LAND_USE_CLASS"});
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_utilisation_rating.csv","UTILISATION_RATING"});
+    }
 }

@@ -1,1 +1,0 @@
-INSERT INTO unit (code,name,is_si,symbol,type) VALUES ('number', 'Units', false, '#', 'T_SCALAR') ON CONFLICT(code) DO NOTHING;

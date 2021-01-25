@@ -24,9 +24,8 @@ FROM asset a
          LEFT JOIN location ON a.asset_id = location.asset_id
          LEFT JOIN geoms ON a.asset_id = geoms.asset_id
          LEFT JOIN asset_identification identification ON a.asset_id = identification.asset_id;
-//
+
 COMMENT ON VIEW public.asset_core_view IS 'Inner join the basic core tables indicating what it is and where it is';
-//
 
 
 CREATE OR REPLACE VIEW public.quantities_view AS
@@ -37,4 +36,3 @@ FROM
     public.quantity q
         JOIN unit u ON q.unit_code = u.code
 ;
-//

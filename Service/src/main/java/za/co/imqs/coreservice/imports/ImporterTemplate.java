@@ -5,9 +5,6 @@ import com.opencsv.bean.BeanVerifier;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,6 +37,8 @@ public class ImporterTemplate {
     }
 
     public interface Before<T> {
+        public static final Before IDENTITY = (dto) -> dto;
+
         T perform(T t);
     }
 
@@ -48,8 +47,13 @@ public class ImporterTemplate {
     }
 
     public interface After<T> {
+        public static final After IDENTITY = (dto) -> dto;
+
         T perform(T t);
     }
+
+    public static BeanVerifier PASS_ALL = (b) -> true;
+
 
     protected final RestTemplate restTemplate;
     protected final String baseUrl;
@@ -63,26 +67,9 @@ public class ImporterTemplate {
         this.baseUrl = baseUrl;
     }
 
-    public static String getAuthSession(String authUrl, String username, String password)  {
-        try {
-            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod(authUrl);
-            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-            client.executeMethod(post);
-            if (post.getStatusCode() != 200)
-                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
-            return post.getResponseHeader("Set-Cookie").getValue();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     //
     // Utility methods to construct solution from
     //
-    public void importLookups(String lookupType, Path path) throws Exception  {
-        importLookups(lookupType, path, new LookupProvider.Kv());
-    }
 
     public <T extends LookupProvider.Kv> void importLookups(String lookupType, Path path, T kv) throws Exception  {
         log.info("Importing Lookup {} from {}", lookupType, path.toString());
@@ -261,6 +248,22 @@ public class ImporterTemplate {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public boolean ping() {
+        try {
+            final Object response = restTemplate.exchange(
+                    baseUrl + "/assets/ping",
+                    HttpMethod.GET,
+                    jsonEntity(null),
+                    Object.class,
+                    Void.class
+            ).getBody();
+
+            return true;
+        } catch (Exception e) {
+           return false;
+        }
     }
 
     protected Map<String,String> getReverseLookups(String lookupType) {

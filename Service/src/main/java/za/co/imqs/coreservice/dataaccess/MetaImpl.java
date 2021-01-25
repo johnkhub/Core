@@ -40,6 +40,15 @@ public class MetaImpl implements Meta {
         return template.queryForList("SELECT extname FROM pg_extension", String.class);
     }
 
+    // TODO : HACK HACK HACK this is a partial duplicate of the init0.sql script
+    public List<String> getUserTypes() {
+        return Collections.singletonList("CREATE TYPE public.unit_type AS ENUM\n" +
+                "    (\n" +
+                "        'T_TIME', 'T_LENGTH', 'T_MASS', 'T_CURRENT', 'T_TEMPERATURE', 'T_LUMINOSITY', 'T_VOLTAGE', 'T_POWER', 'T_VOLUME',\n" +
+                "        'T_AREA', 'T_CURRENCY', 'T_VELOCITY', 'T_DENSITY', 'T_PRESSURE', 'T_SCALAR'\n" +
+                "    );");
+    }
+
     @Override
     public List<String> getTablesAndViewsForUser(String userName) {
         return template.query(

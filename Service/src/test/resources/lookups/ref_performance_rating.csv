@@ -1,0 +1,6 @@
+k,v,condition_standard
+"P1","Functions have ceased and the asset is dormant; pending relinquishment, etc.","Condition can be allowed to deteriorate or marginally maintained at minimal cost"
+"P2","Functions are providing essential support only, with no critical operational role (e.g. storage) or asset has limited life","Condition needs to meet minimum operational requirements only"
+"P3","Functionally-focussed assets at utility level","Assets to be in reasonable condition, fully meeting operational requirements"
+"P4","Business operations requiring good public presentation and high-quality working environments","Assets to be in good condition operationally and aesthetically, benchmarked against industry standards for that particular class of asset"
+"P5","Highly sensitive functions with critical results or high-profile public building","Assets to be in best possible condition, only minimal deterioration will be tolerated"

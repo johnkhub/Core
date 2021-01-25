@@ -332,11 +332,15 @@ SELECT
 
     tags.tags,
 
+    quantity.num_units,
+    quantity.unit_code,
+
     ST_asText(core.geom) AS geom
 FROM
      dtpw.asset_core_dtpw_view_with_lpi core
 LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id
-LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id;
+LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id
+LEFT JOIN public.quantity quantity ON core.asset_id = quantity.asset_id AND quantity.name = 'extent';
 
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
 

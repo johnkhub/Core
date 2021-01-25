@@ -1,0 +1,6 @@
+{
+  "authUrl" : "{{AUTH}}",
+  "serviceUrl": "{{SERVER}}",
+  "loginUsername" : "dev",
+  "loginPassword": ""
+}

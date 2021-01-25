@@ -29,3 +29,8 @@ tag=${1:-$(git rev-parse --abbrev-ref HEAD | sed 's/^[[:blank:]]*//;s/[[:blank:]
 sudo chown -R "$(whoami)" Docker_Test_Env/
 dockerise "asset-core-service" "$tag"
 sudo chown -R "$(whoami)" ./target
+
+rm -f ./deploy/import_config.json
+cp -f ./target/asset-core-service.jar ./deploy/asset-core-service.jar
+cp -f ./target/asset-core-service-jar-with-dependencies.jar ./deploy/asset-core-service-jar-with-dependencies.jar
+echo "$tag" > ./deploy/version.txt

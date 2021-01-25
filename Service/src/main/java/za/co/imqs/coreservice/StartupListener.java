@@ -3,12 +3,16 @@ package za.co.imqs.coreservice;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import za.co.imqs.services.serviceauth.ServiceAuth;
 import za.co.imqs.spring.service.health.ServiceHealth;
+
+import java.io.*;
+import java.net.URL;
 
 
 /**
@@ -25,18 +29,26 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
     private final ServiceAuth serviceAuth;
     private final SchemaManagement schema;
     private final ApplicationArguments applicationArguments;
+    private final String visibleHost;
+    private final String authUrl;
 
     @Autowired
     public StartupListener(
             ServiceHealth serviceHealth,
             ServiceAuth serviceAuth,
             SchemaManagement schema,
-            ApplicationArguments applicationArguments
+            ApplicationArguments applicationArguments,
+            @Qualifier("visible_host_url")
+            String visibleHost,
+            @Qualifier("authUrl")
+                    URL authUrl
     ) {
         this.serviceHealth = serviceHealth;
         this.serviceAuth = serviceAuth;
         this.schema = schema;
         this.applicationArguments = applicationArguments;
+        this.visibleHost = visibleHost;
+        this.authUrl = authUrl.toString();
     }
 
     @Override
@@ -54,6 +66,8 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                     new Boot.HttpPortHandler(),
                     new Boot.ConfigFileHandler()
             );
+
+            new WriteImporterConfig().write("import_config_template.json", "import_config.json", visibleHost);
 
         } finally {
             if(!serviceHealth.isAvailable()) {
@@ -104,6 +118,26 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
                 return false;
             }
             return true;
+        }
+    }
+
+    private class WriteImporterConfig {
+        public void write(String templateName, String targetName, String hostUrl)  {
+            try (
+                BufferedReader r = new BufferedReader(new FileReader(templateName));
+                FileWriter w = new FileWriter(targetName);
+            ) {
+                String line = r.readLine();
+                while (line != null) {
+                    line = line.replace("{{SERVER}}", hostUrl);
+                    line = line.replace("{{AUTH}}", authUrl);
+                    w.write(line);
+                    line = r.readLine();
+                }
+                w.flush();
+            } catch(IOException e) {
+                throw new RuntimeException("Could not create import config file.",e);
+            }
         }
     }
 }

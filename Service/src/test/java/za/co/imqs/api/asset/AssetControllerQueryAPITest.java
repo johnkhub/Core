@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import za.co.imqs.ImportRule;
 import za.co.imqs.TestUtils;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
 import za.co.imqs.coreservice.dto.asset.AssetBuildingDto;
@@ -548,9 +549,9 @@ public class AssetControllerQueryAPITest extends AbstractAssetControllerAPITest 
 
     @Test
     public void queryViaDeptTree() throws Exception {
-        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_branch.csv", "BRANCH"});
-        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_chief_directorate.csv", "CHIEF_DIR"});
-        Importer.main(new String[]{CONFIG, "lookups", TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_client_department.csv", "CLIENT_DEP"});
+        new ImportRule().usingConfig(CONFIG).asLookups("BRANCH").importFile(TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_branch.csv");
+        new ImportRule().usingConfig(CONFIG).asLookups("CHIEF_DIR").importFile(TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_chief_directorate.csv");
+        new ImportRule().usingConfig(CONFIG).asLookups("CLIENT_DEP").importFile(TestUtils.resolveWorkingFolder() + "/src/test/resources/lookups/ref_client_department.csv");
 
         final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
                 code("e1").

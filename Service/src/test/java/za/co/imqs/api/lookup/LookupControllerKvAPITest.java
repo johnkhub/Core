@@ -1,5 +1,6 @@
 package za.co.imqs.api.lookup;
 
+import ch.qos.logback.classic.Level;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
@@ -46,6 +48,10 @@ import static za.co.imqs.coreservice.dto.lookup.KvRegion.tripple;
  */
 @Slf4j
 public class LookupControllerKvAPITest {
+    static {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)).setLevel(Level.INFO);
+    }
+
     protected static final TestRule NULL_RULE = new TestRule() {
         @Override
         public Statement apply(Statement statement, org.junit.runner.Description description) {
@@ -102,9 +108,20 @@ public class LookupControllerKvAPITest {
                     def("CHIEF_DIR", "Chief Directorate", "dtpw.ref_chief_directorate", null),
                     def("CLIENT_DEP", "Client Department", "dtpw.ref_client_department", null),
                     def("FACIL_TYPE","Facility Type", "asset.ref_facility_type", null),
-                    def("EI_DISTR","Educational District", "dtpw.ref_ei_district", null)
+                    def("EI_DISTR","Educational District", "dtpw.ref_ei_district", null),
 
-                )
+                    def("ACCESSIBILITY_RATING", "Accessibility Rating", "public.ref_accessibility_rating", null),
+                    def("ASSET_CLASS", "Asset Class", "public.ref_asset_class", null),
+                    def("ASSET_NATURE", "Asset Nature", "public.ref_asset_nature", null),
+                    def("CONDITION_RATING","Condition Rating", "public.ref_condition_rating", null),
+                    def("CONFIDENCE_RATING","Data Confidence Rating", "public.ref_confidence_rating", null),
+                    def("CRITICALITY_RATING","Criticality Rating", "public.ref_criticality_rating", null),
+                    def("PERFORMANCE_RATING","Performance Rating", "public.ref_performance_rating", null),
+                    def("UTILISATION_RATING","Utilisation Rating", "public.ref_utilisation_rating", null),
+                    def("ACCOMODATION_TYPE","Accomodation Type", "dtpw.ref_accommodation_type", null),
+                    def("DEED_OFFICE","Deed Office", "dtpw.ref_deed_office", null),
+                    def("LAND_USE_CLASS","Land use class", "dtpw.ref_land_use_class", null)
+            )
         );
     }
 

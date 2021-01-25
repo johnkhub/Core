@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,10 +17,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
-import za.co.imqs.coreservice.dataaccess.exception.AlreadyExistsException;
-import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
-import za.co.imqs.coreservice.dataaccess.exception.ResubmitException;
-import za.co.imqs.coreservice.dataaccess.exception.ValidationFailureException;
+import za.co.imqs.coreservice.dataaccess.exception.*;
 import za.co.imqs.coreservice.model.CoreAsset;
 import za.co.imqs.coreservice.model.ORM;
 import za.co.imqs.coreservice.model.Quantity;
@@ -175,14 +173,17 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteAssets(List<UUID> uuids) {
+        int count = 0;
         for (UUID uuid : uuids) {
             try {
-                jdbc.getJdbcTemplate().update("UPDATE public.asset SET deactivated_at = now() WHERE asset_id = ?", uuid);
+                count += jdbc.getJdbcTemplate().update("UPDATE public.asset SET deactivated_at = now() WHERE asset_id = ?", uuid);
             } catch (Exception e) {
                 throw exceptionMapperAsset(e, uuid);
             }
         }
-        updateModTrack();
+        if (count > 0) {
+            updateModTrack();
+        }
     }
 
     @Override
@@ -193,7 +194,7 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             throw new RuntimeException("No way!");
         }
 
-        jdbc.getJdbcTemplate().batchUpdate(
+        int[] counts = jdbc.getJdbcTemplate().batchUpdate(
                 "select public.fn_delete_asset(?)",
                 new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -205,15 +206,21 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
                     }
                 }
         );
-        updateModTrack();
+        for (int i : counts) {
+            if (i > 0) {
+                updateModTrack();
+                return;
+            }
+        }
     }
 
     @Override
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, externalIdType, externalId);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_link (asset_id,external_Id_Type,external_Id) VALUES (?,?,?);", uuid, externalIdType, externalId) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -223,8 +230,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?;", externalId, uuid, externalIdType);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("UPDATE asset_link SET external_Id = ? WHERE asset_id = ? AND external_Id_Type = ?;", externalId, uuid, externalIdType) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -234,8 +242,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteExternalLink(UUID uuid, UUID externalIdType, String externalId) {
         try {
-            jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("DELETE FROM asset_link WHERE asset_id = ? AND external_Id_Type = ? AND external_Id = ?", uuid, externalIdType, externalId) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperExternalLink(e, uuid, externalId);
         }
@@ -246,8 +255,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addToGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
-            jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?) ON CONFLICT DO NOTHING;", uuid, groupingIdType, groupingId);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("INSERT INTO asset_grouping (asset_id,grouping_Id_Type,grouping_Id) VALUES (?,?,?)", uuid, groupingIdType, groupingId) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -257,8 +267,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void updateGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
-            jdbc.getJdbcTemplate().update("UPDATE asset_grouping SET grouping_Id = ? WHERE asset_id = ? AND grouping_Id_Type = ?;", groupingId, uuid, groupingIdType);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("UPDATE asset_grouping SET grouping_Id = ? WHERE asset_id = ? AND grouping_Id_Type = ?;", groupingId, uuid, groupingIdType) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -268,8 +279,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteFromGrouping(UUID uuid, UUID groupingIdType, String groupingId) {
         try {
-            jdbc.getJdbcTemplate().update("DELETE FROM asset_grouping WHERE asset_id = ? AND grouping_Id_Type = ? AND grouping_Id = ?", uuid, groupingIdType, groupingId);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("DELETE FROM asset_grouping WHERE asset_id = ? AND grouping_Id_Type = ? AND grouping_Id = ?", uuid, groupingIdType, groupingId) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperGrouping(e, uuid, groupingId);
         }
@@ -281,11 +293,12 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void linkAssetToLandParcel(UUID asset, UUID to) {
         try {
-            jdbc.getJdbcTemplate().update(
+            if (jdbc.getJdbcTemplate().update(
                     "INSERT INTO asset.asset_landparcel (asset_id,landparcel_asset_id) VALUES (?,?) " +
                             "ON CONFLICT  (asset_id,landparcel_asset_id) DO NOTHING;",
-                    asset, to);
-            updateModTrack();
+                    asset, to) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperLandparcelLink(e);
         }
@@ -295,8 +308,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void unlinkAssetFromLandParcel(UUID asset, UUID from) {
         try {
-            jdbc.getJdbcTemplate().update("DELETE FROM asset.asset_landparcel WHERE asset_id = ? AND landparcel_asset_id = ?", asset, from);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("DELETE FROM asset.asset_landparcel WHERE asset_id = ? AND landparcel_asset_id = ?", asset, from) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperLandparcelLink(e);
         }
@@ -390,13 +404,14 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         try {
             assertValidLinkTable(table);
 
-            jdbc.getJdbcTemplate().update(
+            if (jdbc.getJdbcTemplate().update(
                     String.format(
                             "INSERT INTO %s (asset_id, %s) VALUES (?,?)",
                             table, field
                     ),
-                    assetId, value);
-            updateModTrack();
+                    assetId, value) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -408,13 +423,14 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         try {
             assertValidLinkTable(table);
 
-            jdbc.getJdbcTemplate().update(
+            if (jdbc.getJdbcTemplate().update(
                     String.format(
                             "UPDATE %s SET %s = ? WHERE asset_id = ?",
                             table, field
                     ),
-                    value, assetId);
-            updateModTrack();
+                    value, assetId) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -426,13 +442,14 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
         try {
             assertValidLinkTable(table);
 
-            jdbc.getJdbcTemplate().update(
+            if (jdbc.getJdbcTemplate().update(
                     String.format(
                             "DELETE FROM %s WHERE asset_id = ?",
                             table
                     ),
-                    assetId);
-            updateModTrack();
+                    assetId) >0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperLinkedData(e, assetId, field);
         }
@@ -443,8 +460,9 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void addQuantity(Quantity quantity) {
         try {
-            jdbc.update("INSERT INTO public.quantity (asset_id,unit_code,num_units,name) VALUES (:asset_id,:unit_code,:num_units,:name)", new BeanPropertySqlParameterSource(quantity));
-            updateModTrack();
+            if (jdbc.update("INSERT INTO public.quantity (asset_id,unit_code,num_units,name) VALUES (:asset_id,:unit_code,:num_units,:name)", new BeanPropertySqlParameterSource(quantity)) > 0) {
+                updateModTrack();
+            }
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
         }
@@ -471,8 +489,11 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             sql.deleteCharAt(sql.length()-1);
 
             sql.append("\nWHERE asset_id = :asset_id AND name = :name");
-            jdbc.update(sql.toString(), params);
-            updateModTrack();
+            if (jdbc.update(sql.toString(), params) > 0) {
+                updateModTrack();
+            } else {
+                throw new NotFoundException(String.format("No quantity named %s, found for asset_id %s", quantity.name, quantity.asset_id));
+            }
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, quantity.getAsset_id(), quantity.getName());
         }
@@ -482,8 +503,11 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
     @Transactional(transactionManager="core_tx_mgr", rollbackFor = Exception.class)
     public void deleteQuantity(UUID uuid, String name) {
         try {
-            jdbc.getJdbcTemplate().update("DELETE FROM public.quantity WHERE asset_id = ? and name = ?", uuid, name);
-            updateModTrack();
+            if (jdbc.getJdbcTemplate().update("DELETE FROM public.quantity WHERE asset_id = ? and name = ?", uuid, name) > 0) {
+                updateModTrack();
+            } else {
+                throw new NotFoundException(String.format("No quantity named %s, found for asset_id %s", name, uuid));
+            }
         } catch (Exception e) {
             throw exceptionMapperQuantity(e, uuid, name);
         }
@@ -565,9 +589,15 @@ public class CoreAssetWriterImpl implements CoreAssetWriter {
             return new ValidationFailureException(e.getMessage());
         } else if (e instanceof TransientDataAccessException) {
             return new ResubmitException(e.getMessage());
+        } else if (e instanceof UncategorizedSQLException) {
+            if (e.getMessage().contains("RAISE")) {
+                // Assume that RAISES are all business rule - check constraints etc.
+                return new BusinessRuleViolationException(e.getCause().getMessage());
+            }
+        }
 
         // Esoteric mappings
-        } if (e instanceof TransactionSystemException) {
+        if (e instanceof TransactionSystemException) {
             final Throwable t = ((TransactionSystemException) e).getOriginalException();
 
             // A socket write timeout communicating with the Postgres server

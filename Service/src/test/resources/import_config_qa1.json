@@ -1,0 +1,6 @@
+{
+  "authUrl" : "http://qa1.assetworld.co.za/auth2/login",
+  "serviceUrl": "http://qa1.assetworld.co.za/",
+  "loginUsername" : "dev",
+  "loginPassword": "dev"
+}

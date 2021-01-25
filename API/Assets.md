@@ -116,6 +116,8 @@ Status codes: 201, 400, 403, 408, 409, 412
 ### `PATCH assets/{uuid}`
 Updates an existing Asset.
 
+> **RULE:** Changing the Asset Type is not allowed.
+
 Accepts:  `CoreAssetDto`
 ```
 e.g.
@@ -541,7 +543,7 @@ Accepts: `QuantityDto`
 
 Returns:  *Nothing*
 
-Status codes: 201, 400, 403, 408, 409
+Status codes: 200, 400, 403, 408, 409
 
 
 ### DELETE `/assets/quantity/asset_id/{asset_id}/name/{name}`
@@ -552,7 +554,7 @@ Accepts: *Nothing*
 
 Returns:  *Nothing*
 
-Status codes: 201, 400, 403, 404, 408
+Status codes: 200, 400, 403, 404, 408
 
 
 ### GET `/assets/quantity/asset_id/{asset_id}/name/{name}`
@@ -563,4 +565,4 @@ Accepts: *Nothing*
 
 Returns:  `QuantityDto`
 
-Status codes: 201, 400, 403, 404, 408
+Status codes: 200, 400, 403, 404, 408

@@ -12,4 +12,6 @@ public interface Meta {
     public String getServerIP();
     public String getDbName();
     public List<String> listExtentions();
+
+    public List<String> getUserTypes();
 }

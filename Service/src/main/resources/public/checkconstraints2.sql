@@ -1,0 +1,1 @@
+ALTER TABLE public.ref_performance_rating ADD CONSTRAINT ref_performance_rating_k_check  CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);

@@ -1,5 +1,6 @@
 package za.co.imqs.api.lookup;
 
+import ch.qos.logback.classic.Level;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.ValidatableResponse;
@@ -10,6 +11,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import za.co.imqs.LoginRule;
@@ -41,6 +43,10 @@ import static za.co.imqs.api.TestConfig.DOCKER;
  */
 @Slf4j
 public class LookupControllerGetWithOperatorAPITest {
+    static {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)).setLevel(Level.INFO);
+    }
+
     protected static final TestRule NULL_RULE = new TestRule() {
         @Override
         public Statement apply(Statement statement, org.junit.runner.Description description) {

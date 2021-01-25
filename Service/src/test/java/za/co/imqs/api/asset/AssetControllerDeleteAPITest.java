@@ -74,7 +74,7 @@ public class AssetControllerDeleteAPITest extends AbstractAssetControllerAPITest
 
         given().
                 header("Cookie", login.getSession()).
-                delete("/assets/{uuid}", THE_ASSET).
+                delete("/assets/{uuid}?permanent=true", THE_ASSET).
                 then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN);
     }
 

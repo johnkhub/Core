@@ -66,14 +66,17 @@ public class SchemaManagement implements CliHandler {
                     build());
         }
         if (SCHEMA_MGMT_SUPPRESS.isActive()) grp.addOption(Option.builder("none").longOpt("manual-schemas").desc("Disable liquibase schema management. ").build());
+        grp.addOption(Option.builder("none").longOpt("dump_schemas").desc("Dump all schemas").build());
     }
 
-    public void upgrade() {
+    private void upgrade() {
         boolean drop = Boolean.parseBoolean(System.getenv("DROP_DB"));
         if (drop & !activeProfile.equals(PROFILE_TEST)) {
             drop = false;
-            log.warn("DROPDB specified outside of TEST profile. Ignoring.");
-        } else {
+            log.warn("DROP_DB specified outside of TEST profile. Ignoring.");
+        }
+
+        if (drop) {
             log.warn("DROPPING DB!");
         }
 
@@ -87,7 +90,7 @@ public class SchemaManagement implements CliHandler {
         }
     }
 
-    public void generateDifferenceReport(
+    private void generateDifferenceReport(
             String schema,
             String username,
             String password,

@@ -1,0 +1,92 @@
+{
+  "changeSet": {
+    "id": "...",
+    "author": "...",
+    "comment": "...",
+    "changes": [
+      {
+        "createTable": {
+          "columns": [
+            {
+              "column": {
+                "constraints": {
+                  "nullable": false
+                },
+                "name": "k",
+                "type": "VARCHAR(10)"
+              }
+            },
+            {
+              "column": {
+                "name": "v",
+                "type": "VARCHAR"
+              }
+            },
+            {
+              "column": {
+                "constraints": {
+                  "nullable": false
+                },
+                "defaultValueComputed": "now()",
+                "name": "creation_date",
+                "type": "TIMESTAMP WITHOUT TIME ZONE"
+              }
+            },
+            {
+              "column": {
+                "name": "deactivated_at",
+                "type": "TIMESTAMP WITHOUT TIME ZONE"
+              }
+            },
+            {
+              "column": {
+                "defaultValueBoolean": false,
+                "name": "allow_delete",
+                "type": "BOOLEAN"
+              }
+            },
+            {
+              "column": {
+                "constraints": {
+                  "nullable": false
+                },
+                "defaultValueComputed": "now()",
+                "name": "activated_at",
+                "type": "TIMESTAMP WITHOUT TIME ZONE"
+              }
+            }]
+        ,
+          "tableName": "ref_xxxx",
+          "schemaName": "dtpw"
+        }
+      },{
+        "createIndex": {
+          "columns": [
+            {
+              "column": {
+                "name": "k"
+              }
+            }]
+        ,
+          "indexName": "ref_xxxx_k_idx",
+          "tableName": "ref_xxxx",
+          "schemaName" : "dtpw",
+          "unique": true
+        }
+      }, {
+        "createIndex": {
+          "columns": [
+            {
+              "column": {
+                "name": "v"
+              }
+            }]
+        ,
+          "indexName": "ref_xxxx_v_idx",
+          "tableName": "ref_xxxx",
+          "schemaName" : "dtpw",
+          "unique": true
+        }
+      }]
+  }
+}

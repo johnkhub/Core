@@ -631,7 +631,7 @@ public class AssetController {
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", quantityDto.getAsset_id(), "name", quantityDto.getName())).setCorrelationId(quantityDto.getAsset_id()),
                     () -> {
                         perms.expectPermission(user.getUserUuid(), quantityDto.getAsset_id(), PERM_UPDATE);
-                        assetWriter.addQuantity(Quantity.of(quantityDto));
+                        assetWriter.addQuantity(Quantity.of(quantityDto, true));
                         return null;
                     }
             );
@@ -653,7 +653,7 @@ public class AssetController {
                     new AuditLogEntry(user.getUserUuid(), AuditLogger.Operation.UPDATE_ASSET, of("asset", quantityDto.getAsset_id(), "name", quantityDto.getName())).setCorrelationId(quantityDto.getAsset_id()),
                     () -> {
                         perms.expectPermission(user.getUserUuid(), quantityDto.getAsset_id(), PERM_UPDATE);
-                        assetWriter.updateQuantity(Quantity.of(quantityDto));
+                        assetWriter.updateQuantity(Quantity.of(quantityDto, false));
                         return null;
                     }
             );

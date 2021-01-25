@@ -55,7 +55,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 addPathPatterns(ASSET_ROOT_PATH+"/**").
                 addPathPatterns(LOOKUP_ROOT_PATH+"/**").
                 excludePathPatterns(PING_PATH).
-                excludePathPatterns(DOWNLOAD_PATH+"/importer/**");
+                excludePathPatterns(DOWNLOAD_PATH+"/importer/**").
+                excludePathPatterns(ASSET_ROOT_PATH+"/meta/viewdependencies");
     }
 
     @Override
