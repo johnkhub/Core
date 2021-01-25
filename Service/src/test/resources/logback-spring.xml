@@ -11,6 +11,9 @@
     </appender>
 
     <appender name="SIZE_AND_TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%-5level %d{HH:mm:ss.SSS} [%thread]  %logger{100} - %msg%n</pattern>
+        </encoder>
         <file>${PATH}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${PATH}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
