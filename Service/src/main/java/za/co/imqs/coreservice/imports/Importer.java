@@ -80,6 +80,15 @@ public class Importer extends ImporterTemplate{
                 Before.IDENTITY,
                 (d) -> {
                     final ExternalLinks dto = (ExternalLinks)d;
+
+                    if (skipTo != null) {
+                        if (dto.getAsset_id().equals(skipTo)) {
+                            log.info ("CAUGHT UP TO SKIP TO");
+                            skipTo = null;
+                        }
+                        return dto;
+                    }
+
                     if (dto.getEmis() == null) {
                         return dto;
                     }
@@ -126,6 +135,15 @@ public class Importer extends ImporterTemplate{
                 Before.IDENTITY,
                 (d) -> {
                         final Extent dto = (Extent)d;
+
+                        if (skipTo != null) {
+                            if (dto.getAsset_id().equals(skipTo)) {
+                                log.info ("CAUGHT UP TO SKIP TO");
+                                skipTo = null;
+                            }
+                            return dto;
+                        }
+
                         if (dto.getExtent() == null) {
                             return dto;
                         }
@@ -336,8 +354,9 @@ public class Importer extends ImporterTemplate{
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
             return;
         } else if (cmd.equalsIgnoreCase("delete")) {
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
             Importer i = new Importer(config.getServiceUrl(), session);
-            i.deleteAssets(file, EnumSet.noneOf(ImporterTemplate.Flags.class));
+            i.deleteAssets(file, flags);
             return;
         }
 
