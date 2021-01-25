@@ -1,4 +1,30 @@
 {
+  "template" : {
+    "name" : "kv.template",
+    "uuid": "0e5130d1-94a3-4f12-917c-94d594a5c589",
+    "description" : [
+      "Template for standard K/V table"
+    ],
+    "variables" : {
+      "TABLE_NAME" : {
+        "description" : "Name of the table",
+        "validation" : ""
+      },
+      "TABLE_SCHEMA" : {
+        "description" : "Database schema name",
+        "validation" : ""
+      },
+      "CODE" : {
+        "description" : "Code to use to identify the type of lookup",
+        "validation" : ""
+      },
+      "DESCRIPTION" : {
+        "description" : "Description of this lookup type",
+        "validation" : ""
+      }
+    }
+  },
+
   "changeSet": {
     "id": "...",
     "author": "...",
@@ -56,8 +82,8 @@
               }
             }]
         ,
-          "tableName": "ref_xxxx",
-          "schemaName": "dtpw"
+          "tableName": "{{TABLE_NAME}}",
+          "schemaName": "{{TABLE_SCHEMA}}"
         }
       },{
         "createIndex": {
@@ -68,9 +94,9 @@
               }
             }]
         ,
-          "indexName": "ref_xxxx_k_idx",
-          "tableName": "ref_xxxx",
-          "schemaName" : "dtpw",
+          "indexName": "{{TABLE_NAME}}_k_idx",
+          "tableName": "{TABLE_NAME}}",
+          "schemaName" : "{{TABLE_SCHEMA}}",
           "unique": true
         }
       }, {
@@ -82,10 +108,26 @@
               }
             }]
         ,
-          "indexName": "ref_xxxx_v_idx",
-          "tableName": "ref_xxxx",
-          "schemaName" : "dtpw",
+          "indexName": "{{TABLE_NAME}}_v_idx",
+          "tableName": "{{TABLE_NAME}}",
+          "schemaName" : "{{TABLE_SCHEMA}}",
           "unique": true
+        }
+      }, {
+        "sql" : {
+          "sql" : "INSERT INTO public.kv_type (code,name,\"table\") VALUES ('{{CODE}}', '{{DESCRIPTION}}', '{{TABLE_SCHEMA}}.{{TABLE_NAME}}');"
+        }
+      }, {
+        "sql" : {
+          "sql" : "GRANT SELECT ON TABLE {{TABLE_SCHEMA}}.{{TABLE_NAME}} TO normal_reader;"
+        }
+      },  {
+        "sql" : {
+          "sql" : "GRANT SELECT ON TABLE {{TABLE_SCHEMA}}.{{TABLE_NAME}} TO report_reader;"
+        }
+      },{
+        "sql" : {
+          "sql" : "ALTER TABLE {{TABLE_SCHEMA}}.{{TABLE_NAME}} ADD CONSTRAINT {{TABLE_NAME}}_k_check  CHECK (k::text <> ''::text AND k::text ~ '^[\w]*$'::text);"
         }
       }]
   }
