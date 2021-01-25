@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
@@ -55,16 +56,25 @@ public class ImporterTemplate {
     public static BeanVerifier PASS_ALL = (b) -> true;
 
 
-    protected final RestTemplate restTemplate;
+    protected final RestOperations restTemplate;
     protected final String baseUrl;
     protected final String session;
+    protected String skipTo;
+
+    static long row = 0;
 
     public ImporterTemplate(String baseUrl, String session) {
+        //this(baseUrl, session, null);
+        this(baseUrl, session, null);
+    }
+
+    public ImporterTemplate(String baseUrl, String session, String skipTo) {
         this.session = session;
         //this.restTemplate = new RestTemplate();  Else PATCH is not supported
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         this.restTemplate = new RestTemplate(requestFactory);
         this.baseUrl = baseUrl;
+        this.skipTo = skipTo;
     }
 
     //
@@ -109,6 +119,15 @@ public class ImporterTemplate {
                 before,
                 (d) -> {
                         T dto = (T)d;
+
+                        if (skipTo != null) {
+                            if (dto.getAsset_id().equals(skipTo)) {
+                                log.info ("CAUGHT UP TO SKIP TO");
+                                skipTo = null;
+                            }
+                            return dto;
+                        }
+
                         if (flags.contains(Flags.FORCE_INSERT)) {
                             restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
                         } else if (flags.contains(Flags.FORCE_UPSERT)) {
@@ -133,10 +152,8 @@ public class ImporterTemplate {
 
     public void deleteAssets(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         final boolean permanent = flags.contains(Flags.HARD_DELETE);
-        final UriComponentsBuilder bob = UriComponentsBuilder.fromUriString(baseUrl + "/assets/testing/{uuid}");
-        if (permanent) {
-            bob.queryParam("permanent","true");
-        }
+        final UriComponentsBuilder bob = UriComponentsBuilder.fromUriString(baseUrl + "assets/");
+
 
         importRunner(
                 path, new CoreAssetDto(), null, exceptionFile, flags,
@@ -145,11 +162,10 @@ public class ImporterTemplate {
                 (d) -> {
                     final CoreAssetDto dto = (CoreAssetDto)d;
                     restTemplate.exchange(
-                            bob.toUriString(),
+                            baseUrl + "/assets/"+dto.getAsset_id()+(permanent?"?permanent=true":""),
                             HttpMethod.DELETE,
                             jsonEntity(null),
-                            Void.class,
-                            dto.getAsset_id()
+                            Void.class
                     );
                     return dto;
                 },
@@ -176,13 +192,21 @@ public class ImporterTemplate {
         final StatefulBeanToCsv<ErrorProvider> sbc = exceptionFile == null ? null : new StatefulBeanToCsvBuilder(exceptionFile).withSeparator(CSVWriter.DEFAULT_SEPARATOR).build();
 
         if (!(asset instanceof ErrorProvider)) throw new IllegalArgumentException("DTO type must be a subclass of ErrorProvider!");
+
+
         try (Reader reader = Files.newBufferedReader(path)) {
+            row = 0;
             assetImporter.stream(reader, asset, verifier, type).forEach(
                     (T dto) -> {
                         try {
                             first.perform(dto);
                             handle.perform(dto);
                             then.perform(dto);
+
+                            if (row % 1000 == 0) {
+                                log.info("Now at row {}. {} ", row, dto);
+                            }
+                            row++;
 
                         } catch (HttpClientErrorException c) {
                             ((ErrorProvider)dto).setError(c.getResponseBodyAsString());
