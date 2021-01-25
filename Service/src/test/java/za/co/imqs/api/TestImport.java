@@ -10,7 +10,7 @@ import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
 import za.co.imqs.coreservice.imports.Importer;
 
 @Slf4j
-public class TestImport extends AbstractAssetControllerAPITest {
+public class TestImport /*extends AbstractAssetControllerAPITest*/ {
         
     @Ignore("Fixup")
     @Test
@@ -49,12 +49,19 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
 
+
     @Test
-    @Ignore
+    public void loadExtents() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 19/data-1607496098896_EXTENT_Extent Unit ADDv3.csv"});
+    }
+
+    @Test
     public void pwei164() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 18/PWEI-164/Tygersig PS and Uitzig SS update.csv"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 19/PWEI-164/Tygersig PS and Uitzig SS update.csv"});
     }
+
 
     @Test
     public void loadSmallSet() throws Exception{
