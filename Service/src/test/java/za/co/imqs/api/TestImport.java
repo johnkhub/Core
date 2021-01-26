@@ -124,6 +124,7 @@ public class TestImport /*extends AbstractAssetControllerAPITest*/ {
     public void random_19() throws Exception{
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         //Importer.main(new String[]{config, "assets", "/home/frank/Downloads/Updates/Release 19/Random_data/Update_From_Suspect_List.csv"});
-        Importer.main(new String[]{config, "delete", "/home/frank/Downloads/Updates/Release 19/Random_data/Delete_From_Suspect_List.csv", "HARD_DELETE"});
+        //Importer.main(new String[]{config, "delete", "/home/frank/Downloads/Updates/Release 19/Random_data/Delete_From_Suspect_List.csv", "HARD_DELETE"});
+        Importer.main(new String[]{config, "assets", "/home/frank/Downloads/Updates/Release 19/Random_data/Update of 8 items picked up from QA_20210126.csv"});
     }
 }
