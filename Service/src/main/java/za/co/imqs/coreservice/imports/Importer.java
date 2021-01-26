@@ -179,7 +179,7 @@ public class Importer extends ImporterTemplate{
                         }
 
                         final QuantityDto quantity = new QuantityDto();
-                        quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                        quantity.setUnit_code(dto.getExtent_unit()); // TODO (Caleb) pull lookup table from server and use for validation
                         quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
                         quantity.setName("extent");
                         quantity.setNum_units(dto.getExtent());

@@ -68,6 +68,7 @@ public class ImporterTemplate {
         this(baseUrl, session, null);
     }
 
+    // TOODO (Caleb) read skipTo value as optional commandline parameter
     public ImporterTemplate(String baseUrl, String session, String skipTo) {
         this.session = session;
         //this.restTemplate = new RestTemplate();  Else PATCH is not supported

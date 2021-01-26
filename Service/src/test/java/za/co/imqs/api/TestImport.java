@@ -119,4 +119,11 @@ public class TestImport /*extends AbstractAssetControllerAPITest*/ {
         Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_land_use_class.csv","LAND_USE_CLASS"});
         Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_utilisation_rating.csv","UTILISATION_RATING"});
     }
+
+    @Test
+    public void random_19() throws Exception{
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        //Importer.main(new String[]{config, "assets", "/home/frank/Downloads/Updates/Release 19/Random_data/Update_From_Suspect_List.csv"});
+        Importer.main(new String[]{config, "delete", "/home/frank/Downloads/Updates/Release 19/Random_data/Delete_From_Suspect_List.csv", "HARD_DELETE"});
+    }
 }
