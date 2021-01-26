@@ -105,6 +105,7 @@ public class AssetControllerQuantityCrudAPITest extends AbstractAssetControllerA
                 statusCode(HttpStatus.SC_OK);
     }
 
+
     @Test
     public void assetUpdateValidationFailure() throws Exception {
         fail("Not implemented");
@@ -125,6 +126,30 @@ public class AssetControllerQuantityCrudAPITest extends AbstractAssetControllerA
 
     @Test
     public void assetUpdateQuantityNotFound() throws Exception {
-        fail("Not implemented");
+        final AssetEnvelopeDto envelope = (AssetEnvelopeDto) new CoreAssetBuilder(new AssetEnvelopeDto()).
+                code("e1").
+                name("Envelope 1").
+                type("ENVELOPE").
+                funcloc("at").
+                dept("WCED").
+                serial("1234").
+                get();
+
+        given().
+                header("Cookie", login.getSession()).
+                contentType(ContentType.JSON).body(envelope).
+                put("/assets/{uuid}", THE_ASSET).
+                then().assertThat().
+                statusCode(HttpStatus.SC_CREATED);
+
+        assertEquals(getAsset(THE_ASSET), envelope);
+
+
+        given().
+                header("Cookie", login.getSession()).
+                contentType(ContentType.JSON).
+                delete("/assets/quantity/asset_id/{asset_id}/name/{name}", THE_ASSET, "non-extent").
+                then().assertThat().
+                statusCode(HttpStatus.SC_NOT_FOUND);
     }
 }

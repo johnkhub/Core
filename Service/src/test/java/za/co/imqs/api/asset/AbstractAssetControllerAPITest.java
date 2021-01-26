@@ -306,8 +306,7 @@ public class AbstractAssetControllerAPITest {
         for (UUID u : assets) {
             given().
                     header("Cookie", login.getSession()).
-                    delete("/assets/testing/{uuid}", u).
-                    then().assertThat().statusCode(HttpStatus.SC_OK);
+                    delete("/assets/testing/{uuid}", u);
         }
     }
 
