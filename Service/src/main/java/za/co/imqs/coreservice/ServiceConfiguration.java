@@ -15,10 +15,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import za.co.imqs.configuration.client.ConfigClient;
+import za.co.imqs.coreservice.controller.ExportController;
 
 import javax.sql.DataSource;
 
 import java.sql.Connection;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.PROFILE_ADMIN;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
@@ -88,6 +91,19 @@ public class ServiceConfiguration {
             return "http://localhost:" +serverPort + "/";
         }
         return host;
+    }
+
+
+    @Bean
+    public ExportController.FilenameStrategy exportNameStrategy() {
+        return () -> {
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_kkmmss");
+            try (Connection c = ds.getConnection()){
+                return c.getCatalog() + "_" + format.format(new Date(System.currentTimeMillis()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     @Data
