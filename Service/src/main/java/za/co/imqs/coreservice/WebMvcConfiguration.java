@@ -54,13 +54,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(handleAuthInterceptor).
                 addPathPatterns(ASSET_ROOT_PATH+"/**").
                 addPathPatterns(LOOKUP_ROOT_PATH+"/**").
+                addPathPatterns(DOWNLOAD_PATH+"/exporter**").
                 excludePathPatterns(PING_PATH).
                 excludePathPatterns(DOWNLOAD_PATH+"/importer/**").
-                excludePathPatterns(ASSET_ROOT_PATH+"/meta/viewdependencies");
+                excludePathPatterns(ASSET_ROOT_PATH+"/meta/viewdependencies").
+                excludePathPatterns(DOWNLOAD_PATH+"/export/**");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(DOWNLOAD_PATH+"/export/**").addResourceLocations("classpath:/ui/");
         registry.addResourceHandler(DOWNLOAD_PATH+"/importer/**").addResourceLocations("file:"+System.getProperty("user.dir")+"/");
     }
 }
