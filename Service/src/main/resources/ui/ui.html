@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Asset Core Service</title>
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+    <script src="tasks.js"></script>
+    <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<div id='actions' class="container align center">
+    <h2>Download Core export</h2>
+
+    <div id='loginCredentials'>
+        <h4>Login Details:</h4>
+
+        <label for="userName"><b>Username</b></label>
+        <input id='userName' type="text" placeholder="Enter Username" required>
+
+        <label for="userPwd"><b>Password</b></label>
+        <input id='userPwd' type="password" placeholder="Enter Password" required>
+    </div>
+    <button id='btnTask' class="taskButtonOn" onclick="performTask()">Export</button>
+</div>
+</body>
+</html>

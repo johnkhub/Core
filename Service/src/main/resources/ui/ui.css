@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+}
+
+.container {
+    padding: 16px;
+    width: 30%;
+    horiz-align: left;
+}
+
+.taskButtonOn {
+    background-color: #483d8b;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.taskButtonOff {
+    background-color: #62648B;
+    cursor: not-allowed;
+    color:#d3d3d3;
+}
+
+button {
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: 1px solid #00008b;
+    width: 35%;
+    horiz-align: right;
+}
+
+button:hover {
+    opacity: 0.6;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
