@@ -2,9 +2,9 @@ Import
 ======
 
  **CAVEAT:** Under normal circumstances,THERE IS NO WAY TO DELETE DATA VIA AN IMPORT, so: 
- * There is no way to remove an Asset
  * There is no way to remove a specific value for a specific asset
  * By extension, it is also impossible to move an attribute from one Asset to another e.g. moving an EMIS number
+ * An Asset may be marked as inactive, but it will remain in the database
  
  The server may be stopped though and run using the `admin` profile. This makes it possible to delete assets via the importer.
  Refer to the [configuration documentation](CONFIG.md).
@@ -74,14 +74,17 @@ The above is also packaged in a `.bat` and `.sh` file: `import.bat` and `import.
 |type|parameter|description|
 |----|---------|-----------|
 |lookups|type|The type of lookup (as defined in the `public.kv_type` table)|
-|assets|flags|`FORCE_INSERT`,`FORCE_CONTINUE` (see below)|
+|assets|flags|`FORCE_INSERT`,`FORCE_CONTINUE`,`FORCE_UPSERT` (see below)|
+|delete|flags|Normally this will mark Assets as inactive - while not modifying any data. To truly delete an Asset specify `HARD_DELETE`(see below)|
 |asset_to_landparcel|none||
 
 
 |flag|description|
 |----|------------|
 |`FORCE_INSERT`|Mostly relevant to developers. Will force the insert of a row even if it contains an asset_id. This is useful to import an export from another system while retaining the asset_id values.|
-|`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file. **NOTE:** Incorrectly formatted CSV files will fail on first error.|
+|`FORCE_CONTINUE`|Instead of failing on the first error the import will continue instead writing all failing rows to an exception csv file. **NOTE:** Incorrectly formatted CSV files will fail on first error|
+|`FORCE_UPSERT`|If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT|
+|`HARD_DELETE`|Completely deletes an Asset from the datavase. Requires server to run in `admin` mode.|
 
 ### Examples ###
  Import assets writing failures to exception files.

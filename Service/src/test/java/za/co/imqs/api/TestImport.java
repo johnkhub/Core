@@ -112,4 +112,13 @@ public class TestImport extends AbstractAssetControllerAPITest {
         Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_land_use_class.csv","LAND_USE_CLASS"});
         Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_utilisation_rating.csv","UTILISATION_RATING"});
     }
+
+    @Test
+    public void testForceUpsert() throws Exception {
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+        loadLookups();
+        Importer.main(new String[]{config, "lookups", TestUtils.resolveWorkingFolder()+"/src/test/resources/lookups/ref_ei_district.csv", "EI_DISTR"});
+
+        Importer.main(new String[]{config, "assets", TestUtils.resolveWorkingFolder()+"/src/test/resources/import_data_force_upsert.csv","FORCE_UPSERT"});
+    }
 }

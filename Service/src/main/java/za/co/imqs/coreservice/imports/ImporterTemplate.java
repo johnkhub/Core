@@ -131,7 +131,7 @@ public class ImporterTemplate {
                         if (flags.contains(Flags.FORCE_INSERT)) {
                             restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, dto.getAsset_id());
                         } else if (flags.contains(Flags.FORCE_UPSERT)) {
-                            if (getAsset(dto.getFunc_loc_path()) == null) {
+                            if (!exists(dto.getFunc_loc_path())) {
                                 restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PUT, jsonEntity(dto), Void.class, UUID.randomUUID());
                             } else {
                                 restTemplate.exchange(baseUrl + "/assets/{uuid}", HttpMethod.PATCH, jsonEntity(dto), Void.class, dto.getAsset_id());
@@ -271,8 +271,24 @@ public class ImporterTemplate {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
+
+    public boolean exists(String func_loc_path) {
+        try {
+            return restTemplate.exchange(
+                    baseUrl + "/assets/func_loc_path/{path}",
+                    HttpMethod.GET,
+                    jsonEntity(null),
+                    CoreAssetDto.class,
+                    func_loc_path.replace(".","+")
+            ).getStatusCode().is2xxSuccessful();
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public boolean ping() {
         try {
