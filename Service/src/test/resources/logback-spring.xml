@@ -23,10 +23,6 @@
             <maxHistory>100</maxHistory>
             <totalSizeCap>80GB</totalSizeCap>
         </rollingPolicy>
-
-        <encoder>
-            <pattern>%relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
     </appender>
 
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
