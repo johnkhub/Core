@@ -66,7 +66,7 @@ public class SchemaManagement implements CliHandler {
                     build());
         }
         if (SCHEMA_MGMT_SUPPRESS.isActive()) grp.addOption(Option.builder("none").longOpt("manual-schemas").desc("Disable liquibase schema management. ").build());
-        grp.addOption(Option.builder("none").longOpt("dump_schemas").desc("Dump all schemas").build());
+        //grp.addOption(Option.builder("none").longOpt("dump_schemas").desc("Dump all schemas").build());
     }
 
     private void upgrade() {
