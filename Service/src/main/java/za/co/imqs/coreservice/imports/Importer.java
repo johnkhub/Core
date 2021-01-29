@@ -233,7 +233,7 @@ public class Importer extends ImporterTemplate{
     //
     // Implementations for DTPW
     //
-    // TODO can easily be made general by passing in the type of the linked data
+    // TODO can easily be made general by passing in the type of the linked data - use same method of passing in method reference as we did in importLinkedData
     public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importRunner(
                 path, new ExternalLinks(), null, exceptionFile, flags,
@@ -289,7 +289,7 @@ public class Importer extends ImporterTemplate{
         );
     }
 
-    // TODO can easily be made general by passing in the name of the quantity
+    // TODO can easily be made general by passing in the name of the quantity - use same method of passing in method reference as we did in importLinkedData
     public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importRunner(
                 path, new Extent(), null, exceptionFile, flags,
