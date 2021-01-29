@@ -50,9 +50,7 @@ public class Importer extends ImporterTemplate{
         }
     }
 
-    //
-    // Implementations for DTPW
-    //
+    // TODO Consider incorporating these methods in the ImporterTemplate
     public void importLandParcelMappings(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         log.info("Map Assets to Landparcels");
 
@@ -69,131 +67,12 @@ public class Importer extends ImporterTemplate{
                     );
                     return dto;
                 },
-               After.IDENTITY
-        );
-    }
-
-    public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
-        importRunner(
-                path, new ExternalLinks(), null, exceptionFile, flags,
-                PASS_ALL,
-                Before.IDENTITY,
-                (d) -> {
-                    final ExternalLinks dto = (ExternalLinks)d;
-
-                    if (skipTo != null) {
-                        if (dto.getAsset_id().equals(skipTo)) {
-                            log.info ("CAUGHT UP TO SKIP TO");
-                            skipTo = null;
-                        }
-                        return dto;
-                    }
-
-                    if (dto.getEmis() == null) {
-                        return dto;
-                    }
-
-                    final CoreAssetDto asset = restTemplate.exchange(
-                            baseUrl + "/assets/func_loc_path/{path}",
-                            HttpMethod.GET,
-                            jsonEntity(null),
-                            CoreAssetDto.class,
-                            dto.getFunc_loc_path().replace(".","+")
-                    ).getBody();
-
-                    if (asset == null) {
-                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                    }
-
-                    final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
-                            HttpMethod.DELETE,
-                            jsonEntity(null),
-                            Void.class,
-                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
-                    );
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
-                            HttpMethod.PUT,
-                            jsonEntity(null),
-                            Void.class,
-                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
-                    );
-                    return null;
-                },
                 After.IDENTITY
         );
     }
 
-    public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
-        importRunner(
-                path, new Extent(), null, exceptionFile, flags,
-                PASS_ALL,
-                Before.IDENTITY,
-                (d) -> {
-                        final Extent dto = (Extent)d;
-
-                        if (skipTo != null) {
-                            if (dto.getAsset_id().equals(skipTo)) {
-                                log.info ("CAUGHT UP TO SKIP TO");
-                                skipTo = null;
-                            }
-                            return dto;
-                        }
-
-                        if (dto.getExtent() == null) {
-                            return dto;
-                        }
-
-                        if (dto.getExtent_unit() == null) {
-                            throw new IllegalArgumentException("Extent_unit not set!");
-                        }
-
-                        final CoreAssetDto asset = restTemplate.exchange(
-                                baseUrl + "/assets/func_loc_path/{path}",
-                                HttpMethod.GET,
-                                jsonEntity(null),
-                                CoreAssetDto.class,
-                                dto.getFunc_loc_path().replace(".","+")
-                        ).getBody();
-
-                        if (asset == null) {
-                            throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                        }
-
-                        final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                        try {
-                            restTemplate.exchange(
-                                    baseUrl + "/assets/quantity/asset_id/{uuid}/name/{name}",
-                                    HttpMethod.DELETE,
-                                    jsonEntity(null),
-                                    Void.class,
-                                    assetId, "extent"
-                            );
-                        } catch (HttpClientErrorException ignored) {
-
-                        }
-
-                        final QuantityDto quantity = new QuantityDto();
-                        quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
-                        quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
-                        quantity.setName("extent");
-                        quantity.setNum_units(dto.getExtent());
-
-                        restTemplate.exchange(
-                                baseUrl + "/assets/quantity",
-                                HttpMethod.PUT,
-                                jsonEntity(quantity),
-                                Void.class
-                        );
-                        return dto;
-                },
-                After.IDENTITY
-        );
+    public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
+        deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
     }
 
     public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
@@ -249,58 +128,6 @@ public class Importer extends ImporterTemplate{
                 After.IDENTITY
 
         );
-    }
-
-    public void importAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
-        long t0 = System.currentTimeMillis();
-
-        log.info("Importing Envelopes...");
-        importType(assets, new AssetEnvelopeDto(), "ENVELOPE", new FileWriter("envelope_exceptions.csv"), flags, (dto)-> { remap(dto); return true; });
-
-        log.info("Importing Facilities...");
-        importType(assets, new AssetFacilityDto(), "FACILITY", new FileWriter("facility_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Buildings...");
-        importType(assets, new AssetBuildingDto(),  "BUILDING", new FileWriter("building_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Sites...");
-        importType(assets, new AssetSiteDto(), "SITE", new FileWriter("site_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Floors...");
-        importType(assets, new AssetFloorDto(), "FLOOR",new FileWriter("floor_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Rooms...");
-        importType(assets, new AssetRoomDto(),  "ROOM", new FileWriter("room_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Components...");
-        importType(assets, new AssetComponentDto(),  "COMPONENT", new FileWriter("component_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-
-        log.info("Importing Landparcels...");
-        importType(assets, new AssetLandparcelDto(), "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
-        log.info("Import took {} seconds", (System.currentTimeMillis()-t0)/1000); //278 464 rows
-
-        log.info("Importing EMIS...");
-        importEmis(assets, new FileWriter("emis_exceptions.csv"), flags);
-
-        log.info("Importing Linked data...");
-        importLinkedData(
-                assets, new FileWriter("linked_data_exceptions.csv"),
-                new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"),
-                "dtpw+ei_district_link", "k_education_district",
-                flags
-        );
-
-        log.info("Importing Extents");
-        importExtent(assets, new FileWriter("extent_exceptions.csv"), flags);
-    }
-
-    public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
-        deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
-    }
-
-    private static <T extends CoreAssetDto> T remap(T dto) {
-        dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
-        return dto;
     }
 
     public static String getAuthSession(String authUrl, String username, String password)  {
@@ -387,18 +214,6 @@ public class Importer extends ImporterTemplate{
         private String emis;
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class Extent extends CoreAssetDto {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String extent;
-
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String extent_unit;
-    }
 
     @Data
     public static class AssetToLandparcel implements ErrorProvider {
@@ -412,6 +227,196 @@ public class Importer extends ImporterTemplate{
 
         @CsvBindByName(required = false)
         private String error;
+    }
+
+
+    //
+    // Implementations for DTPW
+    //
+    // TODO can easily be made general by passing in the type of the linked data
+    public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, new ExternalLinks(), null, exceptionFile, flags,
+                PASS_ALL,
+                Before.IDENTITY,
+                (d) -> {
+                    final ExternalLinks dto = (ExternalLinks)d;
+
+                    if (skipTo != null) {
+                        if (dto.getAsset_id().equals(skipTo)) {
+                            log.info ("CAUGHT UP TO SKIP TO");
+                            skipTo = null;
+                        }
+                        return dto;
+                    }
+
+                    if (dto.getEmis() == null) {
+                        return dto;
+                    }
+
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            dto.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                    }
+
+                    final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
+                    );
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
+                            HttpMethod.PUT,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, DTPW.GROUPING_TYPE_EMIS, dto.getEmis()
+                    );
+                    return null;
+                },
+                After.IDENTITY
+        );
+    }
+
+    // TODO can easily be made general by passing in the name of the quantity
+    public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, new Extent(), null, exceptionFile, flags,
+                PASS_ALL,
+                Before.IDENTITY,
+                (d) -> {
+                        final Extent dto = (Extent)d;
+
+                        if (skipTo != null) {
+                            if (dto.getAsset_id().equals(skipTo)) {
+                                log.info ("CAUGHT UP TO SKIP TO");
+                                skipTo = null;
+                            }
+                            return dto;
+                        }
+
+                        if (dto.getExtent() == null) {
+                            return dto;
+                        }
+
+                        if (dto.getExtent_unit() == null) {
+                            throw new IllegalArgumentException("Extent_unit not set!");
+                        }
+
+                        final CoreAssetDto asset = restTemplate.exchange(
+                                baseUrl + "/assets/func_loc_path/{path}",
+                                HttpMethod.GET,
+                                jsonEntity(null),
+                                CoreAssetDto.class,
+                                dto.getFunc_loc_path().replace(".","+")
+                        ).getBody();
+
+                        if (asset == null) {
+                            throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                        }
+
+                        final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                        try {
+                            restTemplate.exchange(
+                                    baseUrl + "/assets/quantity/asset_id/{uuid}/name/{name}",
+                                    HttpMethod.DELETE,
+                                    jsonEntity(null),
+                                    Void.class,
+                                    assetId, "extent"
+                            );
+                        } catch (HttpClientErrorException ignored) {
+
+                        }
+
+                        final QuantityDto quantity = new QuantityDto();
+                        quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                        quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
+                        quantity.setName("extent");
+                        quantity.setNum_units(dto.getExtent());
+
+                        restTemplate.exchange(
+                                baseUrl + "/assets/quantity",
+                                HttpMethod.PUT,
+                                jsonEntity(quantity),
+                                Void.class
+                        );
+                        return dto;
+                },
+                After.IDENTITY
+        );
+    }
+
+    public void importAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
+        long t0 = System.currentTimeMillis();
+
+        log.info("Importing Envelopes...");
+        importType(assets, new AssetEnvelopeDto(), "ENVELOPE", new FileWriter("envelope_exceptions.csv"), flags, (dto)-> { remap(dto); return true; });
+
+        log.info("Importing Facilities...");
+        importType(assets, new AssetFacilityDto(), "FACILITY", new FileWriter("facility_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Buildings...");
+        importType(assets, new AssetBuildingDto(),  "BUILDING", new FileWriter("building_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Sites...");
+        importType(assets, new AssetSiteDto(), "SITE", new FileWriter("site_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Floors...");
+        importType(assets, new AssetFloorDto(), "FLOOR",new FileWriter("floor_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Rooms...");
+        importType(assets, new AssetRoomDto(),  "ROOM", new FileWriter("room_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Components...");
+        importType(assets, new AssetComponentDto(),  "COMPONENT", new FileWriter("component_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+
+        log.info("Importing Landparcels...");
+        importType(assets, new AssetLandparcelDto(), "LANDPARCEL", new FileWriter("landparcel_exceptions.csv"), flags, (dto)->{ remap(dto); return true;});
+        log.info("Import took {} seconds", (System.currentTimeMillis()-t0)/1000); //278 464 rows
+
+        log.info("Importing EMIS...");
+        importEmis(assets, new FileWriter("emis_exceptions.csv"), flags);
+
+        log.info("Importing Linked data...");
+        importLinkedData(
+                assets, new FileWriter("linked_data_exceptions.csv"),
+                new eiDistrict(), eiDistrict.class.getMethod("getEi_district_code"),
+                "dtpw+ei_district_link", "k_education_district",
+                flags
+        );
+
+        log.info("Importing Extents");
+        importExtent(assets, new FileWriter("extent_exceptions.csv"), flags);
+    }
+
+    private static <T extends CoreAssetDto> T remap(T dto) {
+        dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
+        return dto;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class Extent extends CoreAssetDto {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String extent;
+
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String extent_unit;
     }
 
     @Data
