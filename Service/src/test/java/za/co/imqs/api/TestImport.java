@@ -121,4 +121,13 @@ public class TestImport extends AbstractAssetControllerAPITest {
 
         Importer.main(new String[]{config, "assets", TestUtils.resolveWorkingFolder()+"/src/test/resources/import_data_force_upsert.csv","FORCE_UPSERT"});
     }
+
+    @Test
+    public void testForceContinue() throws Exception {
+        loadLookups();
+        loadEIlookups();
+        final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
+       // Importer.main(new String[]{config, "assets", TestUtils.resolveWorkingFolder()+"/src/test/resources/small_dataset.csv","FORCE_INSERT"});
+        Importer.main(new String[]{config, "assets", TestUtils.resolveWorkingFolder()+"/src/test/resources/small_dataset.csv","FORCE_INSERT,FORCE_CONTINUE"});
+    }
 }
