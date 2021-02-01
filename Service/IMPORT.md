@@ -86,6 +86,8 @@ The above is also packaged in a `.bat` and `.sh` file: `import.bat` and `import.
 |`FORCE_UPSERT`|If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT|
 |`HARD_DELETE`|Completely deletes an Asset from the datavase. Requires server to run in `admin` mode.|
 
+>Flags are comma (`,`) separated
+
 ### Examples ###
  Import assets writing failures to exception files.
  

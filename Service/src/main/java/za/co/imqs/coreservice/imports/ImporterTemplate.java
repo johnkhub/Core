@@ -152,8 +152,6 @@ public class ImporterTemplate {
 
     public void deleteAssets(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         final boolean permanent = flags.contains(Flags.HARD_DELETE);
-        final UriComponentsBuilder bob = UriComponentsBuilder.fromUriString(baseUrl + "assets/");
-
 
         importRunner(
                 path, new CoreAssetDto(), null, exceptionFile, flags,
