@@ -56,7 +56,8 @@ CREATE TABLE adm.depreciation_method_link (
     adm_id uuid NOT NULL,
     depreciation_method varchar NOT NULL,   
     
-    FOREIGN KEY (depreciation_method) REFERENCES adm.ref_depreciation_method (k)
+    FOREIGN KEY (depreciation_method) REFERENCES adm.ref_depreciation_method (k),
+    FOREIGN KEY (adm_id) REFERENCES adm.adm (adm_id)
 );
 
 
@@ -112,7 +113,7 @@ CREATE TABLE maintenance_budget_need (
 -- first write to this table to apply constraints and FK stuff, then write to tx log
 CREATE TABLE adm.adm (
     adm_path ltree,
-    adm_id uuid NOT NULL,
+    adm_id uuid NOT NULL DEFAULT (uuid_generate_v4()),
 
     -- We use special sentinel values instead of NULL. This makes it less of a hassle to 
     -- create a unique index over these columns
