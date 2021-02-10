@@ -9,11 +9,19 @@ import org.springframework.util.StringUtils;
 import za.co.imqs.libimqs.auth.Permit;
 
 import java.util.Base64;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static za.co.imqs.TestUtils.poll;
 
 public class LoginRule extends ExternalResource {
+    private static final Permit FAKE_PERMIT = new Permit(
+            "fake_userId",
+            "fake_identity",
+            "fake_email",
+            "fake_name",
+            new String[0],
+            UUID.randomUUID().toString());
 
     private Permit permit;
     private String session;
@@ -23,6 +31,7 @@ public class LoginRule extends ExternalResource {
     private String password;
     private TimeUnit unit = TimeUnit.SECONDS;
     private long numUnits = 15;
+    private boolean fakeLogin = false;
 
     public LoginRule withUrl(String url) {
         this.url = url;
@@ -45,6 +54,11 @@ public class LoginRule extends ExternalResource {
         return this;
     }
 
+    public LoginRule withFakeLogin(boolean fake) {
+        this.fakeLogin = fake;
+        return this;
+    }
+
 
     @Override
     protected void before()  {
@@ -52,7 +66,7 @@ public class LoginRule extends ExternalResource {
         if (StringUtils.isEmpty(username)) throw new IllegalArgumentException("username not specified");
         if (StringUtils.isEmpty(password)) throw new IllegalArgumentException("password not specified");
 
-        final Object[] l = poll(()-> getAuthSession(url, username, password), TimeUnit.SECONDS, 15);
+        final Object[] l = (fakeLogin) ? new Object[]{"fake-session", FAKE_PERMIT } : poll(()-> getAuthSession(url, username, password), TimeUnit.SECONDS, 15);
         this.session = (String)l[0];
         this.permit = (Permit)l[1];
     }
