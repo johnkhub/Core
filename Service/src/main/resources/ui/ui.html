@@ -20,6 +20,14 @@
         <label for="userPwd"><b>Password</b></label>
         <input id='userPwd' type="password" placeholder="Enter Password" required>
     </div>
+
+    <div id='exporterOptions'>
+        <label for="expSelector">Select export option</label>
+        <select id='expSelector'>
+            <option value="exporter" selected="selected">Default</option>
+            <option value="exporter/duplicate-check">Check for duplicate assets</option>
+        </select>
+    </div>
     <button id='btnTask' class="taskButtonOn" onclick="performTask()">Export</button>
     <p id="a"></p>
 </div>

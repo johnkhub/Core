@@ -91,4 +91,12 @@ public class ExportController {
                 .contentType(MediaType.asMediaType(MimeType.valueOf("application/zip")))
                 .body(null);
     }
+
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/exporter/duplicate-check"
+    )
+    public void exportDuplicateAssets() throws Exception {
+        System.out.println("\n\nWe're in exportDuplicateAssets\n\n");
+    }
 }

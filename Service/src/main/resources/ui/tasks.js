@@ -12,9 +12,11 @@ function performTask() {
             dataType: "json",
 
             success: function(result,status,xhr) {
+                let expSelector = document.getElementById("expSelector");
+                let urlSuffix = expSelector.options[expSelector.selectedIndex].value;
                 $.ajax({
                     type: "GET",
-                    url: urlPrefix+"/download/exporter",
+                    url: urlPrefix+"/download/"+urlSuffix,
                     xhrFields: { withCredentials: true },
                     success: function (result, status, xhr) {
                         var name = xhr.getResponseHeader('Content-Disposition').split("=");
