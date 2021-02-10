@@ -86,12 +86,13 @@ The above is also packaged in a `.bat` and `.sh` file: `import.bat` and `import.
 |`FORCE_UPSERT`|If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT|
 |`HARD_DELETE`|Completely deletes an Asset from the datavase. Requires server to run in `admin` mode.|
 
->Flags are comma (`,`) separated
+>Flags are comma (`,`) separated and enclosed in double quotes (`"`)
+>E.g. `import "import_config.json" assets 43703_43734_5761_UPDATE FL.CSV "FORCE_INSERT,FORCE_CONTINUE"`
 
 ### Examples ###
  Import assets writing failures to exception files.
  
- `import "import_config.json" assets 43703_43734_5761_UPDATE FL.CSV FORCE_CONTINUE`
+ `import "import_config.json" assets 43703_43734_5761_UPDATE FL.CSV "FORCE_CONTINUE"`
  
  Import lookup district lookups
  

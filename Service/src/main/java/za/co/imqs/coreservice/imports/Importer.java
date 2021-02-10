@@ -162,6 +162,7 @@ public class Importer extends ImporterTemplate{
         if (cmd.equalsIgnoreCase("lookups")) {
             final String lookupType = args[3];
             Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, lookup type = {}", cmd, lookupType);
             i.importLookups(lookupType, file, i.get(lookupType));
             return;
 
@@ -172,17 +173,20 @@ public class Importer extends ImporterTemplate{
             if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
 
             final Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
             i.importAssets(file, flags);
             return;
 
         } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
             final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
             Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
             i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
             return;
         } else if (cmd.equalsIgnoreCase("delete")) {
             final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
             Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
             i.deleteAssets(file, flags);
             return;
         }
@@ -195,9 +199,9 @@ public class Importer extends ImporterTemplate{
     }
 
     private static EnumSet<Flags> getFlags(String[] args) {
-        final String[] flagsS = (args.length >= 4) ? args[3].split(",") : new String[0];
+        final String[] flagsS = (args.length >= 4) ? args[3].trim().split(",") : new String[0];
         final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).
-                map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s)).
+                map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s.trim())).
                 filter((s) -> s != null).
                 collect(Collectors.toList());
         final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);

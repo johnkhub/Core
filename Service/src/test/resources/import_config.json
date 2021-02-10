@@ -1,6 +1,6 @@
 {
   "authUrl" : "http://localhost/auth2/login",
-  "serviceUrl": "http://localhost:8669/",
+  "serviceUrl": "http://localhost/",
   "loginUsername" : "dev",
   "loginPassword": "dev"
 }
