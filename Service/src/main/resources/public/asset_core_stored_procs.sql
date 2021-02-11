@@ -7,6 +7,9 @@ DECLARE
     link_tables text[];
     stmt text;
 BEGIN
+    DELETE FROM asset.asset_landparcel WHERE asset_id = the_asset;
+    DELETE FROM asset.asset_landparcel WHERE landparcel_asset_id = the_asset;
+
     sub_classes := 	ARRAY(SELECT code FROM public.assettype);
     FOR clss IN 1..array_upper(sub_classes,1)
         LOOP
@@ -21,10 +24,6 @@ BEGIN
     DELETE FROM asset_identification WHERE asset_id=the_asset;
     DELETE FROM asset_classification WHERE asset_id=the_asset;
     DELETE FROM asset_tags WHERE asset_id = the_asset;
-
-    DELETE FROM asset.asset_landparcel WHERE asset_id = the_asset;
-    DELETE FROM asset.asset_landparcel WHERE landparcel_asset_id = the_asset;
-
 
     DELETE FROM access_control.entity_access WHERE entity_id = the_asset;
 

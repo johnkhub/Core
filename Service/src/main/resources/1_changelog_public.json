@@ -3443,6 +3443,7 @@
       "id": "0000000000-1",
       "author": "frankvr",
       "objectQuotingStrategy": "QUOTE_ALL_OBJECTS",
+      "validCheckSum": "7:4b5eada9abb61d0b2232aedabe1d88db",
       "changes": [
         {
           "sqlFile": {

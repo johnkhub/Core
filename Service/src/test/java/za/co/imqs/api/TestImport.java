@@ -67,12 +67,22 @@ public class TestImport extends AbstractAssetControllerAPITest {
     }
 
     @Test
-    @Ignore
-    public void testLandparcelLink() throws Exception {
-        loadLookups();
+
+    public void addLandparcels() throws Exception {
+        // run storedprocs sql
+        // set admin mode
+        // execute below
+
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
-        //Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
-        Importer.main(new String[]{config, "asset_to_landparcel", TestUtils.resolveWorkingFolder()+"/src/test/resources/api/dummyLink.csv","FORCE_CONTINUE"});
+        //ok
+        Importer.main(new String[]{config, "delete","/home/frank/Downloads/Updates/Release 2021.1 (Data only)/Landparcel Update V2/2021 Envelope_Facility_Building_Floor_Room_Site ARCHIVE or DELETE.csv", "HARD_DELETE"});
+        //ok
+        Importer.main(new String[]{config, "delete","/home/frank/Downloads/Updates/Release 2021.1 (Data only)/Landparcel Update V2/2021 LAndparcels ARCHIVE or DELETE_LPI Add.csv", "HARD_DELETE"});
+
+        // should probably run these in sequence once all pass
+        //to burgert some lpi already in use Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 2021.1 (Data only)/Landparcel Update V2/2021 LAndparcels ADDITIONS_LPI Add_V4.csv", "FORCE_UPSERT"});
+        Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 2021.1 (Data only)/Landparcel Update V2/2021 LAndparcels_New Envelopes and Facilities_ADDITIONS_Exceptions Removed_V4.csv"});
+        //ok Importer.main(new String[]{config, "assets","/home/frank/Downloads/Updates/Release 2021.1 (Data only)/Landparcel Update V2/2021 LAndparcels UPDATE_LPI Add_V6.csv"});
     }
 
     @Rule
