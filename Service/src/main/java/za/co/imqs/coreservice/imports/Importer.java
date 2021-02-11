@@ -47,6 +47,7 @@ public class Importer extends ImporterTemplate{
         }
         if (!ping()) {
             log.error("Core service unavailable!");
+            throw new RuntimeException("Core service not available.");
         }
     }
 
