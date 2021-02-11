@@ -15,11 +15,16 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import za.co.imqs.coreservice.dataaccess.LookupProvider;
+import za.co.imqs.coreservice.dataaccess.exception.NotFoundException;
 import za.co.imqs.coreservice.dto.ErrorProvider;
 import za.co.imqs.coreservice.dto.asset.CoreAssetDto;
+import za.co.imqs.coreservice.dto.asset.QuantityDto;
+import za.co.imqs.coreservice.model.Quantity;
+import za.co.imqs.coreservice.model.dtpw.DTPW;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -51,6 +56,10 @@ public class ImporterTemplate {
         public static final After IDENTITY = (dto) -> dto;
 
         T perform(T t);
+    }
+
+    public interface QuantityProvider<T> {
+        QuantityDto get(T asset);
     }
 
     public static BeanVerifier PASS_ALL = (b) -> true;
@@ -173,8 +182,189 @@ public class ImporterTemplate {
 
 
 
+    public <T extends CoreAssetDto> void importGrouping(
+            Path path,
+            T instance,
+            String groupingTypeId,
+            Method get,
+            Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, instance, null, exceptionFile, flags,
+                PASS_ALL,
+                Before.IDENTITY,
+                (d) -> {
+                    T dto = (T)d;
 
+                    if (skipTo != null) {
+                        if (dto.getAsset_id().equals(skipTo)) {
+                            log.info ("CAUGHT UP TO SKIP TO");
+                            skipTo = null;
+                        }
+                        return dto;
+                    }
 
+                    String value;
+                    try {
+                        value = (String) get.invoke(dto);
+                        if (value == null) {
+                            return dto;
+                        }
+                    } catch(Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            dto.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link grouping data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                    }
+
+                    final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{grouping_id_type}/{grouping_id}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, /*DTPW.GROUPING_TYPE_EMIS*/ groupingTypeId, /*dto.getEmis()*/ value
+                    );
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/group/{uuid}/to/{group_id_type}/{grouping_id}",
+                            HttpMethod.PUT,
+                            jsonEntity(null),
+                            Void.class,
+                            assetId, /*DTPW.GROUPING_TYPE_EMIS*/ groupingTypeId, /*dto.getEmis()*/ value
+                    );
+                    return null;
+                },
+                After.IDENTITY
+        );
+    }
+
+    public  <T extends CoreAssetDto> void importLinkedData(
+            Path path, Writer exceptionFile,
+            T instance, Method get, String table, String field,
+            EnumSet<Flags> flags) throws Exception {
+        importRunner(
+                path, instance, null, exceptionFile, flags,
+                (dto) -> true,
+                Before.IDENTITY,
+                (d) -> {
+                    T dto = (T)d;
+
+                    String value;
+                    try {
+                        value = (String) get.invoke(dto);
+                        if (value == null) {
+                            return dto;
+                        }
+                    } catch(Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            dto.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
+                    }
+
+                    final UUID assetId = UUID.fromString(asset.getAsset_id());
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
+                            HttpMethod.DELETE,
+                            jsonEntity(null),
+                            Void.class,
+                            table, field, assetId
+                    );
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
+                            HttpMethod.PUT,
+                            jsonEntity(null),
+                            Void.class,
+                            table, field, assetId, value
+                    );
+
+                    return null;
+                },
+                After.IDENTITY
+
+        );
+    }
+
+    public <T extends CoreAssetDto> void importQuantity(
+            Path path,
+            T instance,
+            QuantityProvider qProv,
+            Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importRunner(
+                path, instance, null, exceptionFile, flags,
+                PASS_ALL,
+                Before.IDENTITY,
+                (d) -> {
+                   T core = (T)d;
+
+                    if (skipTo != null) {
+                        if (core.getAsset_id().equals(skipTo)) {
+                            log.info ("CAUGHT UP TO SKIP TO");
+                            skipTo = null;
+                        }
+                        return core;
+                    }
+
+                    final QuantityDto quantity = qProv.get(core);
+                    if (quantity == null) {
+                        return core;
+                    }
+
+                    final CoreAssetDto asset = restTemplate.exchange(
+                            baseUrl + "/assets/func_loc_path/{path}",
+                            HttpMethod.GET,
+                            jsonEntity(null),
+                            CoreAssetDto.class,
+                            core.getFunc_loc_path().replace(".","+")
+                    ).getBody();
+
+                    if (asset == null) {
+                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link quantity data %s to.", core.getFunc_loc_path(), core.toString()));
+                    }
+
+                    try {
+                        restTemplate.exchange(
+                                baseUrl + "/assets/quantity/asset_id/{uuid}/name/{name}",
+                                HttpMethod.DELETE,
+                                jsonEntity(null),
+                                Void.class,
+                                UUID.fromString(asset.getAsset_id()), quantity.getName()
+                        );
+                    } catch (HttpClientErrorException ignored) {
+                    }
+
+                    restTemplate.exchange(
+                            baseUrl + "/assets/quantity",
+                            HttpMethod.PUT,
+                            jsonEntity(quantity),
+                            Void.class
+                    );
+                    return core;
+                },
+                After.IDENTITY
+        );
+    }
 
 
     protected final <T> void importRunner(

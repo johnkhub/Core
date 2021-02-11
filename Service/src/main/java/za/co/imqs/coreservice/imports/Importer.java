@@ -76,7 +76,9 @@ public class Importer extends ImporterTemplate{
         deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
     }
 
-    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
+    public  <T extends CoreAssetDto> void importLinkedData(
+            Path path, Writer exceptionFile,
+            T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
         importRunner(
                 path, instance, null, exceptionFile, flags,
                 (dto) -> true,
@@ -240,6 +242,13 @@ public class Importer extends ImporterTemplate{
     //
     // TODO can easily be made general by passing in the type of the linked data - use same method of passing in method reference as we did in importLinkedData
     public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importGrouping(
+                path,
+                new ExternalLinks(),
+                DTPW.GROUPING_TYPE_EMIS,
+                ExternalLinks.class.getMethod("getEmis"),
+                exceptionFile, flags);
+        /*
         importRunner(
                 path, new ExternalLinks(), null, exceptionFile, flags,
                 PASS_ALL,
@@ -292,10 +301,33 @@ public class Importer extends ImporterTemplate{
                 },
                 After.IDENTITY
         );
+         */
     }
 
     // TODO can easily be made general by passing in the name of the quantity - use same method of passing in method reference as we did in importLinkedData
     public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importQuantity(
+                path,
+                new Extent(),
+                (e) -> {
+                    final Importer.Extent dto = (Importer.Extent)e;
+                    if (dto.getExtent() == null) {
+                        return null;
+                    }
+
+                    final QuantityDto quantity = new QuantityDto();
+                    quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                    quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
+                    quantity.setName("extent");
+                    quantity.setNum_units(dto.getExtent());
+
+                    if (dto.getExtent_unit() == null) {
+                        throw new IllegalArgumentException("Extent_unit not set!");
+                    }
+                    return quantity;
+                },
+                exceptionFile,flags);
+        /*
         importRunner(
                 path, new Extent(), null, exceptionFile, flags,
                 PASS_ALL,
@@ -361,6 +393,7 @@ public class Importer extends ImporterTemplate{
                 },
                 After.IDENTITY
         );
+         */
     }
 
     public void importAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
