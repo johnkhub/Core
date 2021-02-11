@@ -74,3 +74,32 @@ FROM
         LEFT
             JOIN public.imqs_meta_column_comment_view com ON (def.table_schema = com.table_schema AND def.table_name = com.table_name AND def.column_name = com.table_name)
 ;
+
+
+WITH RECURSIVE xxxx AS (
+    SELECT
+        v.view_name, t.table_name
+    FROM
+        information_schema.view_table_usage v JOIN information_schema.tables t
+                                                   ON v.table_schema = t.table_schema
+                                                       AND v.table_name = t.table_name
+                                                       AND t.table_type = 'VIEW'
+                                                       AND view_schema NOT IN ('information_schema', 'pg_catalog')
+    WHERE view_name = 'asset_core_dtpw_ei_view'
+    UNION ALL
+
+    SELECT
+        v.view_name, t.table_name
+    FROM
+        information_schema.view_table_usage v
+            JOIN information_schema.tables t
+                 ON v.table_schema = t.table_schema
+                     AND v.table_name = t.table_name
+                     AND t.table_type = 'VIEW'
+                     AND view_schema NOT IN ('information_schema', 'pg_catalog')
+            JOIN xxxx ON xxxx.table_name = v.view_name
+) SELECT table_name FROM xxxx
+
+
+
+
