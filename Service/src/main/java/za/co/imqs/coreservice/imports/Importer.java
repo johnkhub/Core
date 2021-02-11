@@ -51,7 +51,6 @@ public class Importer extends ImporterTemplate{
         }
     }
 
-    // TODO Consider incorporating these methods in the ImporterTemplate
     public void importLandParcelMappings(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         log.info("Map Assets to Landparcels");
 
@@ -74,63 +73,6 @@ public class Importer extends ImporterTemplate{
 
     public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
         deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
-    }
-
-    public  <T extends CoreAssetDto> void importLinkedData(
-            Path path, Writer exceptionFile,
-            T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
-        importRunner(
-                path, instance, null, exceptionFile, flags,
-                (dto) -> true,
-                Before.IDENTITY,
-                (d) -> {
-                    T dto = (T)d;
-
-                    String value;
-                    try {
-                        value = (String) get.invoke(dto);
-                        if (value == null) {
-                            return dto;
-                        }
-                    } catch(Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    final CoreAssetDto asset = restTemplate.exchange(
-                            baseUrl + "/assets/func_loc_path/{path}",
-                            HttpMethod.GET,
-                            jsonEntity(null),
-                            CoreAssetDto.class,
-                            dto.getFunc_loc_path().replace(".","+")
-                    ).getBody();
-
-                    if (asset == null) {
-                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                    }
-
-                    final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
-                            HttpMethod.DELETE,
-                            jsonEntity(null),
-                            Void.class,
-                            table, field, assetId
-                    );
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
-                            HttpMethod.PUT,
-                            jsonEntity(null),
-                            Void.class,
-                            table, field, assetId, value
-                    );
-
-                    return null;
-                },
-                After.IDENTITY
-
-        );
     }
 
     public static String getAuthSession(String authUrl, String username, String password)  {
@@ -240,7 +182,6 @@ public class Importer extends ImporterTemplate{
     //
     // Implementations for DTPW
     //
-    // TODO can easily be made general by passing in the type of the linked data - use same method of passing in method reference as we did in importLinkedData
     public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importGrouping(
                 path,
@@ -304,7 +245,6 @@ public class Importer extends ImporterTemplate{
          */
     }
 
-    // TODO can easily be made general by passing in the name of the quantity - use same method of passing in method reference as we did in importLinkedData
     public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
         importQuantity(
                 path,

@@ -413,34 +413,12 @@ public class ImporterTemplate {
     }
 
 
-    //
-    // Writes the dto to the csv output stream
-    //
-    private  <T extends ErrorProvider> void processException(StatefulBeanToCsv<T> sbc, T dto,  EnumSet<Flags> flags) {
-        log.error(dto.getError());
-
-        if (!flags.contains(Flags.FORCE_CONTINUE)) {
-            throw new RuntimeException(dto.getError());
-        }
-
-        if (sbc != null) {
-            try {
-                sbc.write(dto);
-
-            } catch (Exception w) {
-                log.error("Unable to update exceptions file:", w);
-            }
-        }
-    }
-
     protected <T> HttpEntity<T> jsonEntity(T object) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", session);
         return new HttpEntity<>(object, headers);
     }
-
-
 
     //
     // Building block utility methods
@@ -477,7 +455,6 @@ public class ImporterTemplate {
         }
     }
 
-
     public boolean ping() {
         try {
             final Object response = restTemplate.exchange(
@@ -490,11 +467,11 @@ public class ImporterTemplate {
 
             return true;
         } catch (Exception e) {
-           return false;
+            return false;
         }
     }
 
-    protected Map<String,String> getReverseLookups(String lookupType) {
+    public Map<String,String> getReverseLookups(String lookupType) {
         final Map<String,String> valueToKey = new HashMap<>();
         final LookupProvider.Kv[] results = restTemplate.getForEntity(baseUrl+"/lookups/kv/{lookupType}", LookupProvider.Kv[].class, lookupType).getBody();
         for (LookupProvider.Kv kv : results) {
@@ -503,4 +480,29 @@ public class ImporterTemplate {
 
         return valueToKey;
     }
+
+
+    //
+    // Writes the dto to the csv output stream
+    //
+    private  <T extends ErrorProvider> void processException(StatefulBeanToCsv<T> sbc, T dto,  EnumSet<Flags> flags) {
+        log.error(dto.getError());
+
+        if (!flags.contains(Flags.FORCE_CONTINUE)) {
+            throw new RuntimeException(dto.getError());
+        }
+
+        if (sbc != null) {
+            try {
+                sbc.write(dto);
+
+            } catch (Exception w) {
+                log.error("Unable to update exceptions file:", w);
+            }
+        }
+    }
+
+
+
+
 }
