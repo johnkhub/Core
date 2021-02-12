@@ -1,8 +1,6 @@
 package za.co.imqs.api;
 
-import com.jayway.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -12,10 +10,8 @@ import za.co.imqs.TestUtils;
 import za.co.imqs.api.asset.AbstractAssetControllerAPITest;
 import za.co.imqs.coreservice.imports.Importer;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.zip.ZipInputStream;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.fail;
@@ -72,27 +68,49 @@ public class TestImport extends AbstractAssetControllerAPITest {
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         //
         // It is important that the dataset touch on the major features
-        // Grouping (e.g. EMIS)
-        // Quantities (e.g. extent)
-        // Linked data (e.g. EI districts)
+        //      Geometry ✓
+        //      Grouping (e.g. EMIS) ✓
+        //      Quantities (e.g. extent) ✓
+        //      Linked data (e.g. EI districts) ✓
+        //      Tags ✗
+        //
+
         final String file = TestUtils.resolveWorkingFolder()+"/src/test/resources/small_dataset.csv";
         Importer.main(new String[]{config, "assets", file,"FORCE_INSERT"});
 
-        try (
-                InputStream source = new FileInputStream(file);
-                InputStream result = given().header("Cookie", login.getSession()).get("/downloads/exporter").asInputStream()
-        ) {
-            assertContentEquals(source, result);
+        final String tempFile = "out.csv";
+        try (FileOutputStream fout = new FileOutputStream(tempFile)) {
+            String header = given().header("Cookie", login.getSession()).get("/download/exporter").andReturn().getHeader("Content-Disposition");
+            String fileName = header.split("=")[1];
+            final ZipInputStream result = new ZipInputStream(given().header("Cookie", login.getSession()).get(fileName).then().statusCode(200).extract().asInputStream());
+            result.getNextEntry();
+
+            // Write uncompressed csv to temporary file
+            IOUtils.copy(result, fout);
+            fout.flush();
+            fout.close();
+
+            // Read from temporary file and compare to reference
+            try (
+                    InputStream reference = new FileInputStream(file);
+                    FileInputStream fin = new FileInputStream(tempFile)
+            ) {
+                assertContentEquals(reference, fin);
+            }
         }
     }
 
     @Test
-    @Ignore
     public void testLandparcelLink() throws Exception {
+        /*
         loadLookups();
         final String config = TestUtils.resolveWorkingFolder()+"/src/test/resources/import_config.json";
         //Importer.main(new String[]{config, "assets","/home/frank/Downloads/9jul2020.csv", "FORCE_INSERT"});
         Importer.main(new String[]{config, "asset_to_landparcel", TestUtils.resolveWorkingFolder()+"/src/test/resources/api/dummyLink.csv","FORCE_CONTINUE"});
+         */
+        // We will need a normal data set import to ensure that the asset includingthe landparcels exists and then
+        // we need to include the landparcels
+        fail("Recheck this test and the output - compare to reference dataset as in previous loadSmallDataset");
     }
 
     @Rule
@@ -160,7 +178,7 @@ public class TestImport extends AbstractAssetControllerAPITest {
                 ch2 = ((InputStream)input2).read();
                 pos++;
                 if (ch != ch2) {
-                    fail("Contents differ at position "+pos+". " + ch + " vs "+ch2);
+                    fail("Contents differ at position "+pos+". " + (char)ch + " vs "+(char)ch2);
                 }
             }
 
