@@ -1,6 +1,7 @@
 {
   "authUrl" : "http://localhost/auth2/login",
   "serviceUrl": "http://localhost:8669/",
+  "remark": "For automated tests best to specify port above, so we do not st inside dockeroutside but rego through router where our IP keeps changing between environments when core ",
   "loginUsername" : "dev",
   "loginPassword": "dev"
 }

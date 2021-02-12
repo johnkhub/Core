@@ -86,8 +86,6 @@ public class ExportController {
 
 
     private ResponseEntity serveFile(Path filePath) throws Exception {
-        final File file = filePath.toFile();
-        //final InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=/download/importer/" + filePath.getFileName().toString())
                 .contentType(MediaType.asMediaType(MimeType.valueOf("application/zip")))

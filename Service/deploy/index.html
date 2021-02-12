@@ -18,16 +18,22 @@ You need to download all 4 files for your OS and then run either <tt>import.bat<
 <tt>import.bat [config_file] [command] [data file] ( [flags] or [lookup type])</tt>
 where command is one of:
 <ul>
-<li>assets</li>
-<li>asset_to_landparcel</li>
-<li>lookups</li>
+    <li>assets</li>
+    <li>asset_to_landparcel</li>
+    <li>lookups</li>
+    <li>delete</li>
 </ul>
 
 <h3>Flags</h3>
-<li>FORCE_INSERT Performs an INSERT rather than an UPDATE when an Asset UUID is found</li>
-<li>FORCE_CONTINUE Writes to the exception file but does not terminate execution</li>
-<li>FORCE_UPSERT If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT</li>
-<li>HARD_DELETE Erase record instead of marking inactive</li>
+<ul>
+    <li>FORCE_INSERT Performs an INSERT rather than an UPDATE when an Asset UUID is found</li>
+    <li>FORCE_CONTINUE Writes to the exception file but does not terminate execution</li>
+    <li>FORCE_UPSERT If set the importer will check if the asset exists and then perform an UPDATE else it will INSERT</li>
+    <li>HARD_DELETE Erase record instead of marking inactive</li>
+</ul>
+
+Flags are comma (`,`) separated and enclosed in double quotes (`"`)
+E.g. <tt>import "import_config.json" assets 43703_43734_5761_UPDATE_FL.CSV "FORCE_INSERT,FORCE_CONTINUE"</tt>
 
 <h2>Windows</h2>
 <ul>

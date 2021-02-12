@@ -47,12 +47,10 @@ public class Importer extends ImporterTemplate{
         }
         if (!ping()) {
             log.error("Core service unavailable!");
+            throw new RuntimeException("Core service not available.");
         }
     }
 
-    //
-    // Implementations for DTPW
-    //
     public void importLandParcelMappings(Path path, Writer exceptionFile, EnumSet<Flags> flags) throws Exception {
         log.info("Map Assets to Landparcels");
 
@@ -69,11 +67,129 @@ public class Importer extends ImporterTemplate{
                     );
                     return dto;
                 },
-               After.IDENTITY
+                After.IDENTITY
         );
     }
 
+    public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
+        deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
+    }
+
+    public static String getAuthSession(String authUrl, String username, String password)  {
+        if (password == "") return "hkgk";
+        try {
+            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
+            PostMethod post = new PostMethod(authUrl);
+            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
+            client.executeMethod(post);
+            if (post.getStatusCode() != 200)
+                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
+            return post.getResponseHeader("Set-Cookie").getValue();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        Config config;
+        try (InputStream is = new FileInputStream(args[0])) {
+            config = mapper.readerFor(Config.class).readValue(is);
+        }
+
+        final String session = getAuthSession(config.getAuthUrl(), config.getLoginUsername(), config.getLoginPassword()) ;
+
+        final String cmd = args[1];
+        final Path file = Paths.get(args[2]);
+        log.info("Processing {}", file);
+
+
+        if (cmd.equalsIgnoreCase("lookups")) {
+            final String lookupType = args[3];
+            Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, lookup type = {}", cmd, lookupType);
+            i.importLookups(lookupType, file, i.get(lookupType));
+            return;
+
+        } else if (cmd.equalsIgnoreCase("assets")) {
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
+            final EnumSet<ImporterTemplate.Flags> mutuallyExclusive = EnumSet.of(ImporterTemplate.Flags.FORCE_INSERT, ImporterTemplate.Flags.FORCE_UPSERT);
+            mutuallyExclusive.retainAll(flags);
+            if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
+
+            final Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
+            i.importAssets(file, flags);
+            return;
+
+        } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
+            Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
+            i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
+            return;
+        } else if (cmd.equalsIgnoreCase("delete")) {
+            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
+            Importer i = new Importer(config.getServiceUrl(), session);
+            log.info("Command = {}, flags = {}", cmd, flags);
+            i.deleteAssets(file, flags);
+            return;
+        }
+
+        throw new IllegalArgumentException("Unknown command:" + cmd);
+    }
+
+    private <T extends LookupProvider.Kv> T get(String s) throws Exception {
+        return (T)constructors.getOrDefault(s, constructors.get("KV")).newInstance();
+    }
+
+    private static EnumSet<Flags> getFlags(String[] args) {
+        final String[] flagsS = (args.length >= 4) ? args[3].trim().split(",") : new String[0];
+        final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).
+                map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s.trim())).
+                filter((s) -> s != null).
+                collect(Collectors.toList());
+        final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
+        flags.addAll(x);
+        return flags;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    @ToString(callSuper=true, includeFieldNames=true)
+    public static class ExternalLinks extends CoreAssetDto {
+        @CsvBindByName(required = false)
+        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
+        private String emis;
+    }
+
+
+    @Data
+    public static class AssetToLandparcel implements ErrorProvider {
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String asset_id;
+
+        @CsvBindByName(required = true)
+        @PreAssignmentProcessor(processor = Rules.Trim.class)
+        private String landparcel_asset_id;
+
+        @CsvBindByName(required = false)
+        private String error;
+    }
+
+
+    //
+    // Implementations for DTPW
+    //
     public void importEmis(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importGrouping(
+                path,
+                new ExternalLinks(),
+                DTPW.GROUPING_TYPE_EMIS,
+                ExternalLinks.class.getMethod("getEmis"),
+                exceptionFile, flags);
+        /*
         importRunner(
                 path, new ExternalLinks(), null, exceptionFile, flags,
                 PASS_ALL,
@@ -126,9 +242,32 @@ public class Importer extends ImporterTemplate{
                 },
                 After.IDENTITY
         );
+         */
     }
 
     public void importExtent(Path path, Writer exceptionFile, EnumSet<ImporterTemplate.Flags> flags ) throws Exception {
+        importQuantity(
+                path,
+                new Extent(),
+                (e) -> {
+                    final Importer.Extent dto = (Importer.Extent)e;
+                    if (dto.getExtent() == null) {
+                        return null;
+                    }
+
+                    final QuantityDto quantity = new QuantityDto();
+                    quantity.setUnit_code(dto.getExtent_unit()); // TODO pull lookup table from server and use for validation
+                    quantity.setAsset_id(UUID.fromString(dto.getAsset_id()));
+                    quantity.setName("extent");
+                    quantity.setNum_units(dto.getExtent());
+
+                    if (dto.getExtent_unit() == null) {
+                        throw new IllegalArgumentException("Extent_unit not set!");
+                    }
+                    return quantity;
+                },
+                exceptionFile,flags);
+        /*
         importRunner(
                 path, new Extent(), null, exceptionFile, flags,
                 PASS_ALL,
@@ -194,61 +333,7 @@ public class Importer extends ImporterTemplate{
                 },
                 After.IDENTITY
         );
-    }
-
-    public  <T extends CoreAssetDto> void importLinkedData(Path path, Writer exceptionFile, T instance, Method get, String table, String field, EnumSet<Flags> flags) throws Exception {
-        importRunner(
-                path, instance, null, exceptionFile, flags,
-                (dto) -> true,
-                Before.IDENTITY,
-                (d) -> {
-                    T dto = (T)d;
-
-                    String value;
-                    try {
-                        value = (String) get.invoke(dto);
-                        if (value == null) {
-                            return dto;
-                        }
-                    } catch(Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    final CoreAssetDto asset = restTemplate.exchange(
-                            baseUrl + "/assets/func_loc_path/{path}",
-                            HttpMethod.GET,
-                            jsonEntity(null),
-                            CoreAssetDto.class,
-                            dto.getFunc_loc_path().replace(".","+")
-                    ).getBody();
-
-                    if (asset == null) {
-                        throw new NotFoundException(String.format("No asset found with func_loc_path %s to link data %s to.", dto.getFunc_loc_path(), dto.toString()));
-                    }
-
-                    final UUID assetId = UUID.fromString(asset.getAsset_id());
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}",
-                            HttpMethod.DELETE,
-                            jsonEntity(null),
-                            Void.class,
-                            table, field, assetId
-                    );
-
-                    restTemplate.exchange(
-                            baseUrl + "/assets/table/{table}/field/{field}/asset/{uuid}/value/{value}",
-                            HttpMethod.PUT,
-                            jsonEntity(null),
-                            Void.class,
-                            table, field, assetId, value
-                    );
-
-                    return null;
-                },
-                After.IDENTITY
-
-        );
+         */
     }
 
     public void importAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
@@ -294,97 +379,9 @@ public class Importer extends ImporterTemplate{
         importExtent(assets, new FileWriter("extent_exceptions.csv"), flags);
     }
 
-    public void deleteAssets(Path assets, EnumSet<ImporterTemplate.Flags> flags) throws Exception {
-        deleteAssets(assets, new FileWriter("delete_exceptions.csv"), flags);
-    }
-
     private static <T extends CoreAssetDto> T remap(T dto) {
         dto.setCode(dto.getFunc_loc_path().replace(".", "-"));
         return dto;
-    }
-
-    public static String getAuthSession(String authUrl, String username, String password)  {
-        if (password == "") return "hkgk";
-        try {
-            HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-            PostMethod post = new PostMethod(authUrl);
-            post.setRequestHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-            client.executeMethod(post);
-            if (post.getStatusCode() != 200)
-                throw new RuntimeException(String.format("Unable to log in to local IMQS instance with username %s (%s, %s)", username, post.getStatusCode(), new String(post.getResponseBody())));
-            return post.getResponseHeader("Set-Cookie").getValue();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-        Config config;
-        try (InputStream is = new FileInputStream(args[0])) {
-            config = mapper.readerFor(Config.class).readValue(is);
-        }
-
-        final String session = getAuthSession(config.getAuthUrl(), config.getLoginUsername(), config.getLoginPassword()) ;
-
-        final String cmd = args[1];
-        final Path file = Paths.get(args[2]);
-        log.info("Processing {}", file);
-
-
-        if (cmd.equalsIgnoreCase("lookups")) {
-            final String lookupType = args[3];
-            Importer i = new Importer(config.getServiceUrl(), session);
-            i.importLookups(lookupType, file, i.get(lookupType));
-            return;
-
-        } else if (cmd.equalsIgnoreCase("assets")) {
-            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
-            final EnumSet<ImporterTemplate.Flags> mutuallyExclusive = EnumSet.of(ImporterTemplate.Flags.FORCE_INSERT, ImporterTemplate.Flags.FORCE_UPSERT);
-            mutuallyExclusive.retainAll(flags);
-            if (mutuallyExclusive.size() > 1) throw new IllegalArgumentException("Flags " + mutuallyExclusive + " are mutually exclusive.");
-
-            final Importer i = new Importer(config.getServiceUrl(), session);
-            i.importAssets(file, flags);
-            return;
-
-        } else if (cmd.equalsIgnoreCase("asset_to_landparcel")) {
-            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
-            Importer i = new Importer(config.getServiceUrl(), session);
-            i.importLandParcelMappings(file, new FileWriter("landparcel_mapping_exceptions.csv"), flags);
-            return;
-        } else if (cmd.equalsIgnoreCase("delete")) {
-            final EnumSet<ImporterTemplate.Flags> flags = getFlags(args);
-            Importer i = new Importer(config.getServiceUrl(), session);
-            i.deleteAssets(file, flags);
-            return;
-        }
-
-        throw new IllegalArgumentException("Unknown command:" + cmd);
-    }
-
-    private <T extends LookupProvider.Kv> T get(String s) throws Exception {
-        return (T)constructors.getOrDefault(s, constructors.get("KV")).newInstance();
-    }
-
-    private static EnumSet<Flags> getFlags(String[] args) {
-        final String[] flagsS = (args.length >= 4) ? args[3].split(",") : new String[0];
-        final List<ImporterTemplate.Flags> x = Arrays.stream(flagsS).
-                map((s)-> StringUtils.isEmpty(s) ? null : ImporterTemplate.Flags.valueOf(s)).
-                filter((s) -> s != null).
-                collect(Collectors.toList());
-        final EnumSet<ImporterTemplate.Flags> flags = EnumSet.noneOf(ImporterTemplate.Flags.class);
-        flags.addAll(x);
-        return flags;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper=true)
-    @ToString(callSuper=true, includeFieldNames=true)
-    public static class ExternalLinks extends CoreAssetDto {
-        @CsvBindByName(required = false)
-        @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
-        private String emis;
     }
 
     @Data
@@ -398,20 +395,6 @@ public class Importer extends ImporterTemplate{
         @CsvBindByName(required = false)
         @PreAssignmentProcessor(processor = Rules.ConvertEmptyOrBlankStringsToNull.class)
         private String extent_unit;
-    }
-
-    @Data
-    public static class AssetToLandparcel implements ErrorProvider {
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.Trim.class)
-        private String asset_id;
-
-        @CsvBindByName(required = true)
-        @PreAssignmentProcessor(processor = Rules.Trim.class)
-        private String landparcel_asset_id;
-
-        @CsvBindByName(required = false)
-        private String error;
     }
 
     @Data

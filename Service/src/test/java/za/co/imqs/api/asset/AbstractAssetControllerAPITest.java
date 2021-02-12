@@ -40,8 +40,7 @@ import static org.junit.Assert.assertThat;
 import static za.co.imqs.TestUtils.*;
 import static za.co.imqs.TestUtils.ServiceRegistry.AUTH;
 import static za.co.imqs.TestUtils.ServiceRegistry.CORE;
-import static za.co.imqs.api.TestConfig.COMPOSE_FILE;
-import static za.co.imqs.api.TestConfig.DOCKER;
+import static za.co.imqs.api.TestConfig.*;
 import static za.co.imqs.coreservice.dataaccess.LookupProvider.Kv.pair;
 
 /**
@@ -76,7 +75,8 @@ public class AbstractAssetControllerAPITest {
             //withUrl("http://"+SERVICES.get(AUTH)+ "/auth2/login").
                     withUrl("http://localhost/auth2/login").
                     withUsername(USERNAME).
-                    withPassword(PASSWORD);
+                    withPassword(PASSWORD).
+                    withFakeLogin(SANDPIT_MODE);
 
     @ClassRule
     public static TestRule chain = RuleChain.outerRule(compose).around(login);

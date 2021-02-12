@@ -37,11 +37,11 @@ public class CsvDownload {
             // rather than caching the entire resultset : https://jdbc.postgresql.org/documentation/head/query.html
             s.setFetchSize(1000);
             ResultSet rs = null;
-            long num = 0;
             try {
                 CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
                 rs = s.executeQuery("SELECT * FROM dtpw.dtpw_export_view ORDER BY func_loc_path");
                 writer.writeAll(rs, true);
+                writer.flush();
             } catch (Exception e) {
                 throw e;
             } finally {

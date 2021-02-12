@@ -64,7 +64,7 @@ FROM
     dtpw.asset_core_dtpw_view core
         JOIN dtpw.ref_client_department ON (core.responsible_dept_code = dtpw.ref_client_department.k AND dtpw.ref_client_department.chief_directorate_code = 'CD_EI')
         LEFT JOIN asset_grouping ON
-            core.asset_id = asset_grouping.asset_id
+                core.asset_id = asset_grouping.asset_id
             AND asset_grouping.grouping_id_type = (( SELECT grouping_id_type.type_id
                                                      FROM grouping_id_type
                                                      WHERE grouping_id_type.name::text = 'EMIS'::text))
@@ -337,10 +337,9 @@ SELECT
 
     ST_asText(core.geom) AS geom
 FROM
-     dtpw.asset_core_dtpw_view_with_lpi core
-LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id
-LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id
-LEFT JOIN public.quantity quantity ON core.asset_id = quantity.asset_id AND quantity.name = 'extent';
+    dtpw.asset_core_dtpw_view_with_lpi core
+        LEFT JOIN dtpw.asset_core_dtpw_ei_view ei ON core.asset_id = ei.asset_id
+        LEFT JOIN public.asset_tags tags ON core.asset_id = tags.asset_id
+        LEFT JOIN public.quantity quantity ON core.asset_id = quantity.asset_id AND quantity.name = 'extent';
 
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
-
