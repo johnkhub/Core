@@ -116,7 +116,9 @@ GRANT SELECT ON  dtpw.dtpw_iam_report_view_wrapper  TO normal_reader;
 GRANT SELECT ON  dtpw.dtpw_rnm_report_view_wrapper  TO normal_reader;
 GRANT SELECT ON  dtpw.dtpw_ppp_report_view_wrapper  TO normal_reader;
 
-GRANT SELECT ON  dtpw.dtpw_export_view  TO normal_reader;;
+GRANT SELECT ON  dtpw.dtpw_export_view  TO normal_reader;
+
+GRANT SELECT ON dtpw.duplicated_emis_dtpw_view  TO normal_reader;;
 
 
 

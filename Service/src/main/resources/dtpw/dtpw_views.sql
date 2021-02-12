@@ -344,3 +344,29 @@ LEFT JOIN public.quantity quantity ON core.asset_id = quantity.asset_id AND quan
 
 COMMENT ON VIEW dtpw.dtpw_export_view IS 'Converts the geometry to well-known text and provides all asset rows';
 
+--
+-- Duplicate Assets Check
+--
+DROP VIEW IF EXISTS dtpw.duplicated_emis_candidate_view;
+
+CREATE OR REPLACE VIEW dtpw.duplicated_emis_dtpw_view AS
+
+SELECT
+    assets.name,
+    assets.asset_id,
+    assets."EMIS"
+FROM dtpw.dtpw_export_view AS assets
+         JOIN
+     (
+-- Same EMIS assigned to multiple assets
+         select grouping_id from asset_grouping
+         group by grouping_id
+         having count(asset_id) > 1
+     ) AS candidates
+     ON assets."EMIS" = candidates.grouping_id
+
+         JOIN
+     dtpw.dtpw_export_view AS names
+     ON names."EMIS" = candidates.grouping_id
+
+WHERE substring(assets.name, 1,5) != substring(names.name,1,5);

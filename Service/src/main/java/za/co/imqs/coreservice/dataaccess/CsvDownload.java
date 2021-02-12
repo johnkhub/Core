@@ -28,7 +28,7 @@ public class CsvDownload {
     }
 
 
-    public OutputStream get(OutputStream out) {
+    public OutputStream get(OutputStream out, String query) {
         try (
                 Connection c = ds.getConnection();
                 Statement s = c.createStatement();
@@ -39,7 +39,7 @@ public class CsvDownload {
             ResultSet rs = null;
             try {
                 CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
-                rs = s.executeQuery("SELECT * FROM dtpw.dtpw_export_view ORDER BY func_loc_path");
+                rs = s.executeQuery(query);
                 writer.writeAll(rs, true);
                 writer.flush();
             } catch (Exception e) {

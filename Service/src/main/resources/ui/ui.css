@@ -9,6 +9,16 @@ body {
     horiz-align: left;
 }
 
+.options {
+    width: 100%;
+    margin: 5% 0%;
+    align-items: center;
+}
+
+.optionSelector {
+    alignment: right;
+}
+
 .taskButtonOn {
     background-color: #483d8b;
     color: #ffffff;

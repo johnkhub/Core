@@ -1,14 +1,9 @@
 package za.co.imqs.coreservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -16,8 +11,8 @@ import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import za.co.imqs.coreservice.dataaccess.CsvDownload;
+import za.co.imqs.coreservice.reports.DtpwReport;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -30,7 +25,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static za.co.imqs.coreservice.WebMvcConfiguration.*;
-import static za.co.imqs.coreservice.controller.ExceptionRemapper.mapException;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_PRODUCTION;
 import static za.co.imqs.spring.service.webap.DefaultWebAppInitializer.PROFILE_TEST;
 
@@ -63,13 +57,38 @@ public class ExportController {
             method = RequestMethod.GET, value = "/exporter"
     )
     public ResponseEntity exportCore() throws Exception {
+        final String query = DtpwReport.CORE_QUERY;
+
+        final String extension = ".csv";
+        return zipExport(extension, query);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET, value = "/exporter/duplicate-check"
+    )
+    public ResponseEntity exportDuplicateAssets() throws Exception {
+        final String query = DtpwReport.DUPLICATE_ASSET_QUERY;
+        final String extension = ".csv";
+
+        return zipExport(extension, query);
+    }
+
+
+    private ResponseEntity serveFile(Path filePath) throws Exception {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=/download/importer/" + filePath.getFileName().toString())
+                .contentType(MediaType.asMediaType(MimeType.valueOf("application/zip")))
+                .body(null);
+    }
+
+
+    private ResponseEntity zipExport(String extension, String query) throws Exception{
         final String fileName = nameStrat.getName();
         final String filePath = fileName+".zip";
-
         final ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(filePath));
-        final ZipEntry zipEntry = new ZipEntry(fileName + ".csv");
+        final ZipEntry zipEntry = new ZipEntry(fileName + extension);
         zipOut.putNextEntry(zipEntry);
-        download.get(zipOut);
+        download.get(zipOut, query);
         zipOut.finish();
         zipOut.close();
 
@@ -82,21 +101,5 @@ public class ExportController {
         }, new Date(System.currentTimeMillis()+ TimeUnit.HOURS.toMillis(2)));
 
         return serveFile(Paths.get(filePath));
-    }
-
-
-    private ResponseEntity serveFile(Path filePath) throws Exception {
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=/download/importer/" + filePath.getFileName().toString())
-                .contentType(MediaType.asMediaType(MimeType.valueOf("application/zip")))
-                .body(null);
-    }
-
-
-    @RequestMapping(
-            method = RequestMethod.GET, value = "/exporter/duplicate-check"
-    )
-    public void exportDuplicateAssets() throws Exception {
-        System.out.println("\n\nWe're in exportDuplicateAssets\n\n");
     }
 }
