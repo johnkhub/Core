@@ -10,9 +10,9 @@
       "statementsCacheSize": "100",
       "driverClass": "org.postgresql.Driver",
       "--jdbcUrl": "jdbc:postgresql://localhost/virgin",
-      "jdbcUrl": "jdbc:postgresql://localhost/virgin",
+      "jdbcUrl": "jdbc:postgresql://localhost:5433/core",
       "username": "postgres",
-      "password": "1mq5p@55w0rd"
+      "password": "sera"
     },
 
     "configurationService": {

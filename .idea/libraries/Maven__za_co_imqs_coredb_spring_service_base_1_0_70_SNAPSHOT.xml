@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: za.co.imqs.coredb:spring-service-base:1.0.70-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/spring-service-base/1.0.70-SNAPSHOT/spring-service-base-1.0.70-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/spring-service-base/1.0.70-SNAPSHOT/spring-service-base-1.0.70-SNAPSHOT-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/spring-service-base/1.0.70-SNAPSHOT/spring-service-base-1.0.70-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

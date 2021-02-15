@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: za.co.imqs.coredb:form-service-base:1.0.71a-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/form-service-base/1.0.71a-SNAPSHOT/form-service-base-1.0.71a-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/form-service-base/1.0.71a-SNAPSHOT/form-service-base-1.0.71a-SNAPSHOT-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/za/co/imqs/coredb/form-service-base/1.0.71a-SNAPSHOT/form-service-base-1.0.71a-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
